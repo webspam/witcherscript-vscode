@@ -1,25 +1,172 @@
 const fs = require('fs');
+const https = require('https');
 const path = require('path');
-const { execFileSync } = require('child_process');
 
 const extensionRoot = path.resolve(__dirname, '..');
-const repoRoot = path.resolve(extensionRoot, '..');
-const parserRoot = path.join(repoRoot, 'parser');
 const executable = process.platform === 'win32' ? 'witcherscript-lsp.exe' : 'witcherscript-lsp';
-const builtServer = path.join(parserRoot, 'target', 'release', executable);
 const bundledServerDir = path.join(extensionRoot, 'server');
 const bundledServer = path.join(bundledServerDir, executable);
+const releaseApiUrl = 'https://api.github.com/repos/webspam/witcherscript-language/releases/latest';
 
-execFileSync('cargo', ['build', '--release', '--bin', 'witcherscript-lsp'], {
-  cwd: parserRoot,
-  stdio: 'inherit'
-});
+loadLocalEnv();
 
 fs.mkdirSync(bundledServerDir, { recursive: true });
-fs.copyFileSync(builtServer, bundledServer);
 
-if (process.platform !== 'win32') {
-  fs.chmodSync(bundledServer, 0o755);
+const localServerPath = process.env.WITCHERSCRIPT_LSP_PATH;
+
+if (localServerPath) {
+  const sourcePath = path.resolve(extensionRoot, localServerPath);
+  if (!fs.existsSync(sourcePath)) {
+    throw new Error(`WITCHERSCRIPT_LSP_PATH does not exist: ${sourcePath}`);
+  }
+
+  fs.copyFileSync(sourcePath, bundledServer);
+  makeExecutable(bundledServer);
+  console.log(`Bundled ${bundledServer} from WITCHERSCRIPT_LSP_PATH`);
+} else {
+  downloadReleaseServer()
+    .then(() => {
+      makeExecutable(bundledServer);
+      console.log(`Bundled ${bundledServer} from ${releaseApiUrl}`);
+    })
+    .catch((error) => {
+      console.error(error.message);
+      process.exitCode = 1;
+    });
 }
 
-console.log(`Bundled ${bundledServer}`);
+function loadLocalEnv() {
+  const envPath = path.join(extensionRoot, '.env');
+  if (!fs.existsSync(envPath)) {
+    return;
+  }
+
+  for (const line of fs.readFileSync(envPath, 'utf8').split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) {
+      continue;
+    }
+
+    const separator = trimmed.indexOf('=');
+    if (separator === -1) {
+      continue;
+    }
+
+    const key = trimmed.slice(0, separator).trim();
+    const value = trimmed.slice(separator + 1).trim().replace(/^['"]|['"]$/g, '');
+    if (key && process.env[key] === undefined) {
+      process.env[key] = value;
+    }
+  }
+}
+
+async function downloadReleaseServer() {
+  const release = JSON.parse(await requestText(releaseApiUrl, {
+    Accept: 'application/vnd.github+json',
+    'User-Agent': 'witcherscript-vscode'
+  }));
+  const asset = selectAsset(release.assets || []);
+  if (!asset) {
+    throw new Error(`No ${process.platform}/${process.arch} witcherscript-lsp release asset found at ${releaseApiUrl}`);
+  }
+
+  await downloadFile(asset.browser_download_url, bundledServer);
+}
+
+function selectAsset(assets) {
+  const platformTokens = {
+    win32: ['windows', 'win32', 'pc-windows', '.exe'],
+    darwin: ['darwin', 'macos', 'apple-darwin'],
+    linux: ['linux', 'unknown-linux']
+  }[process.platform] || [process.platform];
+  const archTokens = {
+    x64: ['x64', 'x86_64', 'amd64'],
+    arm64: ['arm64', 'aarch64']
+  }[process.arch] || [process.arch];
+
+  return assets
+    .filter((asset) => {
+      const name = asset.name.toLowerCase();
+      return name.includes('witcherscript-lsp') && !name.endsWith('.sha256') && !name.endsWith('.sig');
+    })
+    .map((asset) => ({ asset, score: scoreAsset(asset.name.toLowerCase(), platformTokens, archTokens) }))
+    .filter((entry) => entry.score > 0)
+    .sort((left, right) => right.score - left.score)[0]?.asset;
+}
+
+function scoreAsset(name, platformTokens, archTokens) {
+  let score = 0;
+  if (platformTokens.some((token) => name.includes(token))) {
+    score += 2;
+  }
+  if (archTokens.some((token) => name.includes(token))) {
+    score += 2;
+  }
+  if (name === executable.toLowerCase()) {
+    score += 1;
+  }
+  return score;
+}
+
+function requestText(url, headers = {}) {
+  return new Promise((resolve, reject) => {
+    const request = https.get(url, { headers }, (response) => {
+      if (isRedirect(response.statusCode)) {
+        resolve(requestText(response.headers.location, headers));
+        return;
+      }
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        reject(new Error(`Request failed with ${response.statusCode}: ${url}`));
+        return;
+      }
+
+      let body = '';
+      response.setEncoding('utf8');
+      response.on('data', (chunk) => {
+        body += chunk;
+      });
+      response.on('end', () => resolve(body));
+    });
+    request.on('error', reject);
+  });
+}
+
+function downloadFile(url, destination) {
+  return new Promise((resolve, reject) => {
+    const file = fs.createWriteStream(destination);
+    const request = https.get(url, { headers: { 'User-Agent': 'witcherscript-vscode' } }, (response) => {
+      if (isRedirect(response.statusCode)) {
+        file.close();
+        fs.rmSync(destination, { force: true });
+        resolve(downloadFile(response.headers.location, destination));
+        return;
+      }
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        file.close();
+        fs.rmSync(destination, { force: true });
+        reject(new Error(`Download failed with ${response.statusCode}: ${url}`));
+        return;
+      }
+
+      response.pipe(file);
+      file.on('finish', () => {
+        file.close(resolve);
+      });
+    });
+    request.on('error', (error) => {
+      file.close();
+      fs.rmSync(destination, { force: true });
+      reject(error);
+    });
+  });
+}
+
+function isRedirect(statusCode) {
+  return statusCode >= 300 && statusCode < 400;
+}
+
+function makeExecutable(filePath) {
+  if (process.platform !== 'win32') {
+    fs.chmodSync(filePath, 0o755);
+  }
+}

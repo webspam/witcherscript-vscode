@@ -47,15 +47,7 @@
         "witcherscript.server.path": {
           "type": "string",
           "default": "",
-          "description": "Optional path to the witcherscript-lsp executable. If empty, the extension tries the local parser target directory."
-        },
-        "witcherscript.server.extraScriptRoots": {
-          "type": "array",
-          "default": [],
-          "items": {
-            "type": "string"
-          },
-          "description": "Additional WitcherScript roots for future indexing of external game scripts."
+          "description": "Optional path to the witcherscript-lsp executable. If empty, the extension uses the bundled server binary."
         }
       }
     }

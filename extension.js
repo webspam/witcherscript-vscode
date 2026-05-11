@@ -9,7 +9,7 @@ function activate(context) {
   const serverPath = resolveServerPath(context);
   if (!serverPath) {
     vscode.window.showWarningMessage(
-      'WitcherScript language server not found. Build parser with `cargo build --bin witcherscript-lsp` or set witcherscript.server.path.'
+      'WitcherScript language server not found. Set witcherscript.server.path or reinstall the extension with the bundled server.'
     );
     return;
   }
@@ -56,9 +56,7 @@ function resolveServerPath(context) {
 
   const executable = process.platform === 'win32' ? 'witcherscript-lsp.exe' : 'witcherscript-lsp';
   const candidates = [
-    context.asAbsolutePath(path.join('server', executable)),
-    context.asAbsolutePath(path.join('..', 'parser', 'target', 'debug', executable)),
-    context.asAbsolutePath(path.join('..', 'parser', 'target', 'release', executable))
+    context.asAbsolutePath(path.join('server', executable))
   ];
 
   return candidates.find((candidate) => fs.existsSync(candidate));

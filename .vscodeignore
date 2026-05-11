@@ -1,6 +1,11 @@
 *.vsix
+.env
+.env.example
+.gitignore
 .vscode/**
 .vscode-test/**
 package-lock.json
+scripts/**
 node_modules/@types/**
 node_modules/@vscode/**
+node_modules/dotenv/**
