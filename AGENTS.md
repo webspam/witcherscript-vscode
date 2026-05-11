@@ -4,16 +4,18 @@
 
 Commit changes as you make them — one logical change per commit. Don't batch unrelated edits into a single commit.
 
+Commit messages have a 50 character limit.
+
 ## Project layout
 
-| Path | Purpose |
-|------|---------|
-| `extension.js` | VS Code extension entry point; starts the LSP client |
-| `package.json` | Extension manifest, npm scripts, contributed settings |
-| `language-configuration.json` | Comment style, bracket pairs for `.ws` files |
-| `syntaxes/witcherscript.tmLanguage.json` | TextMate grammar for syntax highlighting |
-| `scripts/prepare-server.js` | Build-time script that copies or downloads the LSP binary |
-| `.env.example` | Template for local env overrides (copy to `.env`) |
+| Path                                     | Purpose                                                   |
+| ---------------------------------------- | --------------------------------------------------------- |
+| `extension.js`                           | VS Code extension entry point; starts the LSP client      |
+| `package.json`                           | Extension manifest, npm scripts, contributed settings     |
+| `language-configuration.json`            | Comment style, bracket pairs for `.ws` files              |
+| `syntaxes/witcherscript.tmLanguage.json` | TextMate grammar for syntax highlighting                  |
+| `scripts/prepare-server.js`              | Build-time script that copies or downloads the LSP binary |
+| `.env.example`                           | Template for local env overrides (copy to `.env`)         |
 
 ## No transpilation
 
