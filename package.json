@@ -49,6 +49,11 @@
           "type": "string",
           "default": "",
           "description": "Optional path to the witcherscript-lsp executable. If empty, the extension uses the bundled server binary."
+        },
+        "witcherscript.game.directory": {
+          "type": "string",
+          "default": "",
+          "description": "Path to The Witcher 3 game directory (the folder containing the bin, content, Mods, dlc folders). Used by the language server to read game scripts."
         }
       }
     }
