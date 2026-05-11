@@ -161,6 +161,10 @@
       "patterns": [
         {
           "name": "support.type.witcherscript",
+          "match": "\\barray\\s*<\\s*[\\w.]+\\s*>"
+        },
+        {
+          "name": "support.type.witcherscript",
           "match": "\\b(void|bool|Bool|int|Int8|Int32|Uint64|float|Float|string|String|name|CName|Byte|byte)\\b"
         }
       ]
