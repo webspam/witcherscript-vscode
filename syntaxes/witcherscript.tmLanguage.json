@@ -48,7 +48,7 @@
     "names": {
       "patterns": [
         {
-          "name": "string.quoted.single.witcherscript",
+          "name": "constant.other.symbol.witcherscript",
           "begin": "'",
           "end": "'"
         }
