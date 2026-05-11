@@ -3,7 +3,7 @@
   "displayName": "WitcherScript Language Features",
   "description": "Minimal WitcherScript diagnostics, navigation, and hover support.",
   "version": "0.1.0",
-  "publisher": "lightrewrite",
+  "publisher": "webspam",
   "private": true,
   "repository": {
     "type": "git",
