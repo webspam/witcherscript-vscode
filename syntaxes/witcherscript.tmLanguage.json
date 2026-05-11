@@ -10,6 +10,9 @@
       "include": "#strings"
     },
     {
+      "include": "#names"
+    },
+    {
       "include": "#annotations"
     },
     {
@@ -64,6 +67,15 @@
         }
       ]
     },
+    "names": {
+      "patterns": [
+        {
+          "name": "constant.other.symbol.quoted.single.witcherscript",
+          "begin": "'",
+          "end": "'"
+        }
+      ]
+    },
     "numbers": {
       "patterns": [
         {
@@ -78,17 +90,6 @@
           "name": "string.quoted.double.witcherscript",
           "begin": "\"",
           "end": "\"",
-          "patterns": [
-            {
-              "name": "constant.character.escape.witcherscript",
-              "match": "\\\\."
-            }
-          ]
-        },
-        {
-          "name": "string.quoted.single.name.witcherscript",
-          "begin": "'",
-          "end": "'",
           "patterns": [
             {
               "name": "constant.character.escape.witcherscript",
