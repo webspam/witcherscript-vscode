@@ -18,6 +18,9 @@ function activate(context) {
     command: serverPath,
     transport: TransportKind.stdio
   };
+  const outputChannel = vscode.window.createOutputChannel('WitcherScript');
+  context.subscriptions.push(outputChannel);
+
   const clientOptions = {
     documentSelector: [
       { scheme: 'file', language: 'witcherscript' },
@@ -28,7 +31,8 @@ function activate(context) {
     },
     initializationOptions: {
       gameDirectory: vscode.workspace.getConfiguration('witcherscript').get('gameDirectory') ?? ''
-    }
+    },
+    outputChannel
   };
 
   client = new LanguageClient(
