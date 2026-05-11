@@ -2,7 +2,7 @@
   "name": "witcherscript-language-features",
   "displayName": "WitcherScript Language Features",
   "description": "Minimal WitcherScript diagnostics, navigation, and hover support.",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "publisher": "webspam",
   "private": true,
   "repository": {
