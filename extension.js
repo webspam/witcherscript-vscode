@@ -25,6 +25,9 @@ function activate(context) {
     ],
     synchronize: {
       configurationSection: 'witcherscript'
+    },
+    initializationOptions: {
+      gameDirectory: vscode.workspace.getConfiguration('witcherscript').get('gameDirectory') ?? ''
     }
   };
 
