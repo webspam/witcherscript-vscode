@@ -10,6 +10,9 @@
       "include": "#strings"
     },
     {
+      "include": "#function-definitions"
+    },
+    {
       "include": "#names"
     },
     {
@@ -19,6 +22,9 @@
       "include": "#keywords"
     },
     {
+      "include": "#function-calls"
+    },
+    {
       "include": "#types"
     },
     {
@@ -26,6 +32,25 @@
     }
   ],
   "repository": {
+    "function-definitions": {
+      "patterns": [
+        {
+          "match": "\\b(function|event)\\s+(?:[A-Za-z_][A-Za-z0-9_]*\\s+)?([A-Za-z_][A-Za-z0-9_]*)\\s*(?=\\()",
+          "captures": {
+            "1": { "name": "keyword.control.witcherscript" },
+            "2": { "name": "entity.name.function.witcherscript" }
+          }
+        }
+      ]
+    },
+    "function-calls": {
+      "patterns": [
+        {
+          "name": "entity.name.function.witcherscript",
+          "match": "\\b[A-Za-z_][A-Za-z0-9_]*(?=\\s*\\()"
+        }
+      ]
+    },
     "annotations": {
       "patterns": [
         {
