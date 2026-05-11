@@ -30,7 +30,7 @@ package; the extension does not read it at runtime.
 Package a local VSIX from this directory:
 
 ```powershell
-npm run package -- --out witcherscript-language-features-0.1.0.vsix
+npm run package
 ```
 
 The package script copies `WITCHERSCRIPT_LSP_PATH` into `server/` when it is set.
