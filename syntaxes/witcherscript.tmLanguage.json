@@ -160,8 +160,13 @@
     "types": {
       "patterns": [
         {
-          "name": "support.type.witcherscript",
-          "match": "\\barray\\s*<\\s*[\\w.]+\\s*>"
+          "match": "\\b(array)\\s*(<)\\s*([\\w.]+)\\s*(>)",
+          "captures": {
+            "1": { "name": "support.type.witcherscript" },
+            "2": { "name": "punctuation.definition.generic.witcherscript" },
+            "3": { "name": "support.type.witcherscript" },
+            "4": { "name": "punctuation.definition.generic.witcherscript" }
+          }
         },
         {
           "name": "support.type.witcherscript",
