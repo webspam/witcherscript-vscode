@@ -30,7 +30,8 @@ function activate(context) {
       configurationSection: 'witcherscript'
     },
     initializationOptions: {
-      gameDirectory: vscode.workspace.getConfiguration('witcherscript').get('gameDirectory') ?? ''
+      gameDirectory: vscode.workspace.getConfiguration('witcherscript').get('gameDirectory') ?? '',
+      logLevel: vscode.workspace.getConfiguration('witcherscript').get('logLevel') ?? 'warn'
     },
     outputChannel
   };

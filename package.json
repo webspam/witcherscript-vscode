@@ -54,6 +54,12 @@
           "type": "string",
           "default": "",
           "description": "Absolute path to The Witcher 3 game directory (e.g. C:\\games\\The Witcher 3 Wild Hunt GOTY). Used by the language server to locate base game scripts."
+        },
+        "witcherscript.logLevel": {
+          "type": "string",
+          "default": "warn",
+          "enum": ["error", "warn", "debug", "trace"],
+          "description": "Log verbosity for the WitcherScript language server. Messages appear in the WitcherScript output channel."
         }
       }
     }
