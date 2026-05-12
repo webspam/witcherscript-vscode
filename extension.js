@@ -31,7 +31,11 @@ function activate(context) {
     },
     initializationOptions: {
       gameDirectory: vscode.workspace.getConfiguration('witcherscript').get('gameDirectory') ?? '',
-      logLevel: vscode.workspace.getConfiguration('witcherscript').get('logLevel') ?? 'warn'
+      logLevel: vscode.workspace.getConfiguration('witcherscript').get('logLevel') ?? 'warn',
+      formatter: {
+        lineLimit: vscode.workspace.getConfiguration('witcherscript').get('formatter.lineLimit') ?? 100,
+        compactColon: vscode.workspace.getConfiguration('witcherscript').get('formatter.compactColon') ?? false
+      }
     },
     outputChannel
   };

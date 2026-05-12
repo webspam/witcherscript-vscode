@@ -60,6 +60,16 @@
           "default": "warn",
           "enum": ["error", "warn", "debug", "trace"],
           "description": "Log verbosity for the WitcherScript language server. Messages appear in the WitcherScript output channel."
+        },
+        "witcherscript.formatter.lineLimit": {
+          "type": "number",
+          "default": 100,
+          "description": "Maximum line length the formatter will target before wrapping."
+        },
+        "witcherscript.formatter.compactColon": {
+          "type": "boolean",
+          "default": false,
+          "description": "When enabled, the formatter omits spaces around the colon in type annotations (e.g. `var x:int` instead of `var x : int`)."
         }
       }
     }
