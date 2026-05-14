@@ -23,9 +23,7 @@ $env:WITCHERSCRIPT_LSP_PATH = "..\witcherscript-language\target\release\witchers
 npm run prepare:server
 ```
 
-You can also copy `.env.example` to `.env` and set `WITCHERSCRIPT_LSP_PATH`
-there. This environment variable is only used while preparing the extension
-package; the extension does not read it at runtime.
+You can also copy `.env.example` to `.env` and set `WITCHERSCRIPT_LSP_PATH` there. This environment variable is only for local development, used while preparing the extension package; the extension does not read it at runtime.
 
 Package a local VSIX from this directory:
 
