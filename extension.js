@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 const vscode = require('vscode');
 const { LanguageClient, TransportKind } = require('vscode-languageclient/node');
 
@@ -30,7 +31,7 @@ function activate(context) {
       configurationSection: 'witcherscript'
     },
     initializationOptions: {
-      gameDirectory: vscode.workspace.getConfiguration('witcherscript').get('gameDirectory') ?? '',
+      gameDirectory: resolveGameDirectory(outputChannel),
       logLevel: vscode.workspace.getConfiguration('witcherscript').get('logLevel') ?? 'warn',
       formatter: {
         lineLimit: vscode.workspace.getConfiguration('witcherscript').get('formatter.lineLimit') ?? 100,
@@ -56,6 +57,50 @@ function deactivate() {
   }
 
   return client.stop();
+}
+
+function resolveGameDirectory(outputChannel) {
+  const configured = vscode.workspace
+    .getConfiguration('witcherscript')
+    .get('gameDirectory');
+  if (configured) {
+    return configured;
+  }
+
+  if (process.platform !== 'win32') {
+    return '';
+  }
+
+  const detected = detectGogGameDirectory();
+  if (!detected) {
+    return '';
+  }
+
+  if (!fs.existsSync(detected)) {
+    outputChannel.appendLine(
+      `WitcherScript: GOG registry lists game directory "${detected}", but it does not exist. Set witcherscript.gameDirectory manually.`
+    );
+    return '';
+  }
+
+  outputChannel.appendLine(
+    `WitcherScript: witcherscript.gameDirectory is not set; using GOG installation path from registry: ${detected}`
+  );
+  return detected;
+}
+
+function detectGogGameDirectory() {
+  const key = 'HKLM\\SOFTWARE\\WOW6432Node\\GOG.com\\Games\\1495134320';
+  try {
+    const output = execSync(`reg query "${key}" /v path`, {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore']
+    });
+    const match = output.match(/^\s*path\s+REG_SZ\s+(.+?)\s*$/m);
+    return match ? match[1] : '';
+  } catch {
+    return '';
+  }
 }
 
 function resolveServerPath(context) {

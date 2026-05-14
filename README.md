@@ -40,3 +40,14 @@ Otherwise, it downloads the matching `witcherscript-lsp` release binary from
 
 At runtime, the editor setting `witcherscript.server.path` can override the
 bundled `server/witcherscript-lsp` or `server/witcherscript-lsp.exe` binary.
+
+## Game directory detection
+
+The language server uses `witcherscript.gameDirectory` to locate the base game
+scripts. When that setting is empty and the extension is running on Windows, it
+falls back to the GOG installation path read from the registry key
+`HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\GOG.com\Games\1495134320` (the GOG
+Game of the Year edition). The detected path is validated and logged to the
+WitcherScript output channel. This fallback only covers the GOG release; Steam
+and other installs still require `witcherscript.gameDirectory` to be set
+explicitly.
