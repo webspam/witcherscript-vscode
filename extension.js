@@ -1,4 +1,5 @@
 const fs = require('fs');
+const net = require('net');
 const path = require('path');
 const { execSync } = require('child_process');
 const vscode = require('vscode');
@@ -31,18 +32,37 @@ function deactivate() {
 }
 
 function startClient() {
-  const serverPath = resolveServerPath(extensionContext);
-  if (!serverPath) {
-    vscode.window.showWarningMessage(
-      'WitcherScript language server not found. Set witcherscript.server.path or reinstall the extension with the bundled server.'
-    );
-    return;
-  }
+  const tcpPort = Number(
+    vscode.workspace.getConfiguration('witcherscript').get('server.tcpPort')
+  );
 
-  const serverOptions = {
-    command: serverPath,
-    transport: TransportKind.stdio
-  };
+  let serverOptions;
+  if (Number.isInteger(tcpPort) && tcpPort > 0 && tcpPort <= 65535) {
+    sharedOutputChannel.appendLine(
+      `Connecting to externally running language server on 127.0.0.1:${tcpPort} (witcherscript.server.tcpPort).`
+    );
+    serverOptions = () =>
+      new Promise((resolve, reject) => {
+        const socket = net.connect({ host: '127.0.0.1', port: tcpPort });
+        socket.once('connect', () => {
+          socket.removeListener('error', reject);
+          resolve({ writer: socket, reader: socket });
+        });
+        socket.once('error', reject);
+      });
+  } else {
+    const serverPath = resolveServerPath(extensionContext);
+    if (!serverPath) {
+      vscode.window.showWarningMessage(
+        'WitcherScript language server not found. Set witcherscript.server.path or reinstall the extension with the bundled server.'
+      );
+      return;
+    }
+    serverOptions = {
+      command: serverPath,
+      transport: TransportKind.stdio
+    };
+  }
 
   const gameDirectory = resolveGameDirectory(sharedOutputChannel);
   if (!gameDirectory) {

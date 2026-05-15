@@ -118,6 +118,13 @@
           "type": "boolean",
           "default": false,
           "description": "When enabled, the formatter vertically aligns the colons of consecutive class, struct, and state field declarations into a column. A blank line, comment, or non-field member breaks a group."
+        },
+        "witcherscript.server.tcpPort": {
+          "type": "number",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 65535,
+          "markdownDescription": "**LSP Testing:** Connect to an externally running language server on this localhost TCP port instead of launching the bundled binary. Leave at `0` to use the bundled server."
         }
       }
     }
