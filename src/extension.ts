@@ -1,16 +1,21 @@
-const fs = require('fs');
-const net = require('net');
-const path = require('path');
-const { execSync } = require('child_process');
-const vscode = require('vscode');
-const { LanguageClient, TransportKind } = require('vscode-languageclient/node');
+import * as fs from 'fs';
+import * as net from 'net';
+import * as path from 'path';
+import { execSync } from 'child_process';
+import * as vscode from 'vscode';
+import {
+  LanguageClient,
+  LanguageClientOptions,
+  ServerOptions,
+  TransportKind,
+} from 'vscode-languageclient/node';
 
-let client;
-let extensionContext;
-let sharedOutputChannel;
-let gameDirectoryStatusBar;
+let client: LanguageClient | undefined;
+let extensionContext: vscode.ExtensionContext;
+let sharedOutputChannel: vscode.OutputChannel;
+let gameDirectoryStatusBar: vscode.StatusBarItem;
 
-function activate(context) {
+export function activate(context: vscode.ExtensionContext): void {
   extensionContext = context;
   sharedOutputChannel = vscode.window.createOutputChannel('WitcherScript');
   context.subscriptions.push(sharedOutputChannel);
@@ -42,7 +47,7 @@ function activate(context) {
   startClient();
 }
 
-function deactivate() {
+export function deactivate(): Thenable<void> | undefined {
   if (!client) {
     return undefined;
   }
@@ -50,12 +55,12 @@ function deactivate() {
   return client.stop();
 }
 
-function startClient() {
+function startClient(): void {
   const tcpPort = Number(
     vscode.workspace.getConfiguration('witcherscript').get('server.tcpPort')
   );
 
-  let serverOptions;
+  let serverOptions: ServerOptions;
   if (Number.isInteger(tcpPort) && tcpPort > 0 && tcpPort <= 65535) {
     sharedOutputChannel.appendLine(
       `Connecting to externally running language server on 127.0.0.1:${tcpPort} (witcherscript.server.tcpPort).`
@@ -79,35 +84,34 @@ function startClient() {
     }
     serverOptions = {
       command: serverPath,
-      transport: TransportKind.stdio
+      transport: TransportKind.stdio,
     };
   }
 
   const gameDirectory = resolveGameDirectory(sharedOutputChannel);
   updateGameDirectoryStatusBar(gameDirectory);
 
-  const clientOptions = {
+  const config = vscode.workspace.getConfiguration('witcherscript');
+  const clientOptions: LanguageClientOptions = {
     documentSelector: [
       { scheme: 'file', language: 'witcherscript' },
-      { scheme: 'untitled', language: 'witcherscript' }
+      { scheme: 'untitled', language: 'witcherscript' },
     ],
     synchronize: {
-      configurationSection: 'witcherscript'
+      configurationSection: 'witcherscript',
     },
     initializationOptions: {
       gameDirectory,
-      additionalScriptDirectories:
-        vscode.workspace.getConfiguration('witcherscript').get('additionalScriptDirectories') ?? [],
-      autoLoadModSharedImports:
-        vscode.workspace.getConfiguration('witcherscript').get('autoLoadModSharedImports') ?? true,
-      logLevel: vscode.workspace.getConfiguration('witcherscript').get('logLevel') ?? 'warn',
+      additionalScriptDirectories: config.get('additionalScriptDirectories') ?? [],
+      autoLoadModSharedImports: config.get('autoLoadModSharedImports') ?? true,
+      logLevel: config.get('logLevel') ?? 'warn',
       formatter: {
-        lineLimit: vscode.workspace.getConfiguration('witcherscript').get('formatter.lineLimit') ?? 100,
-        compactColon: vscode.workspace.getConfiguration('witcherscript').get('formatter.compactColon') ?? false,
-        alignMemberColons: vscode.workspace.getConfiguration('witcherscript').get('formatter.alignMemberColons') ?? false
-      }
+        lineLimit: config.get('formatter.lineLimit') ?? 100,
+        compactColon: config.get('formatter.compactColon') ?? false,
+        alignMemberColons: config.get('formatter.alignMemberColons') ?? false,
+      },
     },
-    outputChannel: sharedOutputChannel
+    outputChannel: sharedOutputChannel,
   };
 
   client = new LanguageClient(
@@ -119,7 +123,7 @@ function startClient() {
   client.start();
 }
 
-async function restartClient() {
+async function restartClient(): Promise<void> {
   if (client) {
     await client.stop();
     client = undefined;
@@ -127,13 +131,13 @@ async function restartClient() {
   startClient();
 }
 
-async function setGameDirectory() {
+async function setGameDirectory(): Promise<void> {
   const picked = await vscode.window.showOpenDialog({
     canSelectFolders: true,
     canSelectFiles: false,
     canSelectMany: false,
     openLabel: 'Select Witcher 3 Folder',
-    title: 'Select your Witcher 3 game directory'
+    title: 'Select your Witcher 3 game directory',
   });
   if (!picked || picked.length === 0) {
     return;
@@ -161,7 +165,7 @@ async function setGameDirectory() {
   );
 }
 
-function updateGameDirectoryStatusBar(gameDirectory) {
+function updateGameDirectoryStatusBar(gameDirectory: string): void {
   if (gameDirectory) {
     gameDirectoryStatusBar.hide();
   } else {
@@ -169,10 +173,10 @@ function updateGameDirectoryStatusBar(gameDirectory) {
   }
 }
 
-function resolveGameDirectory(outputChannel) {
+function resolveGameDirectory(outputChannel: vscode.OutputChannel): string {
   const configured = vscode.workspace
     .getConfiguration('witcherscript')
-    .get('gameDirectory');
+    .get<string>('gameDirectory');
   if (configured) {
     return configured;
   }
@@ -199,12 +203,12 @@ function resolveGameDirectory(outputChannel) {
   return detected;
 }
 
-function detectGogGameDirectory() {
+function detectGogGameDirectory(): string {
   const key = 'HKLM\\SOFTWARE\\WOW6432Node\\GOG.com\\Games\\1495134320';
   try {
     const output = execSync(`reg query "${key}" /v path`, {
       encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'ignore']
+      stdio: ['ignore', 'pipe', 'ignore'],
     });
     const match = output.match(/^\s*path\s+REG_SZ\s+(.+?)\s*$/m);
     return match ? match[1] : '';
@@ -213,23 +217,16 @@ function detectGogGameDirectory() {
   }
 }
 
-function resolveServerPath(context) {
+function resolveServerPath(context: vscode.ExtensionContext): string | undefined {
   const configuredPath = vscode.workspace
     .getConfiguration('witcherscript')
-    .get('server.path');
+    .get<string>('server.path');
   if (configuredPath && fs.existsSync(configuredPath)) {
     return configuredPath;
   }
 
   const executable = process.platform === 'win32' ? 'witcherscript-lsp.exe' : 'witcherscript-lsp';
-  const candidates = [
-    context.asAbsolutePath(path.join('server', executable))
-  ];
+  const candidates = [context.asAbsolutePath(path.join('server', executable))];
 
   return candidates.find((candidate) => fs.existsSync(candidate));
 }
-
-module.exports = {
-  activate,
-  deactivate
-};

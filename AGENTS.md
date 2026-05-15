@@ -10,16 +10,23 @@ Commit messages have a 50 character limit.
 
 | Path                                     | Purpose                                                   |
 | ---------------------------------------- | --------------------------------------------------------- |
-| `extension.js`                           | VS Code extension entry point; starts the LSP client      |
+| `src/extension.ts`                       | VS Code extension entry point; starts the LSP client      |
+| `out/`                                   | Compiled JS output (gitignored); shipped in `.vsix`       |
+| `tsconfig.json`                          | TypeScript compiler config                                |
 | `package.json`                           | Extension manifest, npm scripts, contributed settings     |
 | `language-configuration.json`            | Comment style, bracket pairs for `.ws` files              |
 | `syntaxes/witcherscript.tmLanguage.json` | TextMate grammar for syntax highlighting                  |
 | `scripts/prepare-server.js`              | Build-time script that copies or downloads the LSP binary |
 | `.env.example`                           | Template for local env overrides (copy to `.env`)         |
 
-## No transpilation
+## Building
 
-The extension ships `extension.js` as-is. There is no TypeScript compilation or bundler step. Edit `extension.js` directly.
+```
+npm run compile   # one-shot tsc build into out/
+npm run watch     # tsc --watch for iterative development
+```
+
+The extension's `main` is `out/extension.js`. `vsce package` triggers `vscode:prepublish` → `compile` automatically. There is no bundler — `tsc` emits plain CommonJS that VS Code's Node host loads directly.
 
 ## Checking your work
 
@@ -27,7 +34,7 @@ The extension ships `extension.js` as-is. There is no TypeScript compilation or 
 npm run check
 ```
 
-This runs `node --check` on `extension.js` and `scripts/prepare-server.js`. Run it after any JS changes to catch syntax errors.
+This runs `tsc --noEmit` on `src/` and `node --check` on `scripts/prepare-server.js`. Run it after any code changes.
 
 ## LSP binary
 

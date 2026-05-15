@@ -8,6 +8,10 @@
 AGENTS.md
 package-lock.json
 scripts/**
+src/**
+tsconfig.json
+out/**/*.map
 node_modules/@types/**
 node_modules/@vscode/**
 node_modules/dotenv/**
+node_modules/typescript/**
