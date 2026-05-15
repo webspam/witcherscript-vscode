@@ -42,12 +42,6 @@
         "path": "./syntaxes/witcherscript.tmLanguage.json"
       }
     ],
-    "commands": [
-      {
-        "command": "witcherscript.setGameDirectory",
-        "title": "WitcherScript: Set Game Directory"
-      }
-    ],
     "walkthroughs": [
       {
         "id": "witcherscript.gettingStarted",
