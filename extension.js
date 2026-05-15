@@ -5,11 +5,10 @@ const { execSync } = require('child_process');
 const vscode = require('vscode');
 const { LanguageClient, TransportKind } = require('vscode-languageclient/node');
 
-const WALKTHROUGH_ID = 'webspam.witcherscript-language-features#witcherscript.gettingStarted';
-
 let client;
 let extensionContext;
 let sharedOutputChannel;
+let gameDirectoryStatusBar;
 
 function activate(context) {
   extensionContext = context;
@@ -18,6 +17,26 @@ function activate(context) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand('witcherscript.setGameDirectory', setGameDirectory)
+  );
+
+  gameDirectoryStatusBar = vscode.window.createStatusBarItem(
+    vscode.StatusBarAlignment.Left,
+    100
+  );
+  gameDirectoryStatusBar.name = 'WitcherScript Game Directory';
+  gameDirectoryStatusBar.text = '$(warning) WitcherScript: set game directory';
+  gameDirectoryStatusBar.tooltip =
+    'The Witcher 3 game directory is not set, so the language server cannot locate base game scripts. Click to select the folder.';
+  gameDirectoryStatusBar.command = 'witcherscript.setGameDirectory';
+  gameDirectoryStatusBar.backgroundColor = new vscode.ThemeColor('statusBarItem.warningBackground');
+  context.subscriptions.push(gameDirectoryStatusBar);
+
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration((e) => {
+      if (e.affectsConfiguration('witcherscript.gameDirectory')) {
+        updateGameDirectoryStatusBar(resolveGameDirectory(sharedOutputChannel));
+      }
+    })
   );
 
   startClient();
@@ -65,9 +84,7 @@ function startClient() {
   }
 
   const gameDirectory = resolveGameDirectory(sharedOutputChannel);
-  if (!gameDirectory) {
-    warnMissingGameDirectory(extensionContext);
-  }
+  updateGameDirectoryStatusBar(gameDirectory);
 
   const clientOptions = {
     documentSelector: [
@@ -144,28 +161,12 @@ async function setGameDirectory() {
   );
 }
 
-function warnMissingGameDirectory(context) {
-  const stateKey = 'witcherscript.missingGameDirectoryWarned';
-  if (context.globalState.get(stateKey)) {
-    return;
+function updateGameDirectoryStatusBar(gameDirectory) {
+  if (gameDirectory) {
+    gameDirectoryStatusBar.hide();
+  } else {
+    gameDirectoryStatusBar.show();
   }
-  context.globalState.update(stateKey, true);
-
-  const selectFolder = 'Select Folder';
-  const openWalkthrough = 'Open Walkthrough';
-  vscode.window
-    .showWarningMessage(
-      'WitcherScript: no game directory is set, so the language server cannot locate base game scripts. Set witcherscript.gameDirectory to the Witcher 3 install path.',
-      selectFolder,
-      openWalkthrough
-    )
-    .then((choice) => {
-      if (choice === selectFolder) {
-        vscode.commands.executeCommand('witcherscript.setGameDirectory');
-      } else if (choice === openWalkthrough) {
-        vscode.commands.executeCommand('workbench.action.openWalkthrough', WALKTHROUGH_ID);
-      }
-    });
 }
 
 function resolveGameDirectory(outputChannel) {
