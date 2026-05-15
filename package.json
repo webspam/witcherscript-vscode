@@ -42,6 +42,43 @@
         "path": "./syntaxes/witcherscript.tmLanguage.json"
       }
     ],
+    "commands": [
+      {
+        "command": "witcherscript.setGameDirectory",
+        "title": "WitcherScript: Set Game Directory"
+      }
+    ],
+    "walkthroughs": [
+      {
+        "id": "witcherscript.gettingStarted",
+        "title": "Get Started with WitcherScript",
+        "description": "Set up language features for Witcher 3 modding.",
+        "steps": [
+          {
+            "id": "setGameDirectory",
+            "title": "Set your Witcher 3 game directory",
+            "description": "The language server needs your Witcher 3 install to resolve base game scripts. On Windows with a GOG install this is detected automatically — if not, use the button below.\n\n[Select Game Folder](command:witcherscript.setGameDirectory)",
+            "media": {
+              "markdown": "walkthrough/game-directory.md"
+            },
+            "completionEvents": [
+              "onSettingChanged:witcherscript.gameDirectory"
+            ]
+          },
+          {
+            "id": "openScript",
+            "title": "Open a WitcherScript file",
+            "description": "Open any `.ws` file to get diagnostics, hover documentation, Go to Definition, and document symbols.",
+            "media": {
+              "markdown": "walkthrough/open-script.md"
+            },
+            "completionEvents": [
+              "onLanguage:witcherscript"
+            ]
+          }
+        ]
+      }
+    ],
     "configuration": {
       "title": "WitcherScript",
       "properties": {

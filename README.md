@@ -39,6 +39,13 @@ Otherwise, it downloads the matching `witcherscript-lsp` release binary from
 At runtime, the editor setting `witcherscript.server.path` can override the
 bundled `server/witcherscript-lsp` or `server/witcherscript-lsp.exe` binary.
 
+## First-run setup
+
+On first install VS Code opens a **Get Started with WitcherScript** walkthrough.
+Step one guides you through setting the game directory with a native folder
+picker. You can also run **WitcherScript: Set Game Directory** from the Command
+Palette at any time.
+
 ## Game directory detection
 
 The language server uses `witcherscript.gameDirectory` to locate the base game
