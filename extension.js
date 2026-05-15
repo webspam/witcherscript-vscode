@@ -62,7 +62,8 @@ function startClient() {
       logLevel: vscode.workspace.getConfiguration('witcherscript').get('logLevel') ?? 'warn',
       formatter: {
         lineLimit: vscode.workspace.getConfiguration('witcherscript').get('formatter.lineLimit') ?? 100,
-        compactColon: vscode.workspace.getConfiguration('witcherscript').get('formatter.compactColon') ?? false
+        compactColon: vscode.workspace.getConfiguration('witcherscript').get('formatter.compactColon') ?? false,
+        alignMemberColons: vscode.workspace.getConfiguration('witcherscript').get('formatter.alignMemberColons') ?? false
       }
     },
     outputChannel: sharedOutputChannel
