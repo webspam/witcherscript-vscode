@@ -2,8 +2,10 @@
 .env
 .env.example
 .gitignore
+.claude/**
 .vscode/**
 .vscode-test/**
+AGENTS.md
 package-lock.json
 scripts/**
 node_modules/@types/**
