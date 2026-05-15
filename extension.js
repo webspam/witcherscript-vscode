@@ -79,6 +79,8 @@ function startClient() {
     },
     initializationOptions: {
       gameDirectory,
+      additionalScriptDirectories:
+        vscode.workspace.getConfiguration('witcherscript').get('additionalScriptDirectories') ?? [],
       logLevel: vscode.workspace.getConfiguration('witcherscript').get('logLevel') ?? 'warn',
       formatter: {
         lineLimit: vscode.workspace.getConfiguration('witcherscript').get('formatter.lineLimit') ?? 100,

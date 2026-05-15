@@ -92,6 +92,14 @@
           "default": "",
           "description": "Absolute path to The Witcher 3 game directory (e.g. C:\\games\\The Witcher 3 Wild Hunt GOTY). Used by the language server to locate base game scripts."
         },
+        "witcherscript.additionalScriptDirectories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Extra root directories to walk recursively for .ws files. Each entry is loaded as read-only base scripts: symbols join the global namespace, but renames are rejected. Use this for co-dependent mods that need to see each other's declarations."
+        },
         "witcherscript.logLevel": {
           "type": "string",
           "default": "warn",
