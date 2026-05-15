@@ -4,10 +4,34 @@ const { execSync } = require('child_process');
 const vscode = require('vscode');
 const { LanguageClient, TransportKind } = require('vscode-languageclient/node');
 
+const WALKTHROUGH_ID = 'webspam.witcherscript-language-features#witcherscript.gettingStarted';
+
 let client;
+let extensionContext;
+let sharedOutputChannel;
 
 function activate(context) {
-  const serverPath = resolveServerPath(context);
+  extensionContext = context;
+  sharedOutputChannel = vscode.window.createOutputChannel('WitcherScript');
+  context.subscriptions.push(sharedOutputChannel);
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand('witcherscript.setGameDirectory', setGameDirectory)
+  );
+
+  startClient();
+}
+
+function deactivate() {
+  if (!client) {
+    return undefined;
+  }
+
+  return client.stop();
+}
+
+function startClient() {
+  const serverPath = resolveServerPath(extensionContext);
   if (!serverPath) {
     vscode.window.showWarningMessage(
       'WitcherScript language server not found. Set witcherscript.server.path or reinstall the extension with the bundled server.'
@@ -19,8 +43,11 @@ function activate(context) {
     command: serverPath,
     transport: TransportKind.stdio
   };
-  const outputChannel = vscode.window.createOutputChannel('WitcherScript');
-  context.subscriptions.push(outputChannel);
+
+  const gameDirectory = resolveGameDirectory(sharedOutputChannel);
+  if (!gameDirectory) {
+    warnMissingGameDirectory(extensionContext);
+  }
 
   const clientOptions = {
     documentSelector: [
@@ -31,14 +58,14 @@ function activate(context) {
       configurationSection: 'witcherscript'
     },
     initializationOptions: {
-      gameDirectory: resolveGameDirectory(outputChannel),
+      gameDirectory,
       logLevel: vscode.workspace.getConfiguration('witcherscript').get('logLevel') ?? 'warn',
       formatter: {
         lineLimit: vscode.workspace.getConfiguration('witcherscript').get('formatter.lineLimit') ?? 100,
         compactColon: vscode.workspace.getConfiguration('witcherscript').get('formatter.compactColon') ?? false
       }
     },
-    outputChannel
+    outputChannel: sharedOutputChannel
   };
 
   client = new LanguageClient(
@@ -47,16 +74,73 @@ function activate(context) {
     serverOptions,
     clientOptions
   );
-  context.subscriptions.push(client);
   client.start();
 }
 
-function deactivate() {
-  if (!client) {
-    return undefined;
+async function restartClient() {
+  if (client) {
+    await client.stop();
+    client = undefined;
+  }
+  startClient();
+}
+
+async function setGameDirectory() {
+  const picked = await vscode.window.showOpenDialog({
+    canSelectFolders: true,
+    canSelectFiles: false,
+    canSelectMany: false,
+    openLabel: 'Select Witcher 3 Folder',
+    title: 'Select your Witcher 3 game directory'
+  });
+  if (!picked || picked.length === 0) {
+    return;
   }
 
-  return client.stop();
+  const dir = picked[0].fsPath;
+  if (!fs.existsSync(path.join(dir, 'content'))) {
+    const useAnyway = 'Use Anyway';
+    const choice = await vscode.window.showWarningMessage(
+      `"${dir}" does not look like a Witcher 3 install (no content folder). Use it anyway?`,
+      useAnyway
+    );
+    if (choice !== useAnyway) {
+      return;
+    }
+  }
+
+  await vscode.workspace
+    .getConfiguration('witcherscript')
+    .update('gameDirectory', dir, vscode.ConfigurationTarget.Global);
+
+  await restartClient();
+  vscode.window.showInformationMessage(
+    'WitcherScript: game directory set. Language server restarted.'
+  );
+}
+
+function warnMissingGameDirectory(context) {
+  const stateKey = 'witcherscript.missingGameDirectoryWarned';
+  if (context.globalState.get(stateKey)) {
+    return;
+  }
+  context.globalState.update(stateKey, true);
+
+  const selectFolder = 'Select Folder';
+  const openWalkthrough = 'Open Walkthrough';
+  vscode.window
+    .showWarningMessage(
+      'WitcherScript: no game directory is set, so the language server cannot locate base game scripts. Set witcherscript.gameDirectory to the Witcher 3 install path.',
+      selectFolder,
+      openWalkthrough
+    )
+    .then((choice) => {
+      if (choice === selectFolder) {
+        vscode.commands.executeCommand('witcherscript.setGameDirectory');
+      } else if (choice === openWalkthrough) {
+        vscode.commands.executeCommand('workbench.action.openWalkthrough', WALKTHROUGH_ID);
+      }
+    });
 }
 
 function resolveGameDirectory(outputChannel) {
