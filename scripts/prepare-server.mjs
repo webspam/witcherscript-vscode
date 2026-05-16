@@ -7,9 +7,12 @@ const extensionRoot = path.resolve(import.meta.dirname, "..");
 const executable = process.platform === "win32" ? "witcherscript-lsp.exe" : "witcherscript-lsp";
 const bundledServerDir = path.join(extensionRoot, "server");
 const bundledServer = path.join(bundledServerDir, executable);
-const releaseApiUrl = "https://api.github.com/repos/webspam/witcherscript-language/releases/latest";
+const releaseRepo = "webspam/witcherscript-language";
 
 loadLocalEnv();
+
+const releaseTag = resolveReleaseTag();
+const releaseApiUrl = `https://api.github.com/repos/${releaseRepo}/releases/tags/${encodeURIComponent(releaseTag)}`;
 
 fs.mkdirSync(bundledServerDir, { recursive: true });
 
@@ -49,6 +52,20 @@ if (localServerPath) {
       console.error(error.message);
       process.exitCode = 1;
     });
+}
+
+function resolveReleaseTag() {
+  const override = process.env.WITCHERSCRIPT_LSP_VERSION?.trim();
+  if (override) return override;
+
+  const pkg = JSON.parse(fs.readFileSync(path.join(extensionRoot, "package.json"), "utf8"));
+  const pinned = pkg.witcherscriptLsp?.version;
+  if (!pinned) {
+    throw new Error(
+      "No LSP version pinned: set `witcherscriptLsp.version` in package.json or WITCHERSCRIPT_LSP_VERSION",
+    );
+  }
+  return pinned;
 }
 
 function loadLocalEnv() {

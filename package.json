@@ -12,6 +12,9 @@
   "engines": {
     "vscode": "^1.85.0"
   },
+  "witcherscriptLsp": {
+    "version": "v0.3.2"
+  },
   "categories": [
     "Programming Languages"
   ],

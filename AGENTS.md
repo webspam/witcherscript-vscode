@@ -39,7 +39,7 @@ This runs `tsc --noEmit` on `src/` and `node --check` on `scripts/prepare-server
 
 ## LSP binary
 
-The `server/` directory (gitignored) holds the `witcherscript-lsp` binary at runtime. It is populated by `npm run prepare:server`, which either runs `just release` in `WITCHERSCRIPT_LSP_PATH` (the LSP repo root) and copies the built binary from `target/release/`, or downloads the matching release asset from the `webspam/witcherscript-language` GitHub repo. Never commit the `server/` directory or its contents.
+The `server/` directory (gitignored) holds the `witcherscript-lsp` binary at runtime. It is populated by `npm run prepare:server`, which either runs `just release` in `WITCHERSCRIPT_LSP_PATH` (the LSP repo root) and copies the built binary from `target/release/`, or downloads the pinned release asset from the `webspam/witcherscript-language` GitHub repo. Never commit the `server/` directory or its contents.
 
 ## Packaging
 
