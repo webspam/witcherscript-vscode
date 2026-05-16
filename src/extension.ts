@@ -24,9 +24,11 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.commands.registerCommand("witcherscript.setGameDirectory", setGameDirectory),
   );
 
-  registerGameDirectoryStatusBar(context, sharedOutputChannel);
+  const gameDirectory = resolveGameDirectory(sharedOutputChannel);
 
-  startClient();
+  registerGameDirectoryStatusBar(context, gameDirectory);
+
+  startClient(gameDirectory);
 }
 
 /**
@@ -47,7 +49,7 @@ export function deactivate(): Thenable<void> | undefined {
  * under a debugger via `witcherscript.server.tcpPort`. End users take stdio.
  * `initializationOptions` are read once at boot; see {@link restartClient}.
  */
-function startClient(): void {
+function startClient(gameDirectory: string): void {
   const tcpPort = Number(vscode.workspace.getConfiguration("witcherscript").get("server.tcpPort"));
 
   let serverOptions: ServerOptions;
@@ -77,8 +79,6 @@ function startClient(): void {
       transport: TransportKind.stdio,
     };
   }
-
-  const gameDirectory = resolveGameDirectory(sharedOutputChannel);
 
   const config = vscode.workspace.getConfiguration("witcherscript");
   const clientOptions: LanguageClientOptions = {
@@ -125,7 +125,7 @@ async function restartClient(): Promise<void> {
     await client.stop();
     client = undefined;
   }
-  startClient();
+  startClient(resolveGameDirectory());
 }
 
 /**
@@ -175,7 +175,7 @@ async function setGameDirectory(): Promise<void> {
  */
 function registerGameDirectoryStatusBar(
   context: vscode.ExtensionContext,
-  outputChannel: vscode.OutputChannel,
+  initialGameDirectory: string,
 ): void {
   const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
   statusBar.name = "WitcherScript Game Directory";
@@ -186,8 +186,8 @@ function registerGameDirectoryStatusBar(
   statusBar.backgroundColor = new vscode.ThemeColor("statusBarItem.warningBackground");
   context.subscriptions.push(statusBar);
 
-  const syncVisibility = (): void => {
-    if (resolveGameDirectory(outputChannel)) {
+  const setVisibility = (gameDirectory: string): void => {
+    if (gameDirectory) {
       statusBar.hide();
     } else {
       statusBar.show();
@@ -197,20 +197,21 @@ function registerGameDirectoryStatusBar(
   context.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration(e => {
       if (e.affectsConfiguration("witcherscript.gameDirectory")) {
-        syncVisibility();
+        setVisibility(resolveGameDirectory());
       }
     }),
   );
 
-  syncVisibility();
+  setVisibility(initialGameDirectory);
 }
 
 /**
- * Detected-but-missing logs so users who moved/uninstalled the game see why
- * detection failed. Returns "" (not undefined) so callers can forward
+ * Pass `outputChannel` only from the single startup call to log how the
+ * directory was resolved; omit it elsewhere to avoid duplicate logs and
+ * noise on config changes. Returns "" (not undefined) so callers can forward
  * straight into LSP options — the server treats empty as "not configured".
  */
-function resolveGameDirectory(outputChannel: vscode.OutputChannel): string {
+function resolveGameDirectory(outputChannel?: vscode.OutputChannel): string {
   const configured = vscode.workspace
     .getConfiguration("witcherscript")
     .get<string>("gameDirectory");
@@ -228,13 +229,13 @@ function resolveGameDirectory(outputChannel: vscode.OutputChannel): string {
   }
 
   if (!fs.existsSync(detected)) {
-    outputChannel.appendLine(
+    outputChannel?.appendLine(
       `Registry (GOG) lists game directory "${detected}", but it does not exist. Set witcherscript.gameDirectory manually.`,
     );
     return "";
   }
 
-  outputChannel.appendLine(
+  outputChannel?.appendLine(
     `witcherscript.gameDirectory is not set; using GOG installation path from registry: ${detected}`,
   );
   return detected;
