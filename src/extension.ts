@@ -99,7 +99,10 @@ function startClient(): void {
       gameDirectory,
       additionalScriptDirectories: config.get("additionalScriptDirectories") ?? [],
       autoLoadModSharedImports: config.get("autoLoadModSharedImports") ?? true,
-      logLevel: config.get("logLevel") ?? "warn",
+      logLevel:
+        extensionContext.extensionMode === vscode.ExtensionMode.Development
+          ? "trace"
+          : (config.get("logLevel") ?? "warn"),
       formatter: {
         lineLimit: config.get("formatter.lineLimit") ?? 100,
         compactColon: config.get("formatter.compactColon") ?? false,
