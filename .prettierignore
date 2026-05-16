@@ -1,0 +1,10 @@
+# Default-deny everything; only TS/JS/JSON are formatted.
+*
+
+# Allow descending into subdirectories.
+!*/
+
+# Re-include TS, JS, JSON at any depth.
+!*.ts
+!*.js
+!*.json
