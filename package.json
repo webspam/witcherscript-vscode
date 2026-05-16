@@ -89,10 +89,7 @@
             "description": "Open any `.ws` file to get diagnostics, hover documentation, Go to Definition, and document symbols.",
             "media": {
               "markdown": "walkthrough/open-script.md"
-            },
-            "completionEvents": [
-              "onLanguage:witcherscript"
-            ]
+            }
           }
         ]
       }
