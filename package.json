@@ -52,6 +52,14 @@
         "description": "Set up language features for Witcher 3 modding.",
         "steps": [
           {
+            "id": "welcome",
+            "title": "Welcome",
+            "description": "Language features for `.ws` files: diagnostics, hover, navigation, and formatting via a bundled language server.",
+            "media": {
+              "markdown": "walkthrough/welcome.md"
+            }
+          },
+          {
             "id": "gameDirectoryDetected",
             "title": "Game directory detected",
             "when": "witcherscript.gameDirectoryResolved",
