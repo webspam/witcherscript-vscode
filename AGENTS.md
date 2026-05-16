@@ -18,6 +18,7 @@ Commit messages have a 50 character limit.
 | `syntaxes/witcherscript.tmLanguage.json` | TextMate grammar for syntax highlighting                  |
 | `scripts/prepare-server.js`              | Build-time script that copies or downloads the LSP binary |
 | `.env.example`                           | Template for local env overrides (copy to `.env`)         |
+| `.vscode/*.example`                      | Templates for personal `launch.json` / `tasks.json`       |
 
 ## Building
 

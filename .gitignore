@@ -3,3 +3,5 @@
 /server/
 *.vsix
 .env
+/.vscode/*
+!/.vscode/*.example
