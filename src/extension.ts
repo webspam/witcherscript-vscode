@@ -5,8 +5,8 @@ import { execSync } from "child_process";
 import * as vscode from "vscode";
 import {
   LanguageClient,
-  LanguageClientOptions,
-  ServerOptions,
+  type LanguageClientOptions,
+  type ServerOptions,
   TransportKind,
 } from "vscode-languageclient/node";
 
