@@ -56,13 +56,39 @@ function startClient(gameDirectory: string): void {
       `Connecting to externally running language server on 127.0.0.1:${tcpPort} (witcherscript.server.tcpPort).`,
     );
     serverOptions = () =>
-      new Promise((resolve, reject) => {
+      new Promise(resolve => {
         const socket = net.connect({ host: "127.0.0.1", port: tcpPort });
+        const onError = async () => {
+          socket.destroy();
+          const useBundled = "Use Bundled Server";
+          const choice = await vscode.window.showErrorMessage(
+            `WitcherScript: couldn't connect to language server on 127.0.0.1:${tcpPort}. ` +
+              `The port is set via witcherscript.server.tcpPort for LSP development.`,
+            useBundled,
+            "Open Settings",
+            "Retry",
+          );
+          // Never reject — suppresses the generic VS Code "couldn't create connection" toast.
+          // client.stop() disposes the client that is waiting on this promise.
+          await client?.stop();
+          client = undefined;
+          if (choice === useBundled) {
+            await clearTcpPortSetting();
+            startClient(resolveGameDirectory());
+          } else if (choice === "Retry") {
+            startClient(resolveGameDirectory());
+          } else if (choice === "Open Settings") {
+            void vscode.commands.executeCommand(
+              "workbench.action.openSettings",
+              "witcherscript.server.tcpPort",
+            );
+          }
+        };
         socket.once("connect", () => {
-          socket.removeListener("error", reject);
+          socket.removeListener("error", onError);
           resolve({ writer: socket, reader: socket });
         });
-        socket.once("error", reject);
+        socket.once("error", onError);
       });
   } else {
     const serverPath = resolveServerPath(extensionContext);
@@ -111,6 +137,17 @@ function startClient(gameDirectory: string): void {
     clientOptions,
   );
   client.start();
+}
+
+async function clearTcpPortSetting(): Promise<void> {
+  const config = vscode.workspace.getConfiguration("witcherscript");
+  const inspection = config.inspect<number>("server.tcpPort");
+  if (inspection?.globalValue !== undefined)
+    await config.update("server.tcpPort", undefined, vscode.ConfigurationTarget.Global);
+  if (inspection?.workspaceValue !== undefined)
+    await config.update("server.tcpPort", undefined, vscode.ConfigurationTarget.Workspace);
+  if (inspection?.workspaceFolderValue !== undefined)
+    await config.update("server.tcpPort", undefined, vscode.ConfigurationTarget.WorkspaceFolder);
 }
 
 /**
