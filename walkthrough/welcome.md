@@ -1,14 +1,21 @@
 ## Welcome to WitcherScript
 
 This extension adds language support for `.ws` files — syntax highlighting plus
-a bundled language server that provides diagnostics, hover, navigation, and
-formatting for Witcher 3 modding.
+a bundled language server that provides:
 
-The next two steps will get you set up:
+- **Completion** — members, symbols, and method snippets
+- **Hover** — signatures and type annotations
+- **Document formatting** — opinionated pretty-printer
+- **Go to Definition** and **Find References**
+- **Diagnostics** — syntax errors and validation warnings as you type
 
-1. Point the extension at your Witcher 3 install so the language server can
-   resolve base game scripts.
-2. Open a `.ws` file to start using the language features.
+<details>
 
-It is deliberately not a mod management, packing, or deployment tool — just
-language features for editing scripts.
+<summary><b>Show all language features</b></summary>
+
+- **Signature help** — parameter hints inside calls
+- **Rename** — workspace-wide
+- **Document Symbols** — outline in the Explorer panel
+- **Semantic highlighting** — only highlights valid variable / type names
+
+</details>

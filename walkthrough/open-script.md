@@ -1,21 +1,12 @@
-## Language features
+## Open a WitcherScript file
 
-Once the game directory is set, open any `.ws` file and the language server
-provides:
+With the game directory set, open any `.ws` file and the language server takes
+over — diagnostics appear as you type, hover and completion read from the base
+game scripts, and the formatter is available via **Format Document**.
 
-- **Completion** — members, symbols, and method snippets
-- **Hover** — signatures and type annotations
-- **Document formatting** — opinionated pretty-printer
-- **Go to Definition** and **Find References**
-- **Diagnostics** — syntax errors and validation warnings as you type
+The first open after a fresh install takes a few seconds while the server
+indexes the base game scripts. Subsequent files are instant.
 
-<details>
-
-<summary><b>Show all language features</b></summary>
-
-- **Signature help** — parameter hints inside calls
-- **Rename** — workspace-wide
-- **Document Symbols** — outline in the Explorer panel
-- **Semantic highlighting** — only highlights valid types
-
-</details>
+The server runs in the background and logs to the *WitcherScript* output
+channel. If something looks wrong, raise the verbosity with
+`witcherscript.logLevel` and check the channel for clues.
