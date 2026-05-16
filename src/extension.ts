@@ -12,12 +12,12 @@ import {
 
 let client: LanguageClient | undefined;
 let extensionContext: vscode.ExtensionContext;
-let sharedOutputChannel: vscode.OutputChannel;
+let sharedOutputChannel: vscode.LogOutputChannel;
 
 /** Module-scope state is captured for the restart flow. */
 export function activate(context: vscode.ExtensionContext): void {
   extensionContext = context;
-  sharedOutputChannel = vscode.window.createOutputChannel("WitcherScript");
+  sharedOutputChannel = vscode.window.createOutputChannel("WitcherScript", { log: true });
   context.subscriptions.push(sharedOutputChannel);
 
   context.subscriptions.push(
@@ -230,7 +230,7 @@ function registerGameDirectoryContextKey(
  * noise on config changes. Returns "" (not undefined) so callers can forward
  * straight into LSP options — the server treats empty as "not configured".
  */
-function resolveGameDirectory(outputChannel?: vscode.OutputChannel): string {
+function resolveGameDirectory(outputChannel?: vscode.LogOutputChannel): string {
   const configured = vscode.workspace
     .getConfiguration("witcherscript")
     .get<string>("gameDirectory");
@@ -248,7 +248,7 @@ function resolveGameDirectory(outputChannel?: vscode.OutputChannel): string {
     return "";
   }
 
-  outputChannel?.appendLine(
+  outputChannel?.info(
     `witcherscript.gameDirectory is not set; using GOG installation path from registry: ${detected}`,
   );
   return detected;
