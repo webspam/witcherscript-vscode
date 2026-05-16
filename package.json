@@ -52,8 +52,21 @@
         "description": "Set up language features for Witcher 3 modding.",
         "steps": [
           {
+            "id": "gameDirectoryDetected",
+            "title": "Game directory detected",
+            "when": "witcherscript.gameDirectoryResolved",
+            "description": "Your Witcher 3 install was detected automatically. Nothing to do here — open `Settings` if you want to verify or override the path.",
+            "media": {
+              "markdown": "walkthrough/game-directory-detected.md"
+            },
+            "completionEvents": [
+              "onContext:witcherscript.gameDirectoryResolved"
+            ]
+          },
+          {
             "id": "setGameDirectory",
             "title": "Set your Witcher 3 game directory",
+            "when": "!witcherscript.gameDirectoryResolved",
             "description": "The language server needs your Witcher 3 install to resolve base game scripts. On Windows with a GOG install this is detected automatically — if not, use the button below.\n\n[Select Game Folder](command:witcherscript.setGameDirectory)",
             "media": {
               "markdown": "walkthrough/game-directory.md"

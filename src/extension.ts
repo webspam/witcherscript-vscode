@@ -27,6 +27,7 @@ export function activate(context: vscode.ExtensionContext): void {
   const gameDirectory = resolveGameDirectory(sharedOutputChannel);
 
   registerGameDirectoryStatusBar(context, gameDirectory);
+  registerGameDirectoryContextKey(context, gameDirectory);
 
   startClient(gameDirectory);
 }
@@ -193,6 +194,34 @@ function registerGameDirectoryStatusBar(
   );
 
   setVisibility(initialGameDirectory);
+}
+
+/**
+ * Drives walkthrough step visibility — `when` clauses in package.json gate
+ * the "detected" vs "set me up" steps on this key, so auto-detected installs
+ * don't make the user read setup instructions they don't need.
+ */
+function registerGameDirectoryContextKey(
+  context: vscode.ExtensionContext,
+  initialGameDirectory: string,
+): void {
+  const apply = (gameDirectory: string): void => {
+    void vscode.commands.executeCommand(
+      "setContext",
+      "witcherscript.gameDirectoryResolved",
+      !!gameDirectory,
+    );
+  };
+
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration(e => {
+      if (e.affectsConfiguration("witcherscript.gameDirectory")) {
+        apply(resolveGameDirectory());
+      }
+    }),
+  );
+
+  apply(initialGameDirectory);
 }
 
 /**
