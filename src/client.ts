@@ -22,9 +22,25 @@ export function initClient(
   outputChannel = channel;
 }
 
-export function stopClient(): Thenable<void> | undefined {
-  if (!client) return undefined;
-  return client.stop();
+export function stopClient(): Promise<void> {
+  return stopClientSafely();
+}
+
+/**
+ * `client.stop()` rejects with "Cannot call write after a stream was destroyed"
+ * when the underlying transport already died (TCP socket closed, server crashed).
+ * Swallow it so deactivate and restart don't surface a useless error.
+ */
+async function stopClientSafely(): Promise<void> {
+  if (!client) return;
+  try {
+    await client.stop();
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    outputChannel.warn(`Stopping language server failed: ${message}`);
+  } finally {
+    client = undefined;
+  }
 }
 
 /**
@@ -116,13 +132,7 @@ async function handleTcpConnectionError(port: number): Promise<void> {
     "Retry",
   );
   outputChannel.trace(`Recovery dialog choice: ${choice ?? "(dismissed)"}`);
-  // Never reject: suppresses the generic VS Code toast. stop() throws in 'starting' state.
-  try {
-    await client?.stop();
-  } catch {
-    /* expected when still connecting */
-  }
-  client = undefined;
+  await stopClientSafely();
   if (choice === useBundled) {
     await clearTcpPortSetting();
     startClient(resolveGameDirectory());
@@ -153,10 +163,7 @@ async function clearTcpPortSetting(): Promise<void> {
  * requires a full restart.
  */
 export async function restartClient(): Promise<void> {
-  if (client) {
-    await client.stop();
-    client = undefined;
-  }
+  await stopClientSafely();
   startClient(resolveGameDirectory());
 }
 
