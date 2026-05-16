@@ -229,13 +229,13 @@ function resolveGameDirectory(outputChannel: vscode.OutputChannel): string {
 
   if (!fs.existsSync(detected)) {
     outputChannel.appendLine(
-      `WitcherScript: GOG registry lists game directory "${detected}", but it does not exist. Set witcherscript.gameDirectory manually.`,
+      `Registry (GOG) lists game directory "${detected}", but it does not exist. Set witcherscript.gameDirectory manually.`,
     );
     return "";
   }
 
   outputChannel.appendLine(
-    `WitcherScript: witcherscript.gameDirectory is not set; using GOG installation path from registry: ${detected}`,
+    `witcherscript.gameDirectory is not set; using GOG installation path from registry: ${detected}`,
   );
   return detected;
 }
