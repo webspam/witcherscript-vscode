@@ -1,3 +1,4 @@
+const { spawnSync } = require("child_process");
 const fs = require("fs");
 const https = require("https");
 const path = require("path");
@@ -15,14 +16,29 @@ fs.mkdirSync(bundledServerDir, { recursive: true });
 const localServerPath = process.env.WITCHERSCRIPT_LSP_PATH;
 
 if (localServerPath) {
-  const sourcePath = path.resolve(extensionRoot, localServerPath);
+  const repoRoot = path.resolve(extensionRoot, localServerPath);
+  if (!fs.existsSync(repoRoot) || !fs.statSync(repoRoot).isDirectory()) {
+    throw new Error(`WITCHERSCRIPT_LSP_PATH is not a directory: ${repoRoot}`);
+  }
+
+  console.log(`Running \`just release\` in ${repoRoot}`);
+  const build = spawnSync("just", ["release"], {
+    cwd: repoRoot,
+    stdio: "inherit",
+    shell: true,
+  });
+  if (build.status !== 0) {
+    throw new Error(`\`just release\` failed in ${repoRoot} (exit ${build.status})`);
+  }
+
+  const sourcePath = path.join(repoRoot, "target", "release", executable);
   if (!fs.existsSync(sourcePath)) {
-    throw new Error(`WITCHERSCRIPT_LSP_PATH does not exist: ${sourcePath}`);
+    throw new Error(`Built binary not found: ${sourcePath}`);
   }
 
   fs.copyFileSync(sourcePath, bundledServer);
   makeExecutable(bundledServer);
-  console.log(`Bundled ${bundledServer} from WITCHERSCRIPT_LSP_PATH`);
+  console.log(`Bundled ${bundledServer} from ${sourcePath}`);
 } else {
   downloadReleaseServer()
     .then(() => {
