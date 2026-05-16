@@ -13,7 +13,6 @@ import {
 let client: LanguageClient | undefined;
 let extensionContext: vscode.ExtensionContext;
 let sharedOutputChannel: vscode.OutputChannel;
-let gameDirectoryStatusBar: vscode.StatusBarItem;
 
 export function activate(context: vscode.ExtensionContext): void {
   extensionContext = context;
@@ -24,22 +23,7 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.commands.registerCommand("witcherscript.setGameDirectory", setGameDirectory),
   );
 
-  gameDirectoryStatusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
-  gameDirectoryStatusBar.name = "WitcherScript Game Directory";
-  gameDirectoryStatusBar.text = "$(warning) WitcherScript: set game directory";
-  gameDirectoryStatusBar.tooltip =
-    "The Witcher 3 game directory is not set, so the language server cannot locate base game scripts. Click to select the folder.";
-  gameDirectoryStatusBar.command = "witcherscript.setGameDirectory";
-  gameDirectoryStatusBar.backgroundColor = new vscode.ThemeColor("statusBarItem.warningBackground");
-  context.subscriptions.push(gameDirectoryStatusBar);
-
-  context.subscriptions.push(
-    vscode.workspace.onDidChangeConfiguration(e => {
-      if (e.affectsConfiguration("witcherscript.gameDirectory")) {
-        updateGameDirectoryStatusBar(resolveGameDirectory(sharedOutputChannel));
-      }
-    }),
-  );
+  registerGameDirectoryStatusBar(context, sharedOutputChannel);
 
   startClient();
 }
@@ -84,7 +68,6 @@ function startClient(): void {
   }
 
   const gameDirectory = resolveGameDirectory(sharedOutputChannel);
-  updateGameDirectoryStatusBar(gameDirectory);
 
   const config = vscode.workspace.getConfiguration("witcherscript");
   const clientOptions: LanguageClientOptions = {
@@ -163,12 +146,36 @@ async function setGameDirectory(): Promise<void> {
   );
 }
 
-function updateGameDirectoryStatusBar(gameDirectory: string): void {
-  if (gameDirectory) {
-    gameDirectoryStatusBar.hide();
-  } else {
-    gameDirectoryStatusBar.show();
-  }
+function registerGameDirectoryStatusBar(
+  context: vscode.ExtensionContext,
+  outputChannel: vscode.OutputChannel,
+): void {
+  const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+  statusBar.name = "WitcherScript Game Directory";
+  statusBar.text = "$(warning) WitcherScript: set game directory";
+  statusBar.tooltip =
+    "The Witcher 3 game directory is not set, so the language server cannot locate base game scripts. Click to select the folder.";
+  statusBar.command = "witcherscript.setGameDirectory";
+  statusBar.backgroundColor = new vscode.ThemeColor("statusBarItem.warningBackground");
+  context.subscriptions.push(statusBar);
+
+  const syncVisibility = (): void => {
+    if (resolveGameDirectory(outputChannel)) {
+      statusBar.hide();
+    } else {
+      statusBar.show();
+    }
+  };
+
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration(e => {
+      if (e.affectsConfiguration("witcherscript.gameDirectory")) {
+        syncVisibility();
+      }
+    }),
+  );
+
+  syncVisibility();
 }
 
 function resolveGameDirectory(outputChannel: vscode.OutputChannel): string {
