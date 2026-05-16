@@ -14,6 +14,7 @@ let client: LanguageClient | undefined;
 let extensionContext: vscode.ExtensionContext;
 let sharedOutputChannel: vscode.OutputChannel;
 
+/** Module-scope state is captured for the restart flow. */
 export function activate(context: vscode.ExtensionContext): void {
   extensionContext = context;
   sharedOutputChannel = vscode.window.createOutputChannel("WitcherScript");
@@ -28,6 +29,11 @@ export function activate(context: vscode.ExtensionContext): void {
   startClient();
 }
 
+/**
+ * VS Code awaits the Thenable so the server process exits before the host
+ * — otherwise orphans accumulate across reloads. Everything else lives in
+ * `context.subscriptions` and is disposed automatically.
+ */
 export function deactivate(): Thenable<void> | undefined {
   if (!client) {
     return undefined;
@@ -36,6 +42,11 @@ export function deactivate(): Thenable<void> | undefined {
   return client.stop();
 }
 
+/**
+ * The TCP branch is for the LSP-dev workflow — attach to a server running
+ * under a debugger via `witcherscript.server.tcpPort`. End users take stdio.
+ * `initializationOptions` are read once at boot; see {@link restartClient}.
+ */
 function startClient(): void {
   const tcpPort = Number(vscode.workspace.getConfiguration("witcherscript").get("server.tcpPort"));
 
@@ -104,6 +115,11 @@ function startClient(): void {
   client.start();
 }
 
+/**
+ * Settings in `initializationOptions` (notably gameDirectory) are baked in
+ * at server boot — no live-update LSP message exists — so applying changes
+ * requires a full restart.
+ */
 async function restartClient(): Promise<void> {
   if (client) {
     await client.stop();
@@ -112,6 +128,11 @@ async function restartClient(): Promise<void> {
   startClient();
 }
 
+/**
+ * The `content/` check catches the common mistake of picking a mod folder
+ * or the install's parent. Global scope because the install path is
+ * per-machine, not per-workspace.
+ */
 async function setGameDirectory(): Promise<void> {
   const picked = await vscode.window.showOpenDialog({
     canSelectFolders: true,
@@ -146,6 +167,12 @@ async function setGameDirectory(): Promise<void> {
   );
 }
 
+/**
+ * Surfaces the missing-setup case proactively — otherwise the first signal
+ * is a wall of unresolved base-game imports. Visibility uses
+ * {@link resolveGameDirectory} (not the raw config) so auto-detected GOG
+ * installs don't get nagged.
+ */
 function registerGameDirectoryStatusBar(
   context: vscode.ExtensionContext,
   outputChannel: vscode.OutputChannel,
@@ -178,6 +205,11 @@ function registerGameDirectoryStatusBar(
   syncVisibility();
 }
 
+/**
+ * Detected-but-missing logs so users who moved/uninstalled the game see why
+ * detection failed. Returns "" (not undefined) so callers can forward
+ * straight into LSP options — the server treats empty as "not configured".
+ */
 function resolveGameDirectory(outputChannel: vscode.OutputChannel): string {
   const configured = vscode.workspace
     .getConfiguration("witcherscript")
@@ -208,6 +240,10 @@ function resolveGameDirectory(outputChannel: vscode.OutputChannel): string {
   return detected;
 }
 
+/**
+ * `1495134320` is GOG's stable product ID for Witcher 3. Shelling out to
+ * `reg` avoids a native-module dep for a single boot-time read.
+ */
 function detectGogGameDirectory(): string {
   const key = "HKLM\\SOFTWARE\\WOW6432Node\\GOG.com\\Games\\1495134320";
   try {
@@ -222,6 +258,7 @@ function detectGogGameDirectory(): string {
   }
 }
 
+/** Explicit `server.path` wins so LSP devs can point at a local build. */
 function resolveServerPath(context: vscode.ExtensionContext): string | undefined {
   const configuredPath = vscode.workspace
     .getConfiguration("witcherscript")
