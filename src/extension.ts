@@ -23,7 +23,19 @@ export function activate(context: vscode.ExtensionContext): void {
   const gameDirectory = resolveGameDirectory(channel);
   registerGameDirectoryStatusBar(context, gameDirectory);
   registerGameDirectoryContextKey(context, gameDirectory);
+  registerTcpPortRestart(context);
   startClient(gameDirectory);
+}
+
+/** `tcpPort` is read once at boot, so changes require a restart. */
+function registerTcpPortRestart(context: vscode.ExtensionContext): void {
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration(async e => {
+      if (e.affectsConfiguration("witcherscript.server.tcpPort")) {
+        await restartClient();
+      }
+    }),
+  );
 }
 
 /**
