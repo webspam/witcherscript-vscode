@@ -1,0 +1,8 @@
+{
+  "folders": [
+    { "path": "REPLACE_WITH_PATH_TO_YOUR_TEST_PROJECT" }
+  ],
+  "settings": {
+    "witcherscript.server.tcpPort": 6008
+  }
+}
