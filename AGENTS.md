@@ -1,5 +1,9 @@
 # Agent Instructions
 
+## Code style
+
+Before writing any code, you must have read [code style](CODESTYLE.md).
+
 ## Committing
 
 Commit changes as you make them — one logical change per commit. Don't batch unrelated edits into a single commit.
