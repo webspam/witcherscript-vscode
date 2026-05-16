@@ -22,7 +22,7 @@
     "watch": "tsc -watch -p ./",
     "prepare:server": "node scripts/prepare-server.mjs",
     "vscode:prepublish": "npm run compile",
-    "package": "npm run prepare:server && npm run compile && vsce package"
+    "package": "npm run prepare:server && npm run compile && vsce package --target win32-x64"
   },
   "contributes": {
     "languages": [
