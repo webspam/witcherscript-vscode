@@ -39,41 +39,6 @@ export async function setGameDirectory(restart: () => Promise<void>): Promise<vo
 }
 
 /**
- * Surfaces the missing-setup case proactively — otherwise the first signal
- * is a wall of unresolved base-game imports. Visibility uses
- * {@link resolveGameDirectory} (not the raw config) so auto-detected GOG
- * installs don't get nagged.
- */
-export function registerGameDirectoryStatusBar(
-  context: vscode.ExtensionContext,
-  initialGameDirectory: string,
-): void {
-  const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
-  statusBar.name = "WitcherScript Game Directory";
-  statusBar.text = "$(warning) WitcherScript: set game directory";
-  statusBar.tooltip =
-    "The Witcher 3 game directory is not set, so the language server cannot locate base game scripts. Click to select the folder.";
-  statusBar.command = "witcherscript.setGameDirectory";
-  statusBar.backgroundColor = new vscode.ThemeColor("statusBarItem.warningBackground");
-  context.subscriptions.push(statusBar);
-
-  const setVisibility = (gameDirectory: string): void => {
-    if (gameDirectory) statusBar.hide();
-    else statusBar.show();
-  };
-
-  context.subscriptions.push(
-    vscode.workspace.onDidChangeConfiguration(e => {
-      if (e.affectsConfiguration("witcherscript.gameDirectory")) {
-        setVisibility(resolveGameDirectory());
-      }
-    }),
-  );
-
-  setVisibility(initialGameDirectory);
-}
-
-/**
  * Drives walkthrough step visibility — `when` clauses in package.json gate
  * the "detected" vs "set me up" steps on this key, so auto-detected installs
  * don't make the user read setup instructions they don't need.

@@ -3,9 +3,9 @@ import { initClient, startClient, restartClient, stopClient } from "./client";
 import {
   resolveGameDirectory,
   setGameDirectory,
-  registerGameDirectoryStatusBar,
   registerGameDirectoryContextKey,
 } from "./gameDirectory";
+import { registerStatusBar } from "./statusBar";
 
 /** Module-scope state is captured for the restart flow. */
 export function activate(context: vscode.ExtensionContext): void {
@@ -18,10 +18,11 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.commands.registerCommand("witcherscript.setGameDirectory", () =>
       setGameDirectory(restartClient),
     ),
+    vscode.commands.registerCommand("witcherscript.restartServer", () => restartClient()),
   );
 
   const gameDirectory = resolveGameDirectory(channel);
-  registerGameDirectoryStatusBar(context, gameDirectory);
+  registerStatusBar(context, channel, !!gameDirectory);
   registerGameDirectoryContextKey(context, gameDirectory);
   registerTcpPortRestart(context);
   startClient(gameDirectory);

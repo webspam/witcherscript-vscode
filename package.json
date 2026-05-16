@@ -28,6 +28,13 @@
     "package": "npm run prepare:server && npm run compile && vsce package --target win32-x64"
   },
   "contributes": {
+    "commands": [
+      {
+        "command": "witcherscript.restartServer",
+        "title": "Restart Language Server",
+        "category": "WitcherScript"
+      }
+    ],
     "languages": [
       {
         "id": "witcherscript",

@@ -6,13 +6,17 @@ import {
   LanguageClient,
   type LanguageClientOptions,
   type ServerOptions,
+  State,
   TransportKind,
 } from "vscode-languageclient/node";
 import { resolveGameDirectory } from "./gameDirectory";
+import { setServerState } from "./statusBar";
 
 let client: LanguageClient | undefined;
 let extensionContext: vscode.ExtensionContext;
 let outputChannel: vscode.LogOutputChannel;
+/** Distinguishes a deliberate `stop()` from a crashed server in onDidChangeState. */
+let intentionalStop = false;
 
 export function initClient(
   context: vscode.ExtensionContext,
@@ -33,13 +37,16 @@ export function stopClient(): Promise<void> {
  */
 async function stopClientSafely(): Promise<void> {
   if (!client) return;
+  intentionalStop = true;
   try {
     await client.stop();
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     outputChannel.warn(`Stopping language server failed: ${message}`);
+    setServerState("stopped", `Language server stop failed: ${message}`);
   } finally {
     client = undefined;
+    intentionalStop = false;
   }
 }
 
@@ -63,6 +70,7 @@ export function startClient(gameDirectory: string): void {
       vscode.window.showWarningMessage(
         "WitcherScript language server not found. Set witcherscript.server.path or reinstall the extension with the bundled server.",
       );
+      setServerState("stopped", "Language server binary not found.");
       return;
     }
     serverOptions = {
@@ -103,6 +111,13 @@ export function startClient(gameDirectory: string): void {
     serverOptions,
     clientOptions,
   );
+  client.onDidChangeState(({ newState }) => {
+    if (newState === State.Running) setServerState("running");
+    else if (newState === State.Starting) setServerState("starting");
+    else if (newState === State.Stopped && !intentionalStop) {
+      setServerState("stopped", "Language server stopped unexpectedly.");
+    }
+  });
   client.start();
 }
 
@@ -138,11 +153,14 @@ async function handleTcpConnectionError(port: number): Promise<void> {
     startClient(resolveGameDirectory());
   } else if (choice === "Retry") {
     startClient(resolveGameDirectory());
-  } else if (choice === "Open Settings") {
-    void vscode.commands.executeCommand(
-      "workbench.action.openSettings",
-      "witcherscript.server.tcpPort",
-    );
+  } else {
+    setServerState("stopped", `Could not connect to language server on 127.0.0.1:${port}.`);
+    if (choice === "Open Settings") {
+      void vscode.commands.executeCommand(
+        "workbench.action.openSettings",
+        "witcherscript.server.tcpPort",
+      );
+    }
   }
 }
 
