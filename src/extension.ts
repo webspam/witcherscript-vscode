@@ -37,10 +37,7 @@ export function activate(context: vscode.ExtensionContext): void {
  * `context.subscriptions` and is disposed automatically.
  */
 export function deactivate(): Thenable<void> | undefined {
-  if (!client) {
-    return undefined;
-  }
-
+  if (!client) return undefined;
   return client.stop();
 }
 
@@ -141,9 +138,7 @@ async function setGameDirectory(): Promise<void> {
     openLabel: "Select Witcher 3 Folder",
     title: "Select your Witcher 3 game directory",
   });
-  if (!picked || picked.length === 0) {
-    return;
-  }
+  if (!picked || picked.length === 0) return;
 
   const dir = picked[0].fsPath;
   if (!fs.existsSync(path.join(dir, "content"))) {
@@ -152,9 +147,7 @@ async function setGameDirectory(): Promise<void> {
       `"${dir}" does not look like a Witcher 3 install (no content folder). Use it anyway?`,
       useAnyway,
     );
-    if (choice !== useAnyway) {
-      return;
-    }
+    if (choice !== useAnyway) return;
   }
 
   await vscode.workspace
@@ -187,11 +180,8 @@ function registerGameDirectoryStatusBar(
   context.subscriptions.push(statusBar);
 
   const setVisibility = (gameDirectory: string): void => {
-    if (gameDirectory) {
-      statusBar.hide();
-    } else {
-      statusBar.show();
-    }
+    if (gameDirectory) statusBar.hide();
+    else statusBar.show();
   };
 
   context.subscriptions.push(
@@ -215,18 +205,12 @@ function resolveGameDirectory(outputChannel?: vscode.OutputChannel): string {
   const configured = vscode.workspace
     .getConfiguration("witcherscript")
     .get<string>("gameDirectory");
-  if (configured) {
-    return configured;
-  }
+  if (configured) return configured;
 
-  if (process.platform !== "win32") {
-    return "";
-  }
+  if (process.platform !== "win32") return "";
 
   const detected = detectGogGameDirectory();
-  if (!detected) {
-    return "";
-  }
+  if (!detected) return "";
 
   if (!fs.existsSync(detected)) {
     outputChannel?.appendLine(
@@ -264,6 +248,7 @@ function resolveServerPath(context: vscode.ExtensionContext): string | undefined
   const configuredPath = vscode.workspace
     .getConfiguration("witcherscript")
     .get<string>("server.path");
+
   if (configuredPath && fs.existsSync(configuredPath)) {
     return configuredPath;
   }
