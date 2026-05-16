@@ -12,14 +12,14 @@ import { resolveGameDirectory } from "./gameDirectory";
 
 let client: LanguageClient | undefined;
 let extensionContext: vscode.ExtensionContext;
-let sharedOutputChannel: vscode.LogOutputChannel;
+let outputChannel: vscode.LogOutputChannel;
 
 export function initClient(
   context: vscode.ExtensionContext,
   channel: vscode.LogOutputChannel,
 ): void {
   extensionContext = context;
-  sharedOutputChannel = channel;
+  outputChannel = channel;
 }
 
 export function stopClient(): Thenable<void> | undefined {
@@ -37,7 +37,7 @@ export function startClient(gameDirectory: string): void {
 
   let serverOptions: ServerOptions;
   if (Number.isInteger(tcpPort) && tcpPort > 0 && tcpPort <= 65535) {
-    sharedOutputChannel.appendLine(
+    outputChannel.appendLine(
       `Connecting to externally running language server on 127.0.0.1:${tcpPort} (witcherscript.server.tcpPort).`,
     );
     serverOptions = () => connectToTcpServer(tcpPort);
@@ -78,7 +78,7 @@ export function startClient(gameDirectory: string): void {
         alignMemberColons: config.get("formatter.alignMemberColons") ?? false,
       },
     },
-    outputChannel: sharedOutputChannel,
+    outputChannel,
   };
 
   client = new LanguageClient(
@@ -106,7 +106,7 @@ function connectToTcpServer(port: number): Promise<{ writer: net.Socket; reader:
 }
 
 async function handleTcpConnectionError(port: number): Promise<void> {
-  sharedOutputChannel.trace(`TCP port ${port} unreachable — showing recovery dialog.`);
+  outputChannel.trace(`TCP port ${port} unreachable — showing recovery dialog.`);
   const useBundled = "Use Bundled Server";
   const choice = await vscode.window.showErrorMessage(
     `WitcherScript: couldn't connect to language server on 127.0.0.1:${port}. ` +
@@ -115,7 +115,7 @@ async function handleTcpConnectionError(port: number): Promise<void> {
     "Open Settings",
     "Retry",
   );
-  sharedOutputChannel.trace(`Recovery dialog choice: ${choice ?? "(dismissed)"}`);
+  outputChannel.trace(`Recovery dialog choice: ${choice ?? "(dismissed)"}`);
   // Never reject: suppresses the generic VS Code toast. stop() throws in 'starting' state.
   try {
     await client?.stop();
