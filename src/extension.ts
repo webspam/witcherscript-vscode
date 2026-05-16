@@ -60,6 +60,8 @@ function startClient(gameDirectory: string): void {
         const socket = net.connect({ host: "127.0.0.1", port: tcpPort });
         const onError = async () => {
           socket.destroy();
+          sharedOutputChannel.debug(`TCP port ${tcpPort} unreachable — showing recovery dialog.`);
+
           const useBundled = "Use Bundled Server";
           const choice = await vscode.window.showErrorMessage(
             `WitcherScript: couldn't connect to language server on 127.0.0.1:${tcpPort}. ` +
@@ -68,10 +70,16 @@ function startClient(gameDirectory: string): void {
             "Open Settings",
             "Retry",
           );
-          // Never reject — suppresses the generic VS Code "couldn't create connection" toast.
-          // client.stop() disposes the client that is waiting on this promise.
-          await client?.stop();
+
+          // Never reject: suppresses the generic VS Code toast. stop() throws in 'starting' state.
+          sharedOutputChannel.trace(`Recovery dialog choice: ${choice ?? "(dismissed)"}`);
+          try {
+            await client?.stop();
+          } catch {
+            /* expected when still connecting */
+          }
           client = undefined;
+
           if (choice === useBundled) {
             await clearTcpPortSetting();
             startClient(resolveGameDirectory());
@@ -84,10 +92,12 @@ function startClient(gameDirectory: string): void {
             );
           }
         };
+
         socket.once("connect", () => {
           socket.removeListener("error", onError);
           resolve({ writer: socket, reader: socket });
         });
+
         socket.once("error", onError);
       });
   } else {
