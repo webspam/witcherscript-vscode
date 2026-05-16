@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { registerBuiltinContentProvider } from "./builtinContent";
 import { initClient, startClient, restartClient, stopClient } from "./client";
 import {
   resolveGameDirectory,
@@ -13,6 +14,7 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(channel);
 
   initClient(context, channel);
+  registerBuiltinContentProvider(context, channel);
 
   context.subscriptions.push(
     vscode.commands.registerCommand("witcherscript.setGameDirectory", () =>

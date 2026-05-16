@@ -9,6 +9,7 @@ import {
   State,
   TransportKind,
 } from "vscode-languageclient/node";
+import { setBuiltinClient } from "./builtinContent";
 import { resolveGameDirectory } from "./gameDirectory";
 import { setServerState } from "./statusBar";
 
@@ -47,6 +48,7 @@ async function stopClientSafely(): Promise<void> {
   } finally {
     client = undefined;
     intentionalStop = false;
+    setBuiltinClient(undefined);
   }
 }
 
@@ -84,6 +86,7 @@ export function startClient(gameDirectory: string): void {
     documentSelector: [
       { scheme: "file", language: "witcherscript" },
       { scheme: "untitled", language: "witcherscript" },
+      { scheme: "witcherscript-builtin", language: "witcherscript" },
     ],
     synchronize: {
       configurationSection: "witcherscript",
@@ -111,6 +114,7 @@ export function startClient(gameDirectory: string): void {
     serverOptions,
     clientOptions,
   );
+  setBuiltinClient(client);
   client.onDidChangeState(({ newState }) => {
     if (newState === State.Running) setServerState("running");
     else if (newState === State.Starting) setServerState("starting");
