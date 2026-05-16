@@ -1,9 +1,9 @@
-const { spawnSync } = require("child_process");
-const fs = require("fs");
-const https = require("https");
-const path = require("path");
+import { spawnSync } from "child_process";
+import fs from "fs";
+import https from "https";
+import path from "path";
 
-const extensionRoot = path.resolve(__dirname, "..");
+const extensionRoot = path.resolve(import.meta.dirname, "..");
 const executable = process.platform === "win32" ? "witcherscript-lsp.exe" : "witcherscript-lsp";
 const bundledServerDir = path.join(extensionRoot, "server");
 const bundledServer = path.join(bundledServerDir, executable);

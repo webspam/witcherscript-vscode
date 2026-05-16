@@ -16,7 +16,7 @@ Commit messages have a 50 character limit.
 | `package.json`                           | Extension manifest, npm scripts, contributed settings     |
 | `language-configuration.json`            | Comment style, bracket pairs for `.ws` files              |
 | `syntaxes/witcherscript.tmLanguage.json` | TextMate grammar for syntax highlighting                  |
-| `scripts/prepare-server.js`              | Build-time script that copies or downloads the LSP binary |
+| `scripts/prepare-server.mjs`              | Build-time script that copies or downloads the LSP binary |
 | `.env.example`                           | Template for local env overrides (copy to `.env`)         |
 | `.vscode/*.example`                      | Templates for personal `launch.json` / `tasks.json`       |
 
@@ -35,7 +35,7 @@ The extension's `main` is `out/extension.js`. `vsce package` triggers `vscode:pr
 npm run check
 ```
 
-This runs `tsc --noEmit` on `src/` and `node --check` on `scripts/prepare-server.js`. Run it after any code changes.
+This runs `tsc --noEmit` on `src/` and `node --check` on `scripts/prepare-server.mjs`. Run it after any code changes.
 
 ## LSP binary
 
