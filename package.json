@@ -4,11 +4,16 @@
   "description": "Minimal WitcherScript diagnostics, navigation, and hover support.",
   "version": "0.3.0",
   "publisher": "webspam",
-  "private": true,
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/webspam/witcherscript-vscode.git"
   },
+  "homepage": "https://github.com/webspam/witcherscript-vscode#readme",
+  "bugs": {
+    "url": "https://github.com/webspam/witcherscript-vscode/issues"
+  },
+  "qna": "marketplace",
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -16,9 +21,30 @@
     "version": "v0.3.2"
   },
   "categories": [
-    "Programming Languages"
+    "Programming Languages",
+    "Linters",
+    "Formatters"
+  ],
+  "keywords": [
+    "witcher",
+    "witcherscript",
+    "witcher3",
+    "modding",
+    "lsp",
+    "language-server",
+    "ws"
   ],
   "main": "./out/extension.js",
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": false,
+      "description": "Spawns a native language-server binary and reads workspace .ws files; not safe in untrusted workspaces."
+    },
+    "virtualWorkspaces": {
+      "supported": false,
+      "description": "Requires local filesystem access for the bundled language server and the Witcher 3 install."
+    }
+  },
   "scripts": {
     "check": "tsc --noEmit && node --check scripts/prepare-server.mjs",
     "compile": "tsc -p ./",
