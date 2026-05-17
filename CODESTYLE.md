@@ -9,10 +9,11 @@ generic ones (`handler`, `fn`, `helper`).
 
 ## Comments
 
+**Comments MUST be terse and concise.**
+
 Only write a comment when the **why** is non-obvious: a hidden constraint, a subtle
 invariant, a workaround for a specific behaviour. Never describe what the code does —
-well-named identifiers already do that. Be concise; no multi-line comment blocks
-or verbose docstrings.
+well-named identifiers already do that.
 
 ## Logging
 
