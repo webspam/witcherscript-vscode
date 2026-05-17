@@ -16,6 +16,11 @@ on:
         required: false
         type: boolean
         default: true
+      publish_marketplace:
+        description: "Publish to VS Code Marketplace"
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   create-release:
@@ -77,3 +82,28 @@ jobs:
             $vsix
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to VS Code Marketplace
+        if: ${{ inputs.publish_marketplace }}
+        shell: pwsh
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: |
+          $ErrorActionPreference = "Stop"
+          if ([string]::IsNullOrWhiteSpace($env:VSCE_PAT)) {
+            throw "VSCE_PAT secret is not set. Add it under repo Settings > Secrets and variables > Actions."
+          }
+
+          $vsix = Get-ChildItem -Filter "*.vsix" | Select-Object -First 1 -ExpandProperty FullName
+          if (-not $vsix) { throw "No .vsix found to publish" }
+
+          $publishArgs = @(
+            "publish",
+            "--packagePath", $vsix,
+            "--pat", $env:VSCE_PAT,
+            "--no-update-package-json",
+            "--target", "win32-x64"
+          )
+          if ("${{ inputs.prerelease }}" -eq "true") { $publishArgs += "--pre-release" }
+
+          npx --yes @vscode/vsce @publishArgs
