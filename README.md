@@ -1,58 +1,25 @@
 # WitcherScript Language Features
 
-Minimal VS Code/Cursor wrapper for the Rust `witcherscript-lsp` server.
+Language support for The Witcher 3 `.ws` files in VS Code and Cursor, powered by a bundled Rust language server.
 
-This extension contributes the `witcherscript` language for `.ws` files, basic syntax
-highlighting, and a bundled language server for diagnostics, document symbols, Go To
-Definition, and hover. It is deliberately not a Witcher 3 mod management, packing,
-deployment, or asset tool.
+## Features
 
-## Development
+- **Diagnostics** — syntax errors and validation warnings as you type
+- **Completion** — members, symbols, and method snippets
+- **Hover** — signatures and type annotations
+- **Go to Definition** and **Find References**
+- **Rename** — workspace-wide symbol renaming
+- **Signature help** — parameter hints inside calls
+- **Document Symbols** — outline in the Explorer panel
+- **Semantic highlighting** — only highlights valid variable and type names
+- **Document formatting** — opinionated pretty-printer with configurable line limit and alignment
+- **Shared Imports auto-load** — picks up `modSharedImports` automatically when present (for type resolution)
 
-Install extension dependencies from this directory:
+## Requirements
 
-```powershell
-npm install
-```
-
-For local language-server development, build `witcherscript-lsp` in the separate
-`witcherscript-language` repo and point the packaging step at that binary:
-
-```powershell
-$env:WITCHERSCRIPT_LSP_PATH = "..\witcherscript-language\target\release\witcherscript-lsp.exe"
-npm run prepare:server
-```
-
-You can also copy `.env.example` to `.env` and set `WITCHERSCRIPT_LSP_PATH` there. This environment variable is only for local development, used while preparing the extension package; the extension does not read it at runtime.
-
-Package a local VSIX from this directory:
-
-```powershell
-npm run package
-```
-
-The package script copies `WITCHERSCRIPT_LSP_PATH` into `server/` when it is set.
-Otherwise, it downloads the matching `witcherscript-lsp` release binary from
-`https://github.com/webspam/witcherscript-language` and bundles it before running
-`vsce package`.
-
-At runtime, the editor setting `witcherscript.server.path` can override the
-bundled `server/witcherscript-lsp` or `server/witcherscript-lsp.exe` binary.
+- Windows (x64). The bundled language server is currently Windows-only.
+- A local Witcher 3 install (recommended). Without one, the extension uses built-in base game scripts instead.
 
 ## First-run setup
 
-On first install VS Code opens a **Get Started with WitcherScript** walkthrough.
-Step one guides you through setting the game directory with a native folder
-picker. You can also run **WitcherScript: Set Game Directory** from the Command
-Palette at any time.
-
-## Game directory detection
-
-The language server uses `witcherscript.gameDirectory` to locate the base game
-scripts. When that setting is empty and the extension is running on Windows, it
-falls back to the GOG installation path read from the registry key
-`HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\GOG.com\Games\1495134320` (the GOG
-Game of the Year edition). The detected path is validated and logged to the
-WitcherScript output channel. This fallback only covers the GOG release; Steam
-and other installs still require `witcherscript.gameDirectory` to be set
-explicitly.
+On first install, VS Code opens a **Get Started with WitcherScript** walkthrough that guides you through pointing the language server at your Witcher 3 install. GOG Game of the Year is detected automatically.
