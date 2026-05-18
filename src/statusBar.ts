@@ -7,6 +7,7 @@ let statusBar: vscode.StatusBarItem;
 let outputChannel: vscode.LogOutputChannel;
 let serverState: ServerState = "starting";
 let serverErrorDetail: string | undefined;
+let serverBusy = false;
 let gameDirectorySet = false;
 
 /**
@@ -49,6 +50,12 @@ export function setServerState(state: ServerState, errorDetail?: string): void {
   render();
 }
 
+export function setServerBusy(busy: boolean): void {
+  if (serverBusy === busy) return;
+  serverBusy = busy;
+  render();
+}
+
 function setGameDirectorySet(set: boolean): void {
   gameDirectorySet = set;
   render();
@@ -73,6 +80,12 @@ function render(): void {
   if (serverState === "starting") {
     statusBar.text = "$(sync~spin) WitcherScript";
     statusBar.tooltip = "WitcherScript language server is starting. Click for actions.";
+    statusBar.backgroundColor = undefined;
+    return;
+  }
+  if (serverBusy) {
+    statusBar.text = "$(sync~spin) WitcherScript";
+    statusBar.tooltip = "WitcherScript language server is processing a request. Click for actions.";
     statusBar.backgroundColor = undefined;
     return;
   }

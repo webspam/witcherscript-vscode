@@ -3,7 +3,10 @@ import * as net from "net";
 import * as path from "path";
 import * as vscode from "vscode";
 import {
+  CloseAction,
+  ErrorAction,
   LanguageClient,
+  type ErrorHandler,
   type LanguageClientOptions,
   type ServerOptions,
   State,
@@ -11,13 +14,43 @@ import {
 } from "vscode-languageclient/node";
 import { setBuiltinClient } from "./builtinContent";
 import { resolveGameDirectory } from "./gameDirectory";
-import { setServerState } from "./statusBar";
+import { setServerBusy, setServerState } from "./statusBar";
 
 let client: LanguageClient | undefined;
 let extensionContext: vscode.ExtensionContext;
 let outputChannel: vscode.LogOutputChannel;
 /** Distinguishes a deliberate `stop()` from a crashed server in onDidChangeState. */
 let intentionalStop = false;
+/** Count of outstanding client→server requests; drives the status bar busy spinner. */
+let inFlightRequests = 0;
+
+function adjustInFlight(delta: number): void {
+  inFlightRequests = Math.max(0, inFlightRequests + delta);
+  setServerBusy(inFlightRequests > 0);
+}
+
+function resetInFlight(): void {
+  inFlightRequests = 0;
+  setServerBusy(false);
+}
+
+/**
+ * `handled: true` keeps the library's output-channel logging but suppresses
+ * the modal popups it would otherwise force. The status bar already reflects
+ * the stopped state via `onDidChangeState`, so the popups are redundant noise
+ * — especially when an LSP dev restarts their TCP server.
+ */
+const silentErrorHandler: ErrorHandler = {
+  error(_error, _message, count) {
+    if (count !== undefined && count <= 3) {
+      return { action: ErrorAction.Continue, handled: true };
+    }
+    return { action: ErrorAction.Shutdown, handled: true };
+  },
+  closed() {
+    return { action: CloseAction.DoNotRestart, handled: true };
+  },
+};
 
 export function initClient(
   context: vscode.ExtensionContext,
@@ -49,6 +82,7 @@ async function stopClientSafely(): Promise<void> {
     client = undefined;
     intentionalStop = false;
     setBuiltinClient(undefined);
+    resetInFlight();
   }
 }
 
@@ -106,6 +140,17 @@ export function startClient(gameDirectory: string): void {
       },
     },
     outputChannel,
+    errorHandler: silentErrorHandler,
+    middleware: {
+      sendRequest: async (type, param, token, next) => {
+        adjustInFlight(1);
+        try {
+          return await next(type, param, token);
+        } finally {
+          adjustInFlight(-1);
+        }
+      },
+    },
   };
 
   client = new LanguageClient(
