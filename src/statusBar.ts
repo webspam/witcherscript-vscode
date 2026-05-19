@@ -8,7 +8,15 @@ let outputChannel: vscode.LogOutputChannel;
 let serverState: ServerState = "starting";
 let serverErrorDetail: string | undefined;
 let serverBusy = false;
+let busySpinnerEnabled = false;
 let gameDirectorySet = false;
+
+/** Undeclared in package.json on purpose — power-user opt-in, not surfaced in the settings UI. */
+function readBusySpinnerSetting(): boolean {
+  return (
+    vscode.workspace.getConfiguration("witcherscript").get<boolean>("showBusySpinner") ?? false
+  );
+}
 
 /**
  * Single status bar item that owns all WitcherScript health signals
@@ -22,6 +30,7 @@ export function registerStatusBar(
 ): void {
   outputChannel = channel;
   gameDirectorySet = initialGameDirectorySet;
+  busySpinnerEnabled = readBusySpinnerSetting();
 
   statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
   statusBar.name = "WitcherScript";
@@ -32,6 +41,10 @@ export function registerStatusBar(
     vscode.workspace.onDidChangeConfiguration(e => {
       if (e.affectsConfiguration("witcherscript.gameDirectory")) {
         setGameDirectorySet(!!resolveGameDirectory());
+      }
+      if (e.affectsConfiguration("witcherscript.showBusySpinner")) {
+        busySpinnerEnabled = readBusySpinnerSetting();
+        render();
       }
     }),
   );
@@ -63,7 +76,7 @@ function setGameDirectorySet(set: boolean): void {
 
 function render(): void {
   if (serverState === "stopped") {
-    statusBar.text = "$(error) WitcherScript: server stopped";
+    statusBar.text = "$(debug-disconnect) WitcherScript: server stopped";
     statusBar.tooltip = serverErrorDetail
       ? `${serverErrorDetail} Click for actions.`
       : "Language server stopped. Click for actions.";
@@ -78,12 +91,12 @@ function render(): void {
     return;
   }
   if (serverState === "starting") {
-    statusBar.text = "$(sync~spin) WitcherScript";
+    statusBar.text = "$(debug-disconnect) WitcherScript";
     statusBar.tooltip = "WitcherScript language server is starting. Click for actions.";
     statusBar.backgroundColor = undefined;
     return;
   }
-  if (serverBusy) {
+  if (serverBusy && busySpinnerEnabled) {
     statusBar.text = "$(sync~spin) WitcherScript";
     statusBar.tooltip = "WitcherScript language server is processing a request. Click for actions.";
     statusBar.backgroundColor = undefined;
