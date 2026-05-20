@@ -60,6 +60,11 @@
         "command": "witcherscript.restartServer",
         "title": "Restart Language Server",
         "category": "WitcherScript"
+      },
+      {
+        "command": "witcherscript.addLegacyScriptDirectory",
+        "title": "Add Legacy Script Directory",
+        "category": "WitcherScript"
       }
     ],
     "languages": [
