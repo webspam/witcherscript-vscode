@@ -152,6 +152,14 @@
           "default": [],
           "description": "Extra root directories to walk recursively for .ws files. Each entry is loaded as read-only base scripts: symbols join the global namespace, but renames are rejected. Use this for co-dependent mods that need to see each other's declarations."
         },
+        "witcherscript.legacyScriptDirectories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Extra root directories to walk recursively for .ws files, loaded with replace semantics: a script here overrides the base game script of the same path instead of conflicting with it. Use this for legacy mods that replace content/scripts files. Contrast with additionalScriptDirectories, which loads scripts as a read-only overlay."
+        },
         "witcherscript.autoLoadModSharedImports": {
           "type": "boolean",
           "default": true,

@@ -128,6 +128,7 @@ export function startClient(gameDirectory: string): void {
     initializationOptions: {
       gameDirectory,
       additionalScriptDirectories: config.get("additionalScriptDirectories") ?? [],
+      legacyScriptDirectories: config.get("legacyScriptDirectories") ?? [],
       autoLoadModSharedImports: config.get("autoLoadModSharedImports") ?? true,
       logLevel:
         extensionContext.extensionMode === vscode.ExtensionMode.Development
