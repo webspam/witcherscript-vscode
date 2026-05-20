@@ -67,6 +67,14 @@
         "category": "WitcherScript"
       }
     ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "witcherscript.addLegacyScriptDirectory",
+          "when": "false"
+        }
+      ]
+    },
     "languages": [
       {
         "id": "witcherscript",
