@@ -6,10 +6,8 @@ import {
   setGameDirectory,
   registerGameDirectoryContextKey,
 } from "./gameDirectory";
-import {
-  registerAddLegacyScriptDirCommand,
-  registerLegacyScriptStatusBar,
-} from "./legacyScriptDir";
+import { registerAddLegacyScriptDirCommand } from "./legacyScriptDir";
+import { registerLegacyScriptStatusBar } from "./legacyScriptStatus";
 import { registerStatusBar } from "./statusBar";
 
 /** Module-scope state is captured for the restart flow. */
