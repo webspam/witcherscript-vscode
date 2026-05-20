@@ -6,7 +6,10 @@ import {
   setGameDirectory,
   registerGameDirectoryContextKey,
 } from "./gameDirectory";
-import { registerAddLegacyScriptDirCommand } from "./legacyScriptDir";
+import {
+  registerAddLegacyScriptDirCommand,
+  registerLegacyScriptStatusBar,
+} from "./legacyScriptDir";
 import { registerStatusBar } from "./statusBar";
 
 /** Module-scope state is captured for the restart flow. */
@@ -25,6 +28,7 @@ export function activate(context: vscode.ExtensionContext): void {
   );
 
   registerAddLegacyScriptDirCommand(context);
+  registerLegacyScriptStatusBar(context);
 
   const gameDirectory = resolveGameDirectory(channel);
   registerStatusBar(context, channel, !!gameDirectory);
