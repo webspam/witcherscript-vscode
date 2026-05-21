@@ -60,8 +60,21 @@
         "command": "witcherscript.restartServer",
         "title": "Restart Language Server",
         "category": "WitcherScript"
+      },
+      {
+        "command": "witcherscript.addLegacyScriptDirectory",
+        "title": "Add Legacy Script Directory",
+        "category": "WitcherScript"
       }
     ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "witcherscript.addLegacyScriptDirectory",
+          "when": "false"
+        }
+      ]
+    },
     "languages": [
       {
         "id": "witcherscript",
@@ -150,7 +163,15 @@
             "type": "string"
           },
           "default": [],
-          "description": "Extra root directories to walk recursively for .ws files. Each entry is loaded as read-only base scripts: symbols join the global namespace, but renames are rejected. Use this for co-dependent mods that need to see each other's declarations."
+          "description": "Folders to scan for extra .ws script files, subfolders included. If your scripts use functions from other mods, you can add them here (e.g. Shared Utils). See Legacy Script Directories, also."
+        },
+        "witcherscript.legacyScriptDirectories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Folders to scan for extra .ws script files, subfolders included. A script found here replaces the game's built-in script of the same name, instead of clashing with it. Use this for older mods that overwrite the game's own script files. For mods that add new scripts alongside the game's own, use Additional Script Directories instead."
         },
         "witcherscript.autoLoadModSharedImports": {
           "type": "boolean",

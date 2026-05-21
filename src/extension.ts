@@ -6,6 +6,8 @@ import {
   setGameDirectory,
   registerGameDirectoryContextKey,
 } from "./gameDirectory";
+import { registerAddLegacyScriptDirCommand } from "./legacyScriptDir";
+import { registerLegacyScriptStatusBar } from "./legacyScriptStatus";
 import { registerStatusBar } from "./statusBar";
 
 /** Module-scope state is captured for the restart flow. */
@@ -22,6 +24,9 @@ export function activate(context: vscode.ExtensionContext): void {
     ),
     vscode.commands.registerCommand("witcherscript.restartServer", () => restartClient()),
   );
+
+  registerAddLegacyScriptDirCommand(context);
+  registerLegacyScriptStatusBar(context);
 
   const gameDirectory = resolveGameDirectory(channel);
   registerStatusBar(context, channel, !!gameDirectory);

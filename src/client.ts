@@ -14,6 +14,7 @@ import {
 } from "vscode-languageclient/node";
 import { setBuiltinClient } from "./builtinContent";
 import { resolveGameDirectory } from "./gameDirectory";
+import { setLegacyScriptStatusClient } from "./legacyScriptStatus";
 import { setServerBusy, setServerState } from "./statusBar";
 
 let client: LanguageClient | undefined;
@@ -82,6 +83,7 @@ async function stopClientSafely(): Promise<void> {
     client = undefined;
     intentionalStop = false;
     setBuiltinClient(undefined);
+    setLegacyScriptStatusClient(undefined);
     resetInFlight();
   }
 }
@@ -128,6 +130,7 @@ export function startClient(gameDirectory: string): void {
     initializationOptions: {
       gameDirectory,
       additionalScriptDirectories: config.get("additionalScriptDirectories") ?? [],
+      legacyScriptDirectories: config.get("legacyScriptDirectories") ?? [],
       autoLoadModSharedImports: config.get("autoLoadModSharedImports") ?? true,
       logLevel:
         extensionContext.extensionMode === vscode.ExtensionMode.Development
@@ -160,6 +163,7 @@ export function startClient(gameDirectory: string): void {
     clientOptions,
   );
   setBuiltinClient(client);
+  setLegacyScriptStatusClient(client);
   client.onDidChangeState(({ newState }) => {
     if (newState === State.Running) setServerState("running");
     else if (newState === State.Starting) setServerState("starting");
