@@ -5,11 +5,19 @@
 Extract named functions over anonymous closures. A function should do one thing; if it needs a comment to explain what it does, it needs a better name or a split.
 Prefer self-describing names (`connectToTcpServer`, `handleTcpConnectionError`) over generic ones (`handler`, `fn`, `helper`).
 
+## Loops over chained array methods
+
+Prefer an explicit `for...of` loop to chained array methods (`.filter`, `.map`, `.reduce`). Not for performance - for readability: one loop states the intent once, in order. Reach for an array method only for a single, simple transformation with a short pure callback; once the callback grows a body or accumulates state, write the loop.
+
+## Early returns must not hide bugs
+
+An early return is for a case that is genuinely expected and correctly needs no action. It is not a place for the silent discard of error state. Before a guard returns, decide which you have: if the condition should never happen, make it observable - log it or throw - *then* return. Silently discarding error state erases the difference between "correctly did nothing" and "bailed because something was broken."
+
 ## Comments
 
-**Comments MUST be terse and concise.**
+**Any comments MUST be terse AND concise - less is more, minimal.**
 
-Only write a comment when the **why** is non-obvious: a hidden constraint, a subtle invariant, a workaround for a specific behaviour. Never describe what the code does - well-named identifiers already do that.
+**ONLY** write a comment when the **why** is non-obvious: a hidden constraint, a subtle invariant, a workaround for a specific behaviour. Never describe what the code does - well-named identifiers already do that.
 
 ## Logging
 
@@ -21,6 +29,20 @@ Only write a comment when the **why** is non-obvious: a hidden constraint, a sub
 
 - Always use return type annotations.
 - NEVER use `void` on Promises; prefixing any statement with `void` is a rule violation.
+
+## Principles
+
+- Guard clauses / early returns over nested `if`
+- Explicit over implicit - no truthiness coercion, prefer `=== undefined`
+- `readonly` and `const` by default; mutate deliberately
+- Narrow types - discriminated unions over optional-field soup
+- No `any`; `unknown` at boundaries, then narrow
+- Exhaustive `switch` with `never` default check
+- Validate external input at the boundary, trust it inward
+- Name magic values as `const`
+- Errors fail loud - no silent `catch {}`
+- Small files, one responsibility each
+- No clever one-liners - clarity beats brevity
 
 ## General
 
