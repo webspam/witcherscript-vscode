@@ -10,7 +10,7 @@
    - **Publish to VS Code Marketplace** — defaults to true. Uncheck to produce only the draft GitHub release.
 3. The workflow produces a **draft** release tagged `v<version>` with the `.vsix` attached and GitHub's auto-generated notes. Review and publish the GitHub release manually from the Releases page. The Marketplace upload happens automatically in a separate step and goes live as soon as the Marketplace finishes scanning the package.
 
-The `.vsix` is named `witcherscript-language-features-win32-x64-<version>.vsix` and bundles the Windows `witcherscript-lsp.exe` from the latest release of `webspam/witcherscript-language`. The `win32-x64` target tells the VS Code marketplace this build is Windows-only, so installs are correctly filtered on other platforms.
+The `.vsix` is named `witcherscript-win32-x64-<version>.vsix` and bundles the Windows `witcherscript-lsp.exe` from the latest release of `webspam/witcherscript-language`. The `win32-x64` target tells the VS Code marketplace this build is Windows-only, so installs are correctly filtered on other platforms.
 
 ## Create Release Process
 
@@ -44,4 +44,4 @@ To enable the Marketplace publish step, create a Marketplace PAT and store it as
 3. Copy the token.
 4. In GitHub, go to repo **Settings → Secrets and variables → Actions → New repository secret** and add `VSCE_PAT` with the token value.
 
-The first publish only — verify the listing renders correctly on https://marketplace.visualstudio.com/items?itemName=webspam.witcherscript-language-features. To roll back a bad release, run `npx @vscode/vsce unpublish webspam.witcherscript-language-features@<version>` locally.
+The first publish only — verify the listing renders correctly on https://marketplace.visualstudio.com/items?itemName=webspam.witcherscript. To roll back a bad release, run `npx @vscode/vsce unpublish webspam.witcherscript@<version>` locally.

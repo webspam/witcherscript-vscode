@@ -1,6 +1,6 @@
 {
-  "name": "witcherscript-language-features",
-  "displayName": "WitcherScript Language Features",
+  "name": "witcherscript",
+  "displayName": "WitcherScript",
   "description": "Minimal WitcherScript diagnostics, navigation, and hover support.",
   "version": "0.3.0",
   "publisher": "webspam",
@@ -144,76 +144,97 @@
         ]
       }
     ],
-    "configuration": {
-      "title": "WitcherScript",
-      "properties": {
-        "witcherscript.server.path": {
-          "type": "string",
-          "default": "",
-          "description": "Optional path to the witcherscript-lsp executable. If empty, the extension uses the bundled server binary."
-        },
-        "witcherscript.gameDirectory": {
-          "type": "string",
-          "default": "",
-          "description": "Absolute path to The Witcher 3 game directory (e.g. C:\\games\\The Witcher 3 Wild Hunt GOTY). Used by the language server to locate base game scripts."
-        },
-        "witcherscript.additionalScriptDirectories": {
-          "type": "array",
-          "items": {
-            "type": "string"
+    "configuration": [
+      {
+        "title": "General",
+        "order": 0,
+        "properties": {
+          "witcherscript.gameDirectory": {
+            "type": "string",
+            "default": "",
+            "description": "Absolute path to The Witcher 3 game directory (e.g. C:\\games\\The Witcher 3 Wild Hunt GOTY). Used by the language server to locate base game scripts."
           },
-          "default": [],
-          "description": "Folders to scan for extra .ws script files, subfolders included. If your scripts use functions from other mods, you can add them here (e.g. Shared Utils). See Legacy Script Directories, also."
-        },
-        "witcherscript.legacyScriptDirectories": {
-          "type": "array",
-          "items": {
-            "type": "string"
+          "witcherscript.autoLoadModSharedImports": {
+            "type": "boolean",
+            "default": true,
+            "description": "Auto-load the Shared Imports mod from <gameDirectory>\\Mods\\modSharedImports if present. Most modern Witcher 3 mods depend on it. Disable to opt out."
           },
-          "default": [],
-          "description": "Folders to scan for extra .ws script files, subfolders included. A script found here replaces the game's built-in script of the same name, instead of clashing with it. Use this for older mods that overwrite the game's own script files. For mods that add new scripts alongside the game's own, use Additional Script Directories instead."
-        },
-        "witcherscript.autoLoadModSharedImports": {
-          "type": "boolean",
-          "default": true,
-          "description": "Auto-load the Shared Imports mod from <gameDirectory>\\Mods\\modSharedImports if present. Most modern Witcher 3 mods depend on it. Disable to opt out."
-        },
-        "witcherscript.logLevel": {
-          "type": "string",
-          "default": "info",
-          "enum": [
-            "error",
-            "warn",
-            "info",
-            "debug",
-            "trace"
-          ],
-          "description": "Log verbosity for the WitcherScript language server. Messages appear in the WitcherScript output channel."
-        },
-        "witcherscript.formatter.lineLimit": {
-          "type": "number",
-          "default": 100,
-          "description": "Maximum line length the formatter will target before wrapping."
-        },
-        "witcherscript.formatter.compactColon": {
-          "type": "boolean",
-          "default": false,
-          "description": "When enabled, the formatter omits spaces around the colon in type annotations (e.g. `var x:int` instead of `var x : int`)."
-        },
-        "witcherscript.formatter.alignMemberColons": {
-          "type": "boolean",
-          "default": false,
-          "description": "When enabled, the formatter vertically aligns the colons of consecutive class, struct, and state field declarations into a column. A blank line, comment, or non-field member breaks a group."
-        },
-        "witcherscript.server.tcpPort": {
-          "type": "number",
-          "default": 0,
-          "minimum": 0,
-          "maximum": 65535,
-          "markdownDescription": "**LSP Testing:** Connect to an externally running language server on this localhost TCP port instead of launching the bundled binary. Leave at `0` to use the bundled server."
+          "witcherscript.logLevel": {
+            "type": "string",
+            "default": "info",
+            "enum": [
+              "error",
+              "warn",
+              "info",
+              "debug",
+              "trace"
+            ],
+            "description": "Log verbosity for the WitcherScript language server. Messages appear in the WitcherScript output channel."
+          }
+        }
+      },
+      {
+        "title": "Script Directories",
+        "order": 1,
+        "properties": {
+          "witcherscript.additionalScriptDirectories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": [],
+            "markdownDescription": "Folders to scan for extra `.ws` script files, subfolders included. If your scripts use functions from other mods, you can add them here (e.g. Shared Utils).\n\nSee also `#witcherscript.legacyScriptDirectories#`."
+          },
+          "witcherscript.legacyScriptDirectories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": [],
+            "markdownDescription": "Folders to scan for extra `.ws` script files, subfolders included. A script found here **replaces** the game's built-in script of the same name, instead of clashing with it. Use this for older mods that overwrite the game's own script files.\n\nFor mods that add *new* scripts alongside the game's own, use `#witcherscript.additionalScriptDirectories#` instead."
+          }
+        }
+      },
+      {
+        "title": "Formatter",
+        "order": 2,
+        "properties": {
+          "witcherscript.formatter.lineLimit": {
+            "type": "number",
+            "default": 100,
+            "description": "Maximum line length the formatter will target before wrapping."
+          },
+          "witcherscript.formatter.compactColon": {
+            "type": "boolean",
+            "default": false,
+            "description": "When enabled, the formatter omits spaces around the colon in type annotations (e.g. `var x:int` instead of `var x : int`)."
+          },
+          "witcherscript.formatter.alignMemberColons": {
+            "type": "boolean",
+            "default": false,
+            "description": "When enabled, the formatter vertically aligns the colons of consecutive class, struct, and state field declarations into a column. A blank line, comment, or non-field member breaks a group."
+          }
+        }
+      },
+      {
+        "title": "Language Server",
+        "order": 3,
+        "properties": {
+          "witcherscript.server.path": {
+            "type": "string",
+            "default": "",
+            "description": "Optional path to the witcherscript-lsp executable. If empty, the extension uses the bundled server binary."
+          },
+          "witcherscript.server.tcpPort": {
+            "type": "number",
+            "default": 0,
+            "minimum": 0,
+            "maximum": 65535,
+            "markdownDescription": "**LSP Testing:** Connect to an externally running language server on this localhost TCP port instead of launching the bundled binary. Leave at `0` to use the bundled server."
+          }
         }
       }
-    }
+    ]
   },
   "dependencies": {
     "vscode-languageclient": "^9.0.1"

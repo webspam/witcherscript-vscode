@@ -1,4 +1,4 @@
-# WitcherScript Language Features
+# WitcherScript
 
 Language support for The Witcher 3 `.ws` files in VS Code and Cursor, powered by a bundled Rust language server.
 
