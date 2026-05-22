@@ -31,11 +31,14 @@ First public release. Everything the extension ships is listed below.
 - Automatic detection of the GOG Game of the Year install on Windows via the Galaxy registry; Steam and manual installs are routed through the walkthrough.
 - Auto-loads `modSharedImports` from the game's `Mods` directory when present — the dependency most modern Witcher 3 mods rely on.
 - Additional read-only script roots can be added with `witcherscript.additionalScriptDirectories` for co-dependent mod development.
+- Legacy script directories (`witcherscript.legacyScriptDirectories`) for folders whose `.ws` files replace the game's built-in script of the same name instead of clashing with it — for older mods that overwrite base game scripts. A base-script-conflict diagnostic offers a quick fix that adds the offending folder to this setting.
 
 ### Status bar and onboarding
 
 - Unified status bar item that surfaces LSP health (starting, running, stopped) and game-directory state, with a quick-action menu for restart, open output, set game directory, and open settings.
 - First-run walkthrough ("Get Started with WitcherScript") that adapts its steps based on whether the game directory was auto-detected.
+- Per-file indicator showing whether the active script is loaded as a legacy override, with an interactive tooltip linking to the legacy directory settings.
+- Optional busy spinner shown while the language server is processing a request, gated behind the hidden `witcherscript.showBusySpinner` setting.
 
 ### Commands
 
@@ -47,6 +50,7 @@ First public release. Everything the extension ships is listed below.
 
 - `witcherscript.gameDirectory` — path to the Witcher 3 install.
 - `witcherscript.additionalScriptDirectories` — extra read-only script roots.
+- `witcherscript.legacyScriptDirectories` — script roots whose `.ws` files override base game scripts of the same name.
 - `witcherscript.autoLoadModSharedImports` — toggle auto-loading of `modSharedImports`.
 - `witcherscript.formatter.lineLimit` — target line length before wrapping (default `100`).
 - `witcherscript.formatter.compactColon` — omit spaces around type-annotation colons.
