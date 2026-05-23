@@ -16,8 +16,9 @@ Commit messages have a 50 character limit.
 | Path                                     | Purpose                                                   |
 | ---------------------------------------- | --------------------------------------------------------- |
 | `src/extension.ts`                       | VS Code extension entry point; starts the LSP client      |
-| `out/`                                   | Compiled JS output (gitignored); shipped in `.vsix`       |
-| `tsconfig.json`                          | TypeScript compiler config                                |
+| `dist/`                                  | Bundled JS output (gitignored); shipped in `.vsix`        |
+| `esbuild.mjs`                            | esbuild build script (dev + production bundling)          |
+| `tsconfig.json`                          | TypeScript compiler config (type-check only, no emit)     |
 | `package.json`                           | Extension manifest, npm scripts, contributed settings     |
 | `language-configuration.json`            | Comment style, bracket pairs for `.ws` files              |
 | `syntaxes/witcherscript.tmLanguage.json` | TextMate grammar for syntax highlighting                  |
@@ -28,11 +29,11 @@ Commit messages have a 50 character limit.
 ## Building
 
 ```
-npm run compile   # one-shot tsc build into out/
-npm run watch     # tsc --watch for iterative development
+npm run compile   # one-shot dev bundle into dist/extension.js
+npm run watch     # esbuild --watch for iterative development
 ```
 
-The extension's `main` is `out/extension.js`. `vsce package` triggers `vscode:prepublish` → `compile` automatically. There is no bundler — `tsc` emits plain CommonJS that VS Code's Node host loads directly.
+The extension's `main` is `dist/extension.js`. `vsce package` triggers `vscode:prepublish`, which type-checks and runs the production esbuild bundle. The bundle inlines `vscode-languageclient` and its transitive deps, so `node_modules` is excluded from the `.vsix`. `vscode` is marked external (the Extension Host provides it).
 
 ## Checking your work
 
@@ -40,7 +41,7 @@ The extension's `main` is `out/extension.js`. `vsce package` triggers `vscode:pr
 npm run check
 ```
 
-This runs `tsc --noEmit` on `src/` and `node --check` on `scripts/prepare-server.mjs`. Run it after any code changes.
+Runs `tsc --noEmit` for type checking and `node --check` on the JS build scripts. Run after any code changes. esbuild strips types without checking them, so tsc is the source of truth for type errors.
 
 ## LSP binary
 

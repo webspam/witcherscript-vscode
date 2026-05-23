@@ -35,7 +35,7 @@
     "ws"
   ],
   "icon": "assets/webspam.png",
-  "main": "./out/extension.js",
+  "main": "./dist/extension.js",
   "capabilities": {
     "untrustedWorkspaces": {
       "supported": false,
@@ -47,12 +47,12 @@
     }
   },
   "scripts": {
-    "check": "tsc --noEmit && node --check scripts/prepare-server.mjs",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
+    "check": "tsc --noEmit && node --check scripts/prepare-server.mjs && node --check esbuild.mjs",
+    "compile": "node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch",
     "prepare:server": "node scripts/prepare-server.mjs",
-    "vscode:prepublish": "npm run compile",
-    "package": "npm run prepare:server && npm run compile && vsce package --target win32-x64"
+    "vscode:prepublish": "npm run check && node esbuild.mjs --production",
+    "package": "npm run prepare:server && vsce package --target win32-x64"
   },
   "contributes": {
     "commands": [
@@ -267,6 +267,7 @@
     "@types/node": "^24.0.0",
     "@types/vscode": "^1.85.0",
     "@vscode/vsce": "^3.9.0",
+    "esbuild": "^0.28.0",
     "prettier": "^3.8.3",
     "typescript": "^6.0.3"
   }
