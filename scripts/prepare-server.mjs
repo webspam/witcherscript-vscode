@@ -17,19 +17,20 @@ const releaseApiUrl = `https://api.github.com/repos/${releaseRepo}/releases/tags
 fs.mkdirSync(bundledServerDir, { recursive: true });
 
 const localServerPath = process.env.WITCHERSCRIPT_LSP_PATH;
-
 if (localServerPath) {
-  const repoRoot = path.resolve(extensionRoot, localServerPath);
+  bundleFromLocalBuild(localServerPath);
+} else {
+  await bundleFromRelease();
+}
+
+function bundleFromLocalBuild(lspPath) {
+  const repoRoot = path.resolve(extensionRoot, lspPath);
   if (!fs.existsSync(repoRoot) || !fs.statSync(repoRoot).isDirectory()) {
     throw new Error(`WITCHERSCRIPT_LSP_PATH is not a directory: ${repoRoot}`);
   }
 
   console.log(`Running \`just release\` in ${repoRoot}`);
-  const build = spawnSync("just", ["release"], {
-    cwd: repoRoot,
-    stdio: "inherit",
-    shell: true,
-  });
+  const build = spawnSync("just", ["release"], { cwd: repoRoot, stdio: "inherit", shell: true });
   if (build.status !== 0) {
     throw new Error(`\`just release\` failed in ${repoRoot} (exit ${build.status})`);
   }
@@ -42,16 +43,38 @@ if (localServerPath) {
   fs.copyFileSync(sourcePath, bundledServer);
   makeExecutable(bundledServer);
   console.log(`Bundled ${bundledServer} from ${sourcePath}`);
-} else {
-  downloadReleaseServer()
-    .then(() => {
-      makeExecutable(bundledServer);
-      console.log(`Bundled ${bundledServer} from ${releaseApiUrl}`);
-    })
-    .catch(error => {
-      console.error(error.message);
-      process.exitCode = 1;
-    });
+}
+
+async function bundleFromRelease() {
+  const release = JSON.parse(
+    await requestText(releaseApiUrl, {
+      Accept: "application/vnd.github+json",
+      "User-Agent": "witcherscript-vscode",
+    }),
+  );
+
+  const asset = selectAsset(release.assets ?? []);
+  if (asset === null) {
+    throw new Error(`No ${process.platform}/${process.arch} asset found at ${releaseApiUrl}`);
+  }
+
+  const tmpZip = bundledServer + ".zip";
+  await downloadFile(asset.browser_download_url, tmpZip);
+  try {
+    extractFromZip(tmpZip, bundledServer);
+  } finally {
+    fs.rmSync(tmpZip, { force: true });
+  }
+
+  makeExecutable(bundledServer);
+  console.log(`Bundled ${bundledServer} from ${releaseApiUrl}`);
+}
+
+function selectAsset(assets) {
+  const platformName = { win32: "windows", darwin: "macos", linux: "linux" }[process.platform] ?? process.platform;
+  const archName = { x64: "x64", arm64: "arm64" }[process.arch] ?? process.arch;
+  const expectedName = `witcherscript-language-${releaseTag}-${platformName}-${archName}.zip`;
+  return assets.find(asset => asset.name === expectedName) ?? null;
 }
 
 function resolveReleaseTag() {
@@ -94,36 +117,6 @@ function loadLocalEnv() {
       process.env[key] = value;
     }
   }
-}
-
-async function downloadReleaseServer() {
-  const release = JSON.parse(
-    await requestText(releaseApiUrl, {
-      Accept: "application/vnd.github+json",
-      "User-Agent": "witcherscript-vscode",
-    }),
-  );
-  const asset = selectAsset(release.assets || []);
-  if (!asset) {
-    throw new Error(
-      `No ${process.platform}/${process.arch} witcherscript-lsp release asset found at ${releaseApiUrl}`,
-    );
-  }
-
-  const tmpZip = bundledServer + ".zip";
-  await downloadFile(asset.browser_download_url, tmpZip);
-  try {
-    extractFromZip(tmpZip, bundledServer);
-  } finally {
-    fs.rmSync(tmpZip, { force: true });
-  }
-}
-
-function selectAsset(assets) {
-  const platformName = { win32: "windows", darwin: "macos", linux: "linux" }[process.platform] ?? process.platform;
-  const archName = { x64: "x64", arm64: "arm64" }[process.arch] ?? process.arch;
-  const expectedName = `witcherscript-language-${releaseTag}-${platformName}-${archName}.zip`;
-  return assets.find(asset => asset.name === expectedName) ?? null;
 }
 
 function requestText(url, headers = {}) {
