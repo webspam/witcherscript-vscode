@@ -11,7 +11,7 @@
         "--profile-temp",
         "--sync=off"
       ],
-      "outFiles": ["${workspaceFolder}/out/**/*.js"],
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
       "preLaunchTask": "npm: compile"
     }
   ]
