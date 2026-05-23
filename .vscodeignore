@@ -15,10 +15,10 @@ CODESTYLE.md
 CONTRIBUTING.md
 RELEASE.md
 package-lock.json
+node_modules/**
+out/**
 scripts/**
 src/**
 tsconfig.json
-out/**/*.map
-node_modules/@types/**
-node_modules/@vscode/**
-node_modules/typescript/**
+esbuild.mjs
+dist/**/*.map
