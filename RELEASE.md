@@ -19,9 +19,9 @@ High-level overview of what the workflow does. For actual steps, see the workflo
 1. **Checkout** — clean checkout of the source.
 2. **Derive tag** — read `version` from `package.json` and use `v<version>` as the release tag, so the tag and the `.vsix` filename always agree.
 3. **Install** — restore Node dependencies for the extension build.
-4. **Check** — typecheck and lint the extension sources so a broken build never produces a release.
+4. **Check** — typecheck the extension sources so a broken build never produces a release.
 5. **Bundle LSP** — fetch the matching `witcherscript-lsp` binary from the latest release of the language-server repo and stage it under `server/`.
-6. **Package** — compile the extension and run `vsce package` to produce a single `.vsix` containing the compiled extension plus the bundled server binary.
+6. **Package** — bundle the extension with esbuild and run `vsce package` to produce a single `.vsix` containing the bundled extension plus the language-server binary.
 7. **Draft release** — create a GitHub draft release at the derived tag, attach the `.vsix`, and populate notes from GitHub's auto-generator (with an optional summary prepended).
 8. **Publish to Marketplace** — call `vsce publish --packagePath <vsix> --target win32-x64` against the same `.vsix`. Skipped when `publish_marketplace` is unchecked; passes `--pre-release` when the release is flagged as a pre-release.
 
