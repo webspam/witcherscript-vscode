@@ -22,6 +22,13 @@ async function addScriptDirectory(
   settingKey: string,
   directory: string | undefined,
 ): Promise<void> {
+  if (!vscode.workspace.workspaceFolders?.length) {
+    await vscode.window.showErrorMessage(
+      "Open a folder or workspace first — script directories are stored in workspace settings.",
+    );
+    return;
+  }
+
   const picked =
     typeof directory === "string" && directory.length > 0 ? [directory] : await pickFolders();
   if (picked.length === 0) return;
@@ -41,10 +48,7 @@ async function addScriptDirectory(
     return;
   }
 
-  const target = vscode.workspace.workspaceFolders?.length
-    ? vscode.ConfigurationTarget.Workspace
-    : vscode.ConfigurationTarget.Global;
-  await config.update(settingKey, [...current, ...toAdd], target);
+  await config.update(settingKey, [...current, ...toAdd], vscode.ConfigurationTarget.Workspace);
 }
 
 async function pickFolders(): Promise<string[]> {
