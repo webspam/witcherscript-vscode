@@ -18,7 +18,7 @@ Language support for The Witcher 3 `.ws` files in VS Code and Cursor, powered by
 ## Requirements
 
 - Windows (x64). The bundled language server is currently Windows-only.
-- A local Witcher 3 install (recommended). Without one, the extension uses built-in base game scripts instead.
+- A local Witcher 3 install (recommended). Without one, most features will be of limited use.
 
 ## First-run setup
 
