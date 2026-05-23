@@ -132,6 +132,9 @@ export function startClient(gameDirectory: string): void {
       additionalScriptDirectories: config.get("additionalScriptDirectories") ?? [],
       legacyScriptDirectories: config.get("legacyScriptDirectories") ?? [],
       autoLoadModSharedImports: config.get("autoLoadModSharedImports") ?? true,
+      diagnostics: {
+        scope: config.get("diagnostics.scope") ?? "workspace",
+      },
       logLevel:
         extensionContext.extensionMode === vscode.ExtensionMode.Development
           ? "trace"
