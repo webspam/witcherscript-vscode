@@ -4,16 +4,16 @@ Language support for The Witcher 3 `.ws` files in VS Code and Cursor, powered by
 
 ## Features
 
-- **Diagnostics** — syntax errors and validation warnings as you type
-- **Completion** — members, symbols, and method snippets
-- **Hover** — signatures and type annotations
+- **Diagnostics** - syntax errors and validation warnings as you type
+- **Completion** - members, symbols, and method snippets
+- **Hover** - signatures and type annotations
 - **Go to Definition** and **Find References**
-- **Rename** — workspace-wide symbol renaming
-- **Signature help** — parameter hints inside calls
-- **Document Symbols** — outline in the Explorer panel
-- **Semantic highlighting** — only highlights valid variable and type names
-- **Document formatting** — opinionated pretty-printer with configurable line limit and alignment
-- **Shared Imports auto-load** — picks up `modSharedImports` automatically when present (for type resolution)
+- **Rename** - workspace-wide symbol renaming
+- **Signature help** - parameter hints inside calls
+- **Document Symbols** - outline in the Explorer panel
+- **Semantic highlighting** - only highlights valid variable and type names
+- **Document formatting** - opinionated pretty-printer with configurable line limit and alignment
+- **Shared Imports auto-load** - picks up `modSharedImports` automatically when present (for type resolution)
 
 ## Requirements
 
