@@ -32,6 +32,7 @@ First public release. Everything the extension ships is listed below.
 - Auto-loads `modSharedImports` from the game's `Mods` directory when present — the dependency most modern Witcher 3 mods rely on.
 - Additional read-only script roots can be added with `witcherscript.additionalScriptDirectories` for co-dependent mod development.
 - Legacy script directories (`witcherscript.legacyScriptDirectories`) for folders whose `.ws` files replace the game's built-in script of the same name instead of clashing with it — for older mods that overwrite base game scripts. A base-script-conflict diagnostic offers a quick fix that adds the offending folder to this setting.
+- Both `witcherscript.additionalScriptDirectories` and `witcherscript.legacyScriptDirectories` show an "Add folder (Workspace)…" link in their Settings UI description that opens a folder picker, so paths don't have to be typed by hand.
 
 ### Status bar and onboarding
 
