@@ -23,3 +23,11 @@ Language support for The Witcher 3 `.ws` files in VS Code and Cursor, powered by
 ## First-run setup
 
 On first install, VS Code opens a **Get Started with WitcherScript** walkthrough that guides you through pointing the language server at your Witcher 3 install. GOG Game of the Year is detected automatically.
+
+## Language server
+
+Language features are provided by [`witcherscript-lsp`](https://github.com/webspam/witcherscript-language), a Rust language server bundled with this extension. The current release ships `witcherscript-lsp v0.3.2`.
+
+## Platforms
+
+Support is exclusively win x64 at present, but there should be no major blockers for porting.
