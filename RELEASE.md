@@ -27,7 +27,7 @@ High-level overview of what the workflow does. For actual steps, see the workflo
 
 ### Build requirements
 
-- A GitHub-hosted Windows runner (Node 20+, PowerShell, `gh` CLI).
+- A GitHub-hosted Windows runner (Node 24, PowerShell, `gh` CLI).
 - `GITHUB_TOKEN` with `contents: write` (the workflow declares this).
 - `VSCE_PAT` repo secret — a Marketplace personal access token under publisher `webspam`. See "One-time setup" below.
 - The `witcherscript-lsp` repo (`webspam/witcherscript-language`) must have a published release with platform-matching assets; the build step downloads from `/releases/latest`.
