@@ -65,12 +65,21 @@
         "command": "witcherscript.addLegacyScriptDirectory",
         "title": "Add Legacy Script Directory",
         "category": "WitcherScript"
+      },
+      {
+        "command": "witcherscript.addAdditionalScriptDirectory",
+        "title": "Add Additional Script Directory",
+        "category": "WitcherScript"
       }
     ],
     "menus": {
       "commandPalette": [
         {
           "command": "witcherscript.addLegacyScriptDirectory",
+          "when": "false"
+        },
+        {
+          "command": "witcherscript.addAdditionalScriptDirectory",
           "when": "false"
         }
       ]
@@ -198,7 +207,7 @@
               "type": "string"
             },
             "default": [],
-            "markdownDescription": "Folders to scan for extra `.ws` script files, subfolders included. If your scripts use functions from other mods, you can add them here (e.g. Shared Utils).\n\nSee also `#witcherscript.legacyScriptDirectories#`."
+            "markdownDescription": "Folders to scan for extra `.ws` script files, subfolders included. If your scripts use functions from other mods, you can add them here (e.g. Shared Utils).\n\nSee also `#witcherscript.legacyScriptDirectories#`.\n\n[Add folder…](command:witcherscript.addAdditionalScriptDirectory)"
           },
           "witcherscript.legacyScriptDirectories": {
             "type": "array",
@@ -206,7 +215,7 @@
               "type": "string"
             },
             "default": [],
-            "markdownDescription": "Folders to scan for extra `.ws` script files, subfolders included. A script found here **replaces** the game's built-in script of the same name, instead of clashing with it. Use this for older mods that overwrite the game's own script files.\n\nFor mods that add *new* scripts alongside the game's own, use `#witcherscript.additionalScriptDirectories#` instead."
+            "markdownDescription": "Folders to scan for extra `.ws` script files, subfolders included. A script found here **replaces** the game's built-in script of the same name, instead of clashing with it. Use this for older mods that overwrite the game's own script files.\n\nFor mods that add *new* scripts alongside the game's own, use `#witcherscript.additionalScriptDirectories#` instead.\n\n[Add folder…](command:witcherscript.addLegacyScriptDirectory)"
           }
         }
       },
