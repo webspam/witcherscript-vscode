@@ -1,6 +1,5 @@
 import { spawnSync } from "child_process";
 import fs from "fs";
-import https from "https";
 import path from "path";
 
 const extensionRoot = path.resolve(import.meta.dirname, "..");
@@ -9,18 +8,14 @@ const bundledServerDir = path.join(extensionRoot, "server");
 const bundledServer = path.join(bundledServerDir, executable);
 const releaseRepo = "webspam/witcherscript-language";
 
-loadLocalEnv();
-
-const releaseTag = resolveReleaseTag();
-const releaseApiUrl = `https://api.github.com/repos/${releaseRepo}/releases/tags/${encodeURIComponent(releaseTag)}`;
-
+loadDotEnv();
 fs.mkdirSync(bundledServerDir, { recursive: true });
 
-const localServerPath = process.env.WITCHERSCRIPT_LSP_PATH;
-if (localServerPath) {
-  bundleFromLocalBuild(localServerPath);
+const localBuildPath = process.env.WITCHERSCRIPT_LSP_PATH;
+if (localBuildPath) {
+  bundleFromLocalBuild(localBuildPath);
 } else {
-  await bundleFromRelease();
+  await bundleFromRelease(resolveReleaseTag());
 }
 
 function bundleFromLocalBuild(lspPath) {
@@ -35,46 +30,42 @@ function bundleFromLocalBuild(lspPath) {
     throw new Error(`\`just release\` failed in ${repoRoot} (exit ${build.status})`);
   }
 
-  const sourcePath = path.join(repoRoot, "target", "release", executable);
-  if (!fs.existsSync(sourcePath)) {
-    throw new Error(`Built binary not found: ${sourcePath}`);
+  const builtBinary = path.join(repoRoot, "target", "release", executable);
+  if (!fs.existsSync(builtBinary)) {
+    throw new Error(`Built binary not found: ${builtBinary}`);
   }
 
-  fs.copyFileSync(sourcePath, bundledServer);
+  fs.copyFileSync(builtBinary, bundledServer);
   makeExecutable(bundledServer);
-  console.log(`Bundled ${bundledServer} from ${sourcePath}`);
+  console.log(`Bundled ${bundledServer} from ${builtBinary}`);
 }
 
-async function bundleFromRelease() {
-  const release = JSON.parse(
-    await requestText(releaseApiUrl, {
-      Accept: "application/vnd.github+json",
-      "User-Agent": "witcherscript-vscode",
-    }),
-  );
-
-  const asset = selectAsset(release.assets ?? []);
-  if (asset === null) {
-    throw new Error(`No ${process.platform}/${process.arch} asset found at ${releaseApiUrl}`);
+async function bundleFromRelease(releaseTag) {
+  const releaseApiUrl = `https://api.github.com/repos/${releaseRepo}/releases/tags/${encodeURIComponent(releaseTag)}`;
+  const release = await fetchJson(releaseApiUrl);
+  const asset = findPlatformAsset(release.assets ?? [], releaseTag);
+  if (!asset) {
+    throw new Error(`No ${process.platform}/${process.arch} asset for ${releaseTag} at ${releaseApiUrl}`);
   }
 
-  const tmpZip = bundledServer + ".zip";
-  await downloadFile(asset.browser_download_url, tmpZip);
+  const tmpZip = `${bundledServer}.zip`;
+  await downloadToFile(asset.browser_download_url, tmpZip);
   try {
-    extractFromZip(tmpZip, bundledServer);
+    extractMember(tmpZip, executable, bundledServerDir);
   } finally {
     fs.rmSync(tmpZip, { force: true });
   }
-
   makeExecutable(bundledServer);
   console.log(`Bundled ${bundledServer} from ${releaseApiUrl}`);
 }
 
-function selectAsset(assets) {
-  const platformName = { win32: "windows", darwin: "macos", linux: "linux" }[process.platform] ?? process.platform;
-  const archName = { x64: "x64", arm64: "arm64" }[process.arch] ?? process.arch;
-  const expectedName = `witcherscript-language-${releaseTag}-${platformName}-${archName}.zip`;
-  return assets.find(asset => asset.name === expectedName) ?? null;
+function findPlatformAsset(assets, releaseTag) {
+  const platformName = { win32: "windows", darwin: "macos", linux: "linux" }[process.platform];
+  if (!platformName) {
+    throw new Error(`Unsupported platform: ${process.platform}`);
+  }
+  const expectedName = `witcherscript-language-${releaseTag}-${platformName}-${process.arch}.zip`;
+  return assets.find(asset => asset.name === expectedName);
 }
 
 function resolveReleaseTag() {
@@ -91,118 +82,43 @@ function resolveReleaseTag() {
   return pinned;
 }
 
-function loadLocalEnv() {
+function loadDotEnv() {
   const envPath = path.join(extensionRoot, ".env");
-  if (!fs.existsSync(envPath)) {
-    return;
-  }
-
-  for (const line of fs.readFileSync(envPath, "utf8").split(/\r?\n/)) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith("#")) {
-      continue;
-    }
-
-    const separator = trimmed.indexOf("=");
-    if (separator === -1) {
-      continue;
-    }
-
-    const key = trimmed.slice(0, separator).trim();
-    const value = trimmed
-      .slice(separator + 1)
-      .trim()
-      .replace(/^['"]|['"]$/g, "");
-    if (key && process.env[key] === undefined) {
-      process.env[key] = value;
-    }
+  if (fs.existsSync(envPath)) {
+    process.loadEnvFile(envPath);
   }
 }
 
-function requestText(url, headers = {}) {
-  return new Promise((resolve, reject) => {
-    const request = https.get(url, { headers }, response => {
-      if (isRedirect(response.statusCode)) {
-        resolve(requestText(response.headers.location, headers));
-        return;
-      }
-      if (response.statusCode < 200 || response.statusCode >= 300) {
-        reject(new Error(`Request failed with ${response.statusCode}: ${url}`));
-        return;
-      }
-
-      let body = "";
-      response.setEncoding("utf8");
-      response.on("data", chunk => {
-        body += chunk;
-      });
-      response.on("end", () => resolve(body));
-    });
-    request.on("error", reject);
+async function fetchJson(url) {
+  const response = await fetch(url, {
+    headers: {
+      Accept: "application/vnd.github+json",
+      "User-Agent": "witcherscript-vscode",
+    },
   });
-}
-
-function downloadFile(url, destination) {
-  return new Promise((resolve, reject) => {
-    const file = fs.createWriteStream(destination);
-    const request = https.get(
-      url,
-      { headers: { "User-Agent": "witcherscript-vscode" } },
-      response => {
-        if (isRedirect(response.statusCode)) {
-          file.close();
-          fs.rmSync(destination, { force: true });
-          resolve(downloadFile(response.headers.location, destination));
-          return;
-        }
-        if (response.statusCode < 200 || response.statusCode >= 300) {
-          file.close();
-          fs.rmSync(destination, { force: true });
-          reject(new Error(`Download failed with ${response.statusCode}: ${url}`));
-          return;
-        }
-
-        response.pipe(file);
-        file.on("finish", () => {
-          file.close(resolve);
-        });
-      },
-    );
-    request.on("error", error => {
-      file.close();
-      fs.rmSync(destination, { force: true });
-      reject(error);
-    });
-  });
-}
-
-function extractFromZip(zipPath, destPath) {
-  const tmpDir = zipPath + ".d";
-  try {
-    fs.mkdirSync(tmpDir, { recursive: true });
-    if (process.platform === "win32") {
-      const result = spawnSync(
-        "powershell",
-        ["-Command", `Expand-Archive -LiteralPath '${zipPath}' -DestinationPath '${tmpDir}' -Force`],
-        { stdio: "inherit" },
-      );
-      if (result.status !== 0) throw new Error("Expand-Archive failed");
-    } else {
-      const result = spawnSync("unzip", ["-o", zipPath, "-d", tmpDir], { stdio: "inherit" });
-      if (result.status !== 0) throw new Error(`unzip failed (exit ${result.status})`);
-    }
-    const extracted = path.join(tmpDir, path.basename(destPath));
-    if (!fs.existsSync(extracted)) {
-      throw new Error(`${path.basename(destPath)} not found in ${path.basename(zipPath)}`);
-    }
-    fs.copyFileSync(extracted, destPath);
-  } finally {
-    fs.rmSync(tmpDir, { recursive: true, force: true });
+  if (!response.ok) {
+    throw new Error(`Request failed with ${response.status}: ${url}`);
   }
+  return response.json();
 }
 
-function isRedirect(statusCode) {
-  return statusCode >= 300 && statusCode < 400;
+async function downloadToFile(url, destination) {
+  const response = await fetch(url, { headers: { "User-Agent": "witcherscript-vscode" } });
+  if (!response.ok) {
+    throw new Error(`Download failed with ${response.status}: ${url}`);
+  }
+  fs.writeFileSync(destination, Buffer.from(await response.arrayBuffer()));
+}
+
+// `tar` reads .zip via libarchive on Windows 10 1803+, macOS, and Linux, so one call covers every platform.
+function extractMember(zipPath, memberName, destinationDir) {
+  const result = spawnSync("tar", ["-xf", zipPath, "-C", destinationDir, memberName], { stdio: "inherit" });
+  if (result.status !== 0) {
+    throw new Error(`Failed to extract ${memberName} from ${zipPath} (exit ${result.status})`);
+  }
+  if (!fs.existsSync(path.join(destinationDir, memberName))) {
+    throw new Error(`${memberName} not found in ${path.basename(zipPath)}`);
+  }
 }
 
 function makeExecutable(filePath) {
