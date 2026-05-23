@@ -110,47 +110,20 @@ async function downloadReleaseServer() {
     );
   }
 
-  await downloadFile(asset.browser_download_url, bundledServer);
+  const tmpZip = bundledServer + ".zip";
+  await downloadFile(asset.browser_download_url, tmpZip);
+  try {
+    extractFromZip(tmpZip, bundledServer);
+  } finally {
+    fs.rmSync(tmpZip, { force: true });
+  }
 }
 
 function selectAsset(assets) {
-  const platformTokens = {
-    win32: ["windows", "win32", "pc-windows", ".exe"],
-    darwin: ["darwin", "macos", "apple-darwin"],
-    linux: ["linux", "unknown-linux"],
-  }[process.platform] || [process.platform];
-  const archTokens = {
-    x64: ["x64", "x86_64", "amd64"],
-    arm64: ["arm64", "aarch64"],
-  }[process.arch] || [process.arch];
-
-  return assets
-    .filter(asset => {
-      const name = asset.name.toLowerCase();
-      return (
-        name.includes("witcherscript-lsp") && !name.endsWith(".sha256") && !name.endsWith(".sig")
-      );
-    })
-    .map(asset => ({
-      asset,
-      score: scoreAsset(asset.name.toLowerCase(), platformTokens, archTokens),
-    }))
-    .filter(entry => entry.score > 0)
-    .sort((left, right) => right.score - left.score)[0]?.asset;
-}
-
-function scoreAsset(name, platformTokens, archTokens) {
-  let score = 0;
-  if (platformTokens.some(token => name.includes(token))) {
-    score += 2;
-  }
-  if (archTokens.some(token => name.includes(token))) {
-    score += 2;
-  }
-  if (name === executable.toLowerCase()) {
-    score += 1;
-  }
-  return score;
+  const platformName = { win32: "windows", darwin: "macos", linux: "linux" }[process.platform] ?? process.platform;
+  const archName = { x64: "x64", arm64: "arm64" }[process.arch] ?? process.arch;
+  const expectedName = `witcherscript-language-${releaseTag}-${platformName}-${archName}.zip`;
+  return assets.find(asset => asset.name === expectedName) ?? null;
 }
 
 function requestText(url, headers = {}) {
@@ -208,6 +181,31 @@ function downloadFile(url, destination) {
       reject(error);
     });
   });
+}
+
+function extractFromZip(zipPath, destPath) {
+  const tmpDir = zipPath + ".d";
+  try {
+    fs.mkdirSync(tmpDir, { recursive: true });
+    if (process.platform === "win32") {
+      const result = spawnSync(
+        "powershell",
+        ["-Command", `Expand-Archive -LiteralPath '${zipPath}' -DestinationPath '${tmpDir}' -Force`],
+        { stdio: "inherit" },
+      );
+      if (result.status !== 0) throw new Error("Expand-Archive failed");
+    } else {
+      const result = spawnSync("unzip", ["-o", zipPath, "-d", tmpDir], { stdio: "inherit" });
+      if (result.status !== 0) throw new Error(`unzip failed (exit ${result.status})`);
+    }
+    const extracted = path.join(tmpDir, path.basename(destPath));
+    if (!fs.existsSync(extracted)) {
+      throw new Error(`${path.basename(destPath)} not found in ${path.basename(zipPath)}`);
+    }
+    fs.copyFileSync(extracted, destPath);
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
 }
 
 function isRedirect(statusCode) {
