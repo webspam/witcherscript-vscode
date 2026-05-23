@@ -2,21 +2,29 @@ import * as vscode from "vscode";
 import { LanguageClient } from "vscode-languageclient/node";
 
 /** Server → client push; the server owns the base game script tree, so only it can decide this. */
-const LEGACY_SCRIPT_STATUS_NOTIFICATION = "witcherscript/legacyScriptStatus";
+const FILE_SCOPE_STATUS_NOTIFICATION = "witcherscript/fileScopeStatus";
 
 /** `@id:` filters the Settings editor to exactly this setting. */
 const LEGACY_DIRECTORIES_SETTING = "witcherscript.legacyScriptDirectories";
 
 const REMOVE_LEGACY_DIR_COMMAND = "witcherscript.removeLegacyScriptDirectory";
 
-interface LegacyScriptStatus {
+type FileScope =
+  | "InProject"
+  | "LegacyOverride"
+  | "LegacyNew"
+  | "AdditionalBase"
+  | "OutOfScope"
+  | "SingleFile";
+
+interface FileScopeStatus {
   uri: string;
-  replacesBaseScript: boolean;
+  scope: FileScope;
   /** Game-relative path of the script being replaced, for the tooltip. */
   replacedScriptPath?: string;
 }
 
-const statusByUri = new Map<string, LegacyScriptStatus>();
+const statusByUri = new Map<string, FileScopeStatus>();
 let statusBar: vscode.StatusBarItem;
 let notificationListener: vscode.Disposable | undefined;
 
@@ -56,12 +64,12 @@ export function setLegacyScriptStatusClient(client: LanguageClient | undefined):
   if (!client) return;
 
   notificationListener = client.onNotification(
-    LEGACY_SCRIPT_STATUS_NOTIFICATION,
-    handleLegacyScriptStatus,
+    FILE_SCOPE_STATUS_NOTIFICATION,
+    handleFileScopeStatus,
   );
 }
 
-function handleLegacyScriptStatus(status: LegacyScriptStatus): void {
+function handleFileScopeStatus(status: FileScopeStatus): void {
   statusByUri.set(status.uri, status);
   renderLegacyScriptStatus();
 }
@@ -74,7 +82,7 @@ function renderLegacyScriptStatus(): void {
   const editor = vscode.window.activeTextEditor;
   const status = editor ? statusByUri.get(editor.document.uri.toString()) : undefined;
 
-  if (!status?.replacesBaseScript) {
+  if (status?.scope !== "LegacyOverride") {
     statusBar.hide();
     return;
   }
@@ -116,7 +124,7 @@ function findMatchingLegacyDirs(fileUri: string): string[] {
   return matching;
 }
 
-function buildLegacyTooltip(status: LegacyScriptStatus): vscode.MarkdownString {
+function buildLegacyTooltip(status: FileScopeStatus): vscode.MarkdownString {
   const md = new vscode.MarkdownString(undefined, true);
   md.isTrusted = { enabledCommands: ["workbench.action.openSettings", REMOVE_LEGACY_DIR_COMMAND] };
 

@@ -170,6 +170,21 @@
               "trace"
             ],
             "description": "Log verbosity for the WitcherScript language server. Messages appear in the WitcherScript output channel."
+          },
+          "witcherscript.diagnostics.scope": {
+            "type": "string",
+            "default": "workspace",
+            "enum": [
+              "workspace",
+              "openFiles",
+              "none"
+            ],
+            "markdownEnumDescriptions": [
+              "Diagnose every `.ws` file in the project on startup. The Problems list shows diagnostics for all workspace files.",
+              "Diagnose only the files currently open in the editor. Symbols are still indexed project-wide so go-to-definition and completion work everywhere, but the heavy whole-project checking is skipped.",
+              "Suppress all diagnostics."
+            ],
+            "markdownDescription": "Which files are diagnosed. Live-switchable."
           }
         }
       },
