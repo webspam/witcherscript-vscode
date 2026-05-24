@@ -1,7 +1,7 @@
 {
   "name": "witcherscript",
   "displayName": "WitcherScript",
-  "description": "Minimal WitcherScript diagnostics, navigation, and hover support.",
+  "description": "WitcherScript language support, with code completion, diagnostics, and more.",
   "version": "0.3.0",
   "publisher": "webspam",
   "license": "MIT",
