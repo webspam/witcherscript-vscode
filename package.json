@@ -70,6 +70,11 @@
         "command": "witcherscript.addAdditionalScriptDirectory",
         "title": "Add Additional Script Directory",
         "category": "WitcherScript"
+      },
+      {
+        "command": "witcherscript.openWalkthrough",
+        "title": "Open Get Started Walkthrough",
+        "category": "WitcherScript"
       }
     ],
     "menus": {

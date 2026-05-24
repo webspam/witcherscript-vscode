@@ -23,6 +23,12 @@ export function activate(context: vscode.ExtensionContext): void {
       setGameDirectory(restartClient),
     ),
     vscode.commands.registerCommand("witcherscript.restartServer", () => restartClient()),
+    vscode.commands.registerCommand("witcherscript.openWalkthrough", () =>
+      vscode.commands.executeCommand(
+        "workbench.action.openWalkthrough",
+        "webspam.witcherscript#witcherscript.gettingStarted",
+      ),
+    ),
   );
 
   registerScriptDirCommands(context);
