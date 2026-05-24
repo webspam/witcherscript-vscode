@@ -143,6 +143,22 @@
             ]
           },
           {
+            "id": "addModScripts",
+            "title": "Add scripts from other mods",
+            "description": "Reads `.ws` files from another mod - shared utilities, frameworks, anything you depend on. For modern mods that *add* new scripts.\n\n[Add Folder](command:witcherscript.addAdditionalScriptDirectory)",
+            "media": {
+              "markdown": "walkthrough/mod-scripts.md"
+            }
+          },
+          {
+            "id": "addLegacyScripts",
+            "title": "Add legacy script overrides",
+            "description": "Optional: For older mods that have edited copies of base game scripts. The server uses your copy instead of the original.\n\n[Add Legacy Mod](command:witcherscript.addLegacyScriptDirectory)",
+            "media": {
+              "markdown": "walkthrough/legacy-scripts.md"
+            }
+          },
+          {
             "id": "openScript",
             "title": "Open a WitcherScript file",
             "description": "Open any `.ws` file to get diagnostics, hover documentation, Go to Definition, and document symbols.",
