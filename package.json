@@ -73,7 +73,7 @@
       },
       {
         "command": "witcherscript.openWalkthrough",
-        "title": "Open Get Started Walkthrough",
+        "title": "Open Walkthrough",
         "category": "WitcherScript"
       }
     ],
