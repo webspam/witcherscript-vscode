@@ -54,7 +54,13 @@ jobs:
         run: npm run check
 
       - name: Build VSIX
-        run: npm run package
+        shell: pwsh
+        run: |
+          if ("${{ inputs.prerelease }}" -eq "true") {
+            npm run prerelease
+          } else {
+            npm run package
+          }
 
       - name: Create Draft Release
         shell: pwsh
@@ -72,7 +78,7 @@ jobs:
           }
 
           $vsix = Get-ChildItem -Filter "*.vsix" | Select-Object -First 1 -ExpandProperty FullName
-          if (-not $vsix) { throw "No .vsix produced by npm run package" }
+          if (-not $vsix) { throw "No .vsix produced by build step" }
 
           gh release create "${{ steps.version.outputs.tag }}" `
             --title $releaseTitle `
