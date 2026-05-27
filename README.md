@@ -14,6 +14,7 @@ Language support for The Witcher 3 `.ws` files in VS Code and Cursor, powered by
 - **Semantic highlighting** - only highlights valid variable and type names
 - **Document formatting** - opinionated pretty-printer with configurable line limit and alignment
 - **Shared Imports auto-load** - picks up `modSharedImports` automatically when present (for type resolution)
+- **Auto-detected projects** - folders with a `witcherscript.toml` manifest are indexed automatically, no config needed
 
 ## Requirements
 
@@ -24,9 +25,14 @@ Language support for The Witcher 3 `.ws` files in VS Code and Cursor, powered by
 
 On first install, VS Code opens a **Get Started with WitcherScript** walkthrough that guides you through pointing the language server at your Witcher 3 install. GOG Game of the Year is detected automatically.
 
+## Commands
+
+- **WitcherScript: Open Walkthrough** - reopen the Get Started walkthrough after dismissing it
+- **WitcherScript: Restart Language Server** - restart the bundled language server
+
 ## Language server
 
-Language features are provided by [`witcherscript-lsp`](https://github.com/webspam/witcherscript-language), a Rust language server bundled with this extension. The current release ships `witcherscript-lsp v0.3.2`.
+Language features are provided by the [WitcherScript LSP](https://github.com/webspam/witcherscript-language) (`witcherscript-language`), a Rust language server bundled with this extension.
 
 ## Platforms
 
