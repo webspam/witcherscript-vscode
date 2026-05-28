@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { execSync } from "child_process";
 import * as vscode from "vscode";
+import { configs, type ConfigKeyTypeMap } from "./generated-meta";
 
 /**
  * The `content/` check catches the common mistake of picking a mod folder
@@ -29,8 +30,8 @@ export async function setGameDirectory(restart: () => Promise<void>): Promise<vo
   }
 
   await vscode.workspace
-    .getConfiguration("witcherscript")
-    .update("gameDirectory", dir, vscode.ConfigurationTarget.Global);
+    .getConfiguration()
+    .update(configs.gameDirectory.key, dir, vscode.ConfigurationTarget.Global);
 
   await restart();
   vscode.window.showInformationMessage(
@@ -57,7 +58,7 @@ export function registerGameDirectoryContextKey(
 
   context.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration(e => {
-      if (e.affectsConfiguration("witcherscript.gameDirectory")) {
+      if (e.affectsConfiguration(configs.gameDirectory.key)) {
         apply(resolveGameDirectory());
       }
     }),
@@ -73,9 +74,8 @@ export function registerGameDirectoryContextKey(
  * straight into LSP options — the server treats empty as "not configured".
  */
 export function resolveGameDirectory(outputChannel?: vscode.LogOutputChannel): string {
-  const configured = vscode.workspace
-    .getConfiguration("witcherscript")
-    .get<string>("gameDirectory");
+  const { key } = configs.gameDirectory;
+  const configured = vscode.workspace.getConfiguration().get<ConfigKeyTypeMap[typeof key]>(key);
   if (configured) return configured;
 
   if (process.platform !== "win32") return "";

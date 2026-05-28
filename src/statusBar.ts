@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { resolveGameDirectory } from "./gameDirectory";
+import { commands, displayName } from "./generated-meta";
 
 export type ServerState = "starting" | "running" | "stopped";
 
@@ -13,9 +14,7 @@ let gameDirectorySet = false;
 
 /** Undeclared in package.json on purpose — power-user opt-in, not surfaced in the settings UI. */
 function readBusySpinnerSetting(): boolean {
-  return (
-    vscode.workspace.getConfiguration("witcherscript").get<boolean>("showBusySpinner") ?? false
-  );
+  return vscode.workspace.getConfiguration("witcherscript").get<boolean>("showBusySpinner", false);
 }
 
 /**
@@ -33,7 +32,7 @@ export function registerStatusBar(
   busySpinnerEnabled = readBusySpinnerSetting();
 
   statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
-  statusBar.name = "WitcherScript";
+  statusBar.name = displayName;
   statusBar.command = "witcherscript.showStatusMenu";
   context.subscriptions.push(statusBar);
 
@@ -76,7 +75,7 @@ function setGameDirectorySet(set: boolean): void {
 
 function render(): void {
   if (serverState === "stopped") {
-    statusBar.text = "$(debug-disconnect) WitcherScript: server stopped";
+    statusBar.text = `$(debug-disconnect) ${displayName}: server stopped`;
     statusBar.tooltip = serverErrorDetail
       ? `${serverErrorDetail} Click for actions.`
       : "Language server stopped. Click for actions.";
@@ -84,26 +83,26 @@ function render(): void {
     return;
   }
   if (!gameDirectorySet) {
-    statusBar.text = "$(warning) WitcherScript: set game directory";
+    statusBar.text = `$(warning) ${displayName}: set game directory`;
     statusBar.tooltip =
       "The Witcher 3 game directory is not set, so the language server cannot locate base game scripts. Click for actions.";
     statusBar.backgroundColor = new vscode.ThemeColor("statusBarItem.warningBackground");
     return;
   }
   if (serverState === "starting") {
-    statusBar.text = "$(debug-disconnect) WitcherScript";
-    statusBar.tooltip = "WitcherScript language server is starting. Click for actions.";
+    statusBar.text = `$(debug-disconnect) ${displayName}`;
+    statusBar.tooltip = `${displayName} language server is starting. Click for actions.`;
     statusBar.backgroundColor = undefined;
     return;
   }
   if (serverBusy && busySpinnerEnabled) {
-    statusBar.text = "$(sync~spin) WitcherScript";
-    statusBar.tooltip = "WitcherScript language server is processing a request. Click for actions.";
+    statusBar.text = `$(sync~spin) ${displayName}`;
+    statusBar.tooltip = `${displayName} language server is processing a request. Click for actions.`;
     statusBar.backgroundColor = undefined;
     return;
   }
-  statusBar.text = "$(check) WitcherScript";
-  statusBar.tooltip = "WitcherScript language server is running. Click for actions.";
+  statusBar.text = `$(check) ${displayName}`;
+  statusBar.tooltip = `${displayName} language server is running. Click for actions.`;
   statusBar.backgroundColor = undefined;
 }
 
@@ -113,7 +112,7 @@ async function showStatusMenu(): Promise<void> {
   const items: MenuItem[] = [
     {
       label: "$(refresh) Restart language server",
-      run: () => vscode.commands.executeCommand("witcherscript.restartServer"),
+      run: () => vscode.commands.executeCommand(commands.restartServer),
     },
     {
       label: "$(output) Show output",
@@ -131,6 +130,6 @@ async function showStatusMenu(): Promise<void> {
     run: () => vscode.commands.executeCommand("workbench.action.openSettings", "witcherscript"),
   });
 
-  const picked = await vscode.window.showQuickPick(items, { placeHolder: "WitcherScript" });
+  const picked = await vscode.window.showQuickPick(items, { placeHolder: displayName });
   if (picked) await picked.run();
 }
