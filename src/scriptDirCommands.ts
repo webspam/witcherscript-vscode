@@ -1,7 +1,5 @@
 import * as vscode from "vscode";
-
-const ADD_LEGACY_DIR_COMMAND = "witcherscript.addLegacyScriptDirectory";
-const ADD_ADDITIONAL_DIR_COMMAND = "witcherscript.addAdditionalScriptDirectory";
+import { commands, configs, type ConfigItem } from "./generated-meta";
 
 /**
  * Each command takes an optional directory. With one (server code action) it's added
@@ -9,17 +7,21 @@ const ADD_ADDITIONAL_DIR_COMMAND = "witcherscript.addAdditionalScriptDirectory";
  */
 export function registerScriptDirCommands(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
-    vscode.commands.registerCommand(ADD_LEGACY_DIR_COMMAND, (directory?: string) =>
-      addScriptDirectory("legacyScriptDirectories", directory),
+    vscode.commands.registerCommand(commands.addLegacyScriptDirectory, (directory?: string) =>
+      addScriptDirectory(configs.legacyScriptDirectories, directory),
     ),
-    vscode.commands.registerCommand(ADD_ADDITIONAL_DIR_COMMAND, (directory?: string) =>
-      addScriptDirectory("additionalScriptDirectories", directory),
+    vscode.commands.registerCommand(commands.addAdditionalScriptDirectory, (directory?: string) =>
+      addScriptDirectory(configs.additionalScriptDirectories, directory),
     ),
   );
 }
 
+type ScriptConfigKeys =
+  | typeof configs.legacyScriptDirectories.key
+  | typeof configs.additionalScriptDirectories.key;
+
 async function addScriptDirectory(
-  settingKey: string,
+  setting: ConfigItem<ScriptConfigKeys>,
   directory: string | undefined,
 ): Promise<void> {
   if (!vscode.workspace.workspaceFolders?.length) {
@@ -33,8 +35,8 @@ async function addScriptDirectory(
     typeof directory === "string" && directory.length > 0 ? [directory] : await pickFolders();
   if (picked.length === 0) return;
 
-  const config = vscode.workspace.getConfiguration("witcherscript");
-  const current = config.get<string[]>(settingKey) ?? [];
+  const config = vscode.workspace.getConfiguration();
+  const current = config.get(setting.key, setting.default);
   const toAdd: string[] = [];
   for (const dir of picked) {
     if (!current.includes(dir) && !toAdd.includes(dir)) toAdd.push(dir);
@@ -42,13 +44,13 @@ async function addScriptDirectory(
   if (toAdd.length === 0) {
     await vscode.window.showInformationMessage(
       picked.length === 1
-        ? `"${picked[0]}" is already in ${settingKey}.`
-        : `All selected folders are already in ${settingKey}.`,
+        ? `"${picked[0]}" is already in ${setting.key}.`
+        : `All selected folders are already in ${setting.key}.`,
     );
     return;
   }
 
-  await config.update(settingKey, [...current, ...toAdd], vscode.ConfigurationTarget.Workspace);
+  await config.update(setting.key, [...current, ...toAdd], vscode.ConfigurationTarget.Workspace);
 }
 
 async function pickFolders(): Promise<string[]> {

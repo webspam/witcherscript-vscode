@@ -16,6 +16,14 @@ import {
 } from "vscode-languageclient/node";
 import { setBuiltinClient } from "./builtinContent";
 import { resolveGameDirectory } from "./gameDirectory";
+import {
+  configs,
+  displayName,
+  languages,
+  scopedConfigs,
+  type ConfigKeyTypeMap,
+  type ConfigShorthandTypeMap,
+} from "./generated-meta";
 import { setLegacyScriptStatusClient } from "./legacyScriptStatus";
 import { setServerBusy, setServerState } from "./statusBar";
 
@@ -120,19 +128,20 @@ async function stopClientSafely(): Promise<void> {
  * `initializationOptions` are read once at boot; see {@link restartClient}.
  */
 export function startClient(gameDirectory: string): void {
-  const tcpPort = Number(vscode.workspace.getConfiguration("witcherscript").get("server.tcpPort"));
+  const { serverTcpPort } = configs;
+  const tcpPort = vscode.workspace.getConfiguration().get(serverTcpPort.key, serverTcpPort.default);
 
   let serverOptions: ServerOptions;
   if (Number.isInteger(tcpPort) && tcpPort > 0 && tcpPort <= 65535) {
     outputChannel.appendLine(
-      `Connecting to externally running language server on 127.0.0.1:${tcpPort} (witcherscript.server.tcpPort).`,
+      `Connecting to externally running language server on 127.0.0.1:${tcpPort} (${serverTcpPort.key}).`,
     );
     serverOptions = () => connectToTcpServer(tcpPort);
   } else {
     const serverPath = resolveServerPath(extensionContext);
     if (!serverPath) {
       vscode.window.showWarningMessage(
-        "WitcherScript language server not found. Set witcherscript.server.path or reinstall the extension with the bundled server.",
+        `${displayName} language server not found. Set ${configs.serverPath.key} or reinstall the extension with the bundled server.`,
       );
       setServerState("stopped", "Language server binary not found.");
       return;
@@ -143,32 +152,45 @@ export function startClient(gameDirectory: string): void {
     };
   }
 
-  const config = vscode.workspace.getConfiguration("witcherscript");
   const clientOptions: LanguageClientOptions = {
     documentSelector: [
-      { scheme: "file", language: "witcherscript" },
-      { scheme: "untitled", language: "witcherscript" },
-      { scheme: "witcherscript-builtin", language: "witcherscript" },
+      { scheme: "file", language: languages.witcherscript },
+      { scheme: "untitled", language: languages.witcherscript },
+      { scheme: "witcherscript-builtin", language: languages.witcherscript },
     ],
     synchronize: {
-      configurationSection: "witcherscript",
+      configurationSection: scopedConfigs.scope,
     },
     initializationOptions: {
       gameDirectory,
-      additionalScriptDirectories: config.get("additionalScriptDirectories") ?? [],
-      legacyScriptDirectories: config.get("legacyScriptDirectories") ?? [],
-      autoLoadModSharedImports: config.get("autoLoadModSharedImports") ?? true,
+      additionalScriptDirectories: vscode.workspace
+        .getConfiguration()
+        .get(configs.additionalScriptDirectories.key, configs.additionalScriptDirectories.default),
+      legacyScriptDirectories: vscode.workspace
+        .getConfiguration()
+        .get(configs.legacyScriptDirectories.key, configs.legacyScriptDirectories.default),
+      autoLoadModSharedImports: vscode.workspace
+        .getConfiguration()
+        .get(configs.autoLoadModSharedImports.key, configs.autoLoadModSharedImports.default),
       diagnostics: {
-        scope: config.get("diagnostics.scope") ?? "workspace",
+        scope: vscode.workspace
+          .getConfiguration()
+          .get(configs.diagnosticsScope.key, configs.diagnosticsScope.default),
       },
       logLevel:
         extensionContext.extensionMode === vscode.ExtensionMode.Development
           ? "trace"
-          : (config.get("logLevel") ?? "warn"),
+          : vscode.workspace.getConfiguration().get(configs.logLevel.key, configs.logLevel.default),
       formatter: {
-        lineLimit: config.get("formatter.lineLimit") ?? 100,
-        compactColon: config.get("formatter.compactColon") ?? false,
-        alignMemberColons: config.get("formatter.alignMemberColons") ?? false,
+        lineLimit: vscode.workspace
+          .getConfiguration()
+          .get(configs.formatterLineLimit.key, configs.formatterLineLimit.default),
+        compactColon: vscode.workspace
+          .getConfiguration()
+          .get(configs.formatterCompactColon.key, configs.formatterCompactColon.default),
+        alignMemberColons: vscode.workspace
+          .getConfiguration()
+          .get(configs.formatterAlignMemberColons.key, configs.formatterAlignMemberColons.default),
       },
     },
     outputChannel,
@@ -192,7 +214,7 @@ export function startClient(gameDirectory: string): void {
 
   client = new LanguageClient(
     "witcherscriptLanguageServer",
-    "WitcherScript Language Server",
+    `${displayName} Language Server`,
     serverOptions,
     clientOptions,
   );
@@ -227,8 +249,8 @@ async function handleTcpConnectionError(port: number): Promise<void> {
   outputChannel.trace(`TCP port ${port} unreachable — showing recovery dialog.`);
   const useBundled = "Use Bundled Server";
   const choice = await vscode.window.showErrorMessage(
-    `WitcherScript: couldn't connect to language server on 127.0.0.1:${port}. ` +
-      `The port is set via witcherscript.server.tcpPort for LSP development.`,
+    `${displayName}: couldn't connect to language server on 127.0.0.1:${port}. ` +
+      `The port is set via ${configs.serverTcpPort.key} for LSP development.`,
     useBundled,
     "Open Settings",
     "Retry",
@@ -245,21 +267,26 @@ async function handleTcpConnectionError(port: number): Promise<void> {
     if (choice === "Open Settings") {
       void vscode.commands.executeCommand(
         "workbench.action.openSettings",
-        "witcherscript.server.tcpPort",
+        configs.serverTcpPort.key,
       );
     }
   }
 }
 
 async function clearTcpPortSetting(): Promise<void> {
-  const config = vscode.workspace.getConfiguration("witcherscript");
-  const inspection = config.inspect<number>("server.tcpPort");
-  if (inspection?.globalValue !== undefined)
-    await config.update("server.tcpPort", undefined, vscode.ConfigurationTarget.Global);
-  if (inspection?.workspaceValue !== undefined)
-    await config.update("server.tcpPort", undefined, vscode.ConfigurationTarget.Workspace);
-  if (inspection?.workspaceFolderValue !== undefined)
-    await config.update("server.tcpPort", undefined, vscode.ConfigurationTarget.WorkspaceFolder);
+  const { key } = configs.serverTcpPort;
+  const config = vscode.workspace.getConfiguration();
+  const inspection = config.inspect<ConfigKeyTypeMap[typeof key]>(key);
+
+  if (inspection?.globalValue !== undefined) {
+    await config.update(key, undefined, vscode.ConfigurationTarget.Global);
+  }
+  if (inspection?.workspaceValue !== undefined) {
+    await config.update(key, undefined, vscode.ConfigurationTarget.Workspace);
+  }
+  if (inspection?.workspaceFolderValue !== undefined) {
+    await config.update(key, undefined, vscode.ConfigurationTarget.WorkspaceFolder);
+  }
 }
 
 /**
@@ -275,8 +302,8 @@ export async function restartClient(): Promise<void> {
 /** Explicit `server.path` wins so LSP devs can point at a local build. */
 function resolveServerPath(context: vscode.ExtensionContext): string | undefined {
   const configuredPath = vscode.workspace
-    .getConfiguration("witcherscript")
-    .get<string>("server.path");
+    .getConfiguration()
+    .get(configs.serverPath.key, configs.serverPath.default);
 
   if (configuredPath && fs.existsSync(configuredPath)) {
     return configuredPath;

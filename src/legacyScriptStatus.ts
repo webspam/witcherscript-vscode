@@ -1,11 +1,12 @@
 import * as vscode from "vscode";
 import { LanguageClient } from "vscode-languageclient/node";
+import { configs, displayName } from "./generated-meta";
 
 /** Server → client push; the server owns the base game script tree, so only it can decide this. */
 const FILE_SCOPE_STATUS_NOTIFICATION = "witcherscript/fileScopeStatus";
 
 /** `@id:` filters the Settings editor to exactly this setting. */
-const LEGACY_DIRECTORIES_SETTING = "witcherscript.legacyScriptDirectories";
+const idFilter = `@id:${configs.legacyScriptDirectories.key}`;
 
 const REMOVE_LEGACY_DIR_COMMAND = "witcherscript.removeLegacyScriptDirectory";
 
@@ -35,14 +36,14 @@ let notificationListener: vscode.Disposable | undefined;
  */
 export function registerLegacyScriptStatusBar(context: vscode.ExtensionContext): void {
   statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 200);
-  statusBar.name = "WitcherScript Legacy Script";
+  statusBar.name = `${displayName} Legacy Script`;
   statusBar.text = "$(replace)";
   statusBar.accessibilityInformation = { label: "Replaces a base game script" };
   statusBar.backgroundColor = new vscode.ThemeColor("statusBarItem.warningBackground");
   statusBar.command = {
     command: "workbench.action.openSettings",
     title: "Open legacy script directory settings",
-    arguments: [`@id:${LEGACY_DIRECTORIES_SETTING}`],
+    arguments: [idFilter],
   };
   context.subscriptions.push(statusBar);
 
@@ -91,11 +92,15 @@ function renderLegacyScriptStatus(): void {
   statusBar.show();
 }
 
+function getLegacyScriptDirectories(): string[] {
+  const { default: defaultValue, key } = configs.legacyScriptDirectories;
+  return vscode.workspace.getConfiguration().get(key, defaultValue);
+}
+
 async function removeLegacyScriptDirectory(dir: string): Promise<void> {
   if (typeof dir !== "string" || dir.length === 0) return;
 
-  const config = vscode.workspace.getConfiguration("witcherscript");
-  const current = config.get<string[]>("legacyScriptDirectories") ?? [];
+  const current = getLegacyScriptDirectories();
   const updated = current.filter(d => d !== dir);
 
   if (updated.length === current.length) return;
@@ -103,14 +108,13 @@ async function removeLegacyScriptDirectory(dir: string): Promise<void> {
   const target = vscode.workspace.workspaceFolders?.length
     ? vscode.ConfigurationTarget.Workspace
     : vscode.ConfigurationTarget.Global;
-  await config.update("legacyScriptDirectories", updated, target);
+  const config = vscode.workspace.getConfiguration();
+  await config.update(configs.legacyScriptDirectories.key, updated, target);
 }
 
 function findMatchingLegacyDirs(fileUri: string): string[] {
   const filePath = vscode.Uri.parse(fileUri).fsPath.toLowerCase();
-  const dirs = vscode.workspace
-    .getConfiguration("witcherscript")
-    .get<string[]>("legacyScriptDirectories");
+  const dirs = getLegacyScriptDirectories();
 
   if (!dirs || dirs.length === 0) return [];
 
@@ -128,7 +132,7 @@ function buildLegacyTooltip(status: FileScopeStatus): vscode.MarkdownString {
   const md = new vscode.MarkdownString(undefined, true);
   md.isTrusted = { enabledCommands: ["workbench.action.openSettings", REMOVE_LEGACY_DIR_COMMAND] };
 
-  const settingsArg = encodeURIComponent(JSON.stringify([`@id:${LEGACY_DIRECTORIES_SETTING}`]));
+  const settingsArg = encodeURIComponent(JSON.stringify([idFilter]));
   const settingsLink = `[$(gear)](command:workbench.action.openSettings?${settingsArg} "Open settings")`;
   md.appendMarkdown(
     `$(replace) **This file is replacing a base game script** | ${settingsLink}\n\n`,
