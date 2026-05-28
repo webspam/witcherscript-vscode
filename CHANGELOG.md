@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.4.3
+
+Bundles `witcherscript-lsp v0.5.1-alpha.0`.
+
+### Improvements
+
+- Rapid edits (hold-paste, burst typing) no longer freeze the editor or peg CPU. Parse and index work now runs off the LSP event loop, edit bursts coalesce to 1-2 parses instead of one per keystroke, and small changes in large files re-parse only the changed region.
+- Switched to LSP pull diagnostics. VS Code now requests diagnostics for visible editor tabs (including built-in / read-only script tabs) on demand, instead of relying on server-pushed updates.
+
+### Bug fixes
+
+- Ini globals (`thePlayer`, `theGame`, etc.) now highlight as variables with the `defaultLibrary` modifier, instead of as classes. A workspace class with the same name still wins and highlights as a class.
+
 ## 0.4.1
 
 Bundles `witcherscript-lsp v0.5.0`.
