@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { execSync } from "child_process";
 import * as vscode from "vscode";
-import { configs, type ConfigKeyTypeMap } from "./generated-meta";
+import { configs, displayName, type ConfigKeyTypeMap } from "./generated-meta";
 
 /**
  * The `content/` check catches the common mistake of picking a mod folder
@@ -35,7 +35,7 @@ export async function setGameDirectory(restart: () => Promise<void>): Promise<vo
 
   await restart();
   vscode.window.showInformationMessage(
-    "WitcherScript: game directory set. Language server restarted.",
+    `${displayName}: game directory set. Language server restarted.`,
   );
 }
 
@@ -85,13 +85,13 @@ export function resolveGameDirectory(outputChannel?: vscode.LogOutputChannel): s
 
   if (!fs.existsSync(detected)) {
     outputChannel?.appendLine(
-      `Registry (GOG) lists game directory "${detected}", but it does not exist. Set witcherscript.gameDirectory manually.`,
+      `Registry (GOG) lists game directory "${detected}", but it does not exist. Set ${configs.gameDirectory.key} manually.`,
     );
     return "";
   }
 
   outputChannel?.info(
-    `witcherscript.gameDirectory is not set; using GOG installation path from registry: ${detected}`,
+    `${configs.gameDirectory.key} is not set; using GOG installation path from registry: ${detected}`,
   );
   return detected;
 }
