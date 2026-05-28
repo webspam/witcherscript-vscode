@@ -22,7 +22,6 @@ import {
   languages,
   scopedConfigs,
   type ConfigKeyTypeMap,
-  type ConfigShorthandTypeMap,
 } from "./generated-meta";
 import { setLegacyScriptStatusClient } from "./legacyScriptStatus";
 import { setServerBusy, setServerState } from "./statusBar";
@@ -152,6 +151,7 @@ export function startClient(gameDirectory: string): void {
     };
   }
 
+  const config = vscode.workspace.getConfiguration();
   const clientOptions: LanguageClientOptions = {
     documentSelector: [
       { scheme: "file", language: languages.witcherscript },
@@ -163,34 +163,39 @@ export function startClient(gameDirectory: string): void {
     },
     initializationOptions: {
       gameDirectory,
-      additionalScriptDirectories: vscode.workspace
-        .getConfiguration()
-        .get(configs.additionalScriptDirectories.key, configs.additionalScriptDirectories.default),
-      legacyScriptDirectories: vscode.workspace
-        .getConfiguration()
-        .get(configs.legacyScriptDirectories.key, configs.legacyScriptDirectories.default),
-      autoLoadModSharedImports: vscode.workspace
-        .getConfiguration()
-        .get(configs.autoLoadModSharedImports.key, configs.autoLoadModSharedImports.default),
+      additionalScriptDirectories: config.get(
+        configs.additionalScriptDirectories.key,
+        configs.additionalScriptDirectories.default,
+      ),
+      legacyScriptDirectories: config.get(
+        configs.legacyScriptDirectories.key,
+        configs.legacyScriptDirectories.default,
+      ),
+      autoLoadModSharedImports: config.get(
+        configs.autoLoadModSharedImports.key,
+        configs.autoLoadModSharedImports.default,
+      ),
       diagnostics: {
-        scope: vscode.workspace
-          .getConfiguration()
-          .get(configs.diagnosticsScope.key, configs.diagnosticsScope.default),
+        scope: config.get(configs.diagnosticsScope.key, configs.diagnosticsScope.default),
       },
       logLevel:
         extensionContext.extensionMode === vscode.ExtensionMode.Development
           ? "trace"
-          : vscode.workspace.getConfiguration().get(configs.logLevel.key, configs.logLevel.default),
+          : config.get(configs.logLevel.key, configs.logLevel.default),
       formatter: {
-        lineLimit: vscode.workspace
-          .getConfiguration()
-          .get(configs.formatterLineLimit.key, configs.formatterLineLimit.default),
-        compactColon: vscode.workspace
-          .getConfiguration()
-          .get(configs.formatterCompactColon.key, configs.formatterCompactColon.default),
-        alignMemberColons: vscode.workspace
-          .getConfiguration()
-          .get(configs.formatterAlignMemberColons.key, configs.formatterAlignMemberColons.default),
+        lineLimit: config.get(configs.formatterLineLimit.key, configs.formatterLineLimit.default),
+        compactColon: config.get(
+          configs.formatterCompactColon.key,
+          configs.formatterCompactColon.default,
+        ),
+        alignMemberColons: config.get(
+          configs.formatterAlignMemberColons.key,
+          configs.formatterAlignMemberColons.default,
+        ),
+        annotationPlacement: config.get(
+          configs.formatterAnnotationPlacement.key,
+          configs.formatterAnnotationPlacement.default,
+        ),
       },
     },
     outputChannel,

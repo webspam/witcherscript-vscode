@@ -70,6 +70,7 @@ export type ConfigKey =
   | "witcherscript.formatter.lineLimit"
   | "witcherscript.formatter.compactColon"
   | "witcherscript.formatter.alignMemberColons"
+  | "witcherscript.formatter.annotationPlacement"
   | "witcherscript.server.path"
   | "witcherscript.server.tcpPort";
 
@@ -83,6 +84,7 @@ export interface ConfigKeyTypeMap {
   "witcherscript.formatter.lineLimit": number;
   "witcherscript.formatter.compactColon": boolean;
   "witcherscript.formatter.alignMemberColons": boolean;
+  "witcherscript.formatter.annotationPlacement": "preserve" | "ownLine" | "sameLine";
   "witcherscript.server.path": string;
   "witcherscript.server.tcpPort": number;
 }
@@ -97,6 +99,7 @@ export interface ConfigShorthandMap {
   formatterLineLimit: "witcherscript.formatter.lineLimit";
   formatterCompactColon: "witcherscript.formatter.compactColon";
   formatterAlignMemberColons: "witcherscript.formatter.alignMemberColons";
+  formatterAnnotationPlacement: "witcherscript.formatter.annotationPlacement";
   serverPath: "witcherscript.server.path";
   serverTcpPort: "witcherscript.server.tcpPort";
 }
@@ -111,6 +114,7 @@ export interface ConfigShorthandTypeMap {
   formatterLineLimit: number;
   formatterCompactColon: boolean;
   formatterAlignMemberColons: boolean;
+  formatterAnnotationPlacement: "preserve" | "ownLine" | "sameLine";
   serverPath: string;
   serverTcpPort: number;
 }
@@ -215,6 +219,16 @@ export const configs = {
     default: false,
   } as ConfigItem<"witcherscript.formatter.alignMemberColons">,
   /**
+   *
+   * @key `witcherscript.formatter.annotationPlacement`
+   * @default `"preserve"`
+   * @type `string`
+   */
+  formatterAnnotationPlacement: {
+    key: "witcherscript.formatter.annotationPlacement",
+    default: "preserve",
+  } as ConfigItem<"witcherscript.formatter.annotationPlacement">,
+  /**
    * Optional path to the witcherscript-lsp executable. If empty, the extension uses the bundled server binary.
    * @key `witcherscript.server.path`
    * @default `""`
@@ -246,6 +260,7 @@ export interface ScopedConfigKeyTypeMap {
   "formatter.lineLimit": number;
   "formatter.compactColon": boolean;
   "formatter.alignMemberColons": boolean;
+  "formatter.annotationPlacement": "preserve" | "ownLine" | "sameLine";
   "server.path": string;
   "server.tcpPort": number;
 }
@@ -262,6 +277,7 @@ export const scopedConfigs = {
     "formatter.lineLimit": 100,
     "formatter.compactColon": false,
     "formatter.alignMemberColons": false,
+    "formatter.annotationPlacement": "preserve",
     "server.path": "",
     "server.tcpPort": 0,
   } satisfies ScopedConfigKeyTypeMap,
@@ -281,6 +297,7 @@ export interface NestedConfigs {
       lineLimit: number;
       compactColon: boolean;
       alignMemberColons: boolean;
+      annotationPlacement: "preserve" | "ownLine" | "sameLine";
     };
     server: {
       path: string;
@@ -302,6 +319,7 @@ export interface NestedScopedConfigs {
     lineLimit: number;
     compactColon: boolean;
     alignMemberColons: boolean;
+    annotationPlacement: "preserve" | "ownLine" | "sameLine";
   };
   server: {
     path: string;
