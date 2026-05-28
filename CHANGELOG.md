@@ -1,5 +1,49 @@
 # Changelog
 
+## 0.4.1
+
+Bundles `witcherscript-lsp v0.5.0`.
+
+### Features
+
+- Opening a folder with a `witcherscript.toml` manifest now Just Works; the LSP auto-detects it and indexes `scripts_root` with no config changes required (opt out via `witcherscript.detectProjectManifests`).
+- New diagnostic: using a type name (class, struct, state, enum) where a value is expected now flags as an error (e.g. `x = MyClass`, `EnumGetMin(ESomeEnum)`).
+- Filled in missing members across all synthetic engine enum definitions; `EInputKeys` (264 members) and `EShowFlags` extracted into their own files.
+
+### Improvements
+
+- Completions for global symbols, types, and enum members are now cached, and are more responsive and power-efficient.
+- Hover text now correctly says "enum member" instead of "enum variant".
+- For-loops with comma-separated init/update clauses now parse correctly.
+
+### Bug fixes
+
+- `Sleep()` and other function calls no longer false-flag as `type_used_as_value` when a state shares the name; `this`, `super`, and `extends` inside states also resolve correctly in the presence of same-named functions or classes.
+- Semantic highlighting no longer flickers or shows half-coloured symbols after fast edits or cut/paste.
+- Files inside gitignored directories are now excluded from the workspace.
+- Formatting a file no longer silently deletes certain expressions that contained parse errors.
+- Engine enum members (e.g. `AD_Front`) now appear in completion results; they were previously missing from merged completions.
+- Several correctness fixes around legacy script suppression: stale parse errors after override apply or remove, false `find references` hits from same-name locals in shadowed vanilla files, and stale suppress maps right after opening a legacy file.
+
+### Distribution
+
+- Pre-release VSIX is now published to the marketplace via the release workflow.
+
+## 0.4.0
+
+Bundles `witcherscript-lsp v0.4.1`.
+
+### Features
+
+- Get Started walkthrough now has two new steps that guide users through adding mod dependencies instead of leaving the settings to be discovered: "Add scripts from other mods" (for mods that add new `.ws` files) and "Add legacy script overrides" (for older mods that ship edited copies of base game scripts). Both include a folder-picker button that saves the selection to workspace settings.
+- New `WitcherScript: Open Walkthrough` command, so the Get Started walkthrough can be reopened after it has been dismissed.
+- New diagnostics: private member access, instantiating an abstract class with `new`, and using `super.` to access fields.
+- Completions are now offered for `new SomeClass in this`.
+
+### Bug fixes
+
+- Removing a duplicate function or class no longer breaks completion and diagnostics for the remaining copy.
+
 ## 0.3.0
 
 First public release. Everything the extension ships is listed below.
