@@ -47,7 +47,8 @@
     }
   },
   "scripts": {
-    "check": "tsc --noEmit && node --check scripts/prepare-server.mjs && node --check esbuild.mjs",
+    "gen:meta": "vscode-ext-gen --scope witcherscript --output src/generated-meta.ts",
+    "check": "npm run gen:meta && tsc --noEmit && node --check scripts/prepare-server.mjs && node --check esbuild.mjs",
     "compile": "node esbuild.mjs",
     "watch": "node esbuild.mjs --watch",
     "prepare:server": "node scripts/prepare-server.mjs",
@@ -291,6 +292,7 @@
     "@vscode/vsce": "^3.9.0",
     "esbuild": "^0.28.0",
     "prettier": "^3.8.3",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vscode-ext-gen": "^1.6.0"
   }
 }
