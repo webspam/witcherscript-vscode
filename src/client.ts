@@ -37,12 +37,6 @@ function resetInFlight(): void {
   setServerBusy(false);
 }
 
-/**
- * `handled: true` keeps the library's output-channel logging but suppresses
- * the modal popups it would otherwise force. The status bar already reflects
- * the stopped state via `onDidChangeState`, so the popups are redundant noise
- * — especially when an LSP dev restarts their TCP server.
- */
 /** Server reports via `textDocument/diagnostic` pulls; drop legacy push notifications. */
 function ignorePushDiagnostics(
   _uri: vscode.Uri,
@@ -67,6 +61,12 @@ function matchesWitcherScriptDiagnosticResource(
   return false;
 }
 
+/**
+ * `handled: true` keeps the library's output-channel logging but suppresses
+ * the modal popups it would otherwise force. The status bar already reflects
+ * the stopped state via `onDidChangeState`, so the popups are redundant noise
+ * — especially when an LSP dev restarts their TCP server.
+ */
 const silentErrorHandler: ErrorHandler = {
   error(_error, _message, count) {
     if (count !== undefined && count <= 3) {
