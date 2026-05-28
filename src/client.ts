@@ -192,6 +192,10 @@ export function startClient(gameDirectory: string): void {
           configs.formatterAlignMemberColons.key,
           configs.formatterAlignMemberColons.default,
         ),
+        annotationPlacement: config.get(
+          configs.formatterAnnotationPlacement.key,
+          configs.formatterAnnotationPlacement.default,
+        ),
       },
     },
     outputChannel,
