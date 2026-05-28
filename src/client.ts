@@ -2,11 +2,13 @@ import * as fs from "fs";
 import * as net from "net";
 import * as path from "path";
 import * as vscode from "vscode";
+import type { DocumentSelector } from "vscode-languageserver-protocol";
 import {
   CloseAction,
   ErrorAction,
   LanguageClient,
   type ErrorHandler,
+  type HandleDiagnosticsSignature,
   type LanguageClientOptions,
   type ServerOptions,
   State,
@@ -41,6 +43,30 @@ function resetInFlight(): void {
  * the stopped state via `onDidChangeState`, so the popups are redundant noise
  * — especially when an LSP dev restarts their TCP server.
  */
+/** Server reports via `textDocument/diagnostic` pulls; drop legacy push notifications. */
+function ignorePushDiagnostics(
+  _uri: vscode.Uri,
+  _diagnostics: vscode.Diagnostic[],
+  _next: HandleDiagnosticsSignature,
+): void {}
+
+/** Pull diagnostics for tabs where only the URI is known (e.g. built-in scripts). */
+function matchesWitcherScriptDiagnosticResource(
+  _documentSelector: DocumentSelector,
+  resource: vscode.Uri,
+): boolean {
+  if (resource.scheme === "witcherscript-builtin") {
+    return true;
+  }
+  if (resource.scheme === "untitled") {
+    return true;
+  }
+  if (resource.scheme === "file") {
+    return resource.path.endsWith(".ws");
+  }
+  return false;
+}
+
 const silentErrorHandler: ErrorHandler = {
   error(_error, _message, count) {
     if (count !== undefined && count <= 3) {
@@ -147,7 +173,12 @@ export function startClient(gameDirectory: string): void {
     },
     outputChannel,
     errorHandler: silentErrorHandler,
+    diagnosticPullOptions: {
+      onTabs: true,
+      match: matchesWitcherScriptDiagnosticResource,
+    },
     middleware: {
+      handleDiagnostics: ignorePushDiagnostics,
       sendRequest: async (type, param, token, next) => {
         adjustInFlight(1);
         try {
