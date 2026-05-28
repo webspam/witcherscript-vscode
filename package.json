@@ -260,6 +260,21 @@
             "type": "boolean",
             "default": false,
             "description": "When enabled, the formatter vertically aligns the colons of consecutive class, struct, and state field declarations into a column. A blank line, comment, or non-field member breaks a group."
+          },
+          "witcherscript.formatter.annotationPlacement": {
+            "type": "string",
+            "default": "preserve",
+            "enum": [
+              "preserve",
+              "ownLine",
+              "sameLine"
+            ],
+            "markdownEnumDescriptions": [
+              "Keep same-line vs split as in source; normalise whitespace only.",
+              "Annotation always above the member.",
+              "Annotation and member always on one line."
+            ],
+            "markdownDescription": "How the formatter places annotations relative to their member."
           }
         }
       },
