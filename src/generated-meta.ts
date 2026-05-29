@@ -19,7 +19,8 @@ export type CommandKey =
   | "witcherscript.addAdditionalScriptDirectory"
   | "witcherscript.openWalkthrough"
   | "witcherscript.goToBaseDefinition"
-  | "witcherscript.showReferences";
+  | "witcherscript.showReferences"
+  | "witcherscript.showOutput";
 
 /**
  * Commands map registered by `webspam.witcherscript`
@@ -55,6 +56,11 @@ export const commands = {
    * @value `witcherscript.showReferences`
    */
   showReferences: "witcherscript.showReferences",
+  /**
+   * Show Output
+   * @value `witcherscript.showOutput`
+   */
+  showOutput: "witcherscript.showOutput",
 } satisfies Record<string, CommandKey>;
 
 /**

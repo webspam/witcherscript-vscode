@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { resolveGameDirectory } from "./gameDirectory";
-import { commands, displayName } from "./generated-meta";
+import { commands, displayName, extensionId } from "./generated-meta";
 
 export type ServerState = "starting" | "running" | "stopped";
 
@@ -50,10 +50,15 @@ export function registerStatusBar(
 
   context.subscriptions.push(
     vscode.commands.registerCommand("witcherscript.showStatusMenu", showStatusMenu),
+    vscode.commands.registerCommand(commands.showOutput, showOutput),
   );
 
   render();
   statusBar.show();
+}
+
+function showOutput(): void {
+  outputChannel.show(true);
 }
 
 export function setServerState(state: ServerState, errorDetail?: string): void {
@@ -76,34 +81,50 @@ function setGameDirectorySet(set: boolean): void {
 function render(): void {
   if (serverState === "stopped") {
     statusBar.text = `$(debug-disconnect) ${displayName}: server stopped`;
-    statusBar.tooltip = serverErrorDetail
-      ? `${serverErrorDetail} Click for actions.`
-      : "Language server stopped. Click for actions.";
+    statusBar.tooltip = buildTooltip(serverErrorDetail ?? "Language server stopped.");
     statusBar.backgroundColor = new vscode.ThemeColor("statusBarItem.errorBackground");
     return;
   }
   if (!gameDirectorySet) {
     statusBar.text = `$(warning) ${displayName}: set game directory`;
-    statusBar.tooltip =
-      "The Witcher 3 game directory is not set, so the language server cannot locate base game scripts. Click for actions.";
+    statusBar.tooltip = buildTooltip(
+      "The Witcher 3 game directory is not set, so the language server cannot locate base game scripts.",
+    );
     statusBar.backgroundColor = new vscode.ThemeColor("statusBarItem.warningBackground");
     return;
   }
   if (serverState === "starting") {
     statusBar.text = `$(debug-disconnect) ${displayName}`;
-    statusBar.tooltip = `${displayName} language server is starting. Click for actions.`;
+    statusBar.tooltip = buildTooltip(`${displayName} language server is starting.`);
     statusBar.backgroundColor = undefined;
     return;
   }
   if (serverBusy && busySpinnerEnabled) {
     statusBar.text = `$(sync~spin) ${displayName}`;
-    statusBar.tooltip = `${displayName} language server is processing a request. Click for actions.`;
+    statusBar.tooltip = buildTooltip(`${displayName} language server is processing a request.`);
     statusBar.backgroundColor = undefined;
     return;
   }
   statusBar.text = `$(check) ${displayName}`;
-  statusBar.tooltip = `${displayName} language server is running. Click for actions.`;
+  statusBar.tooltip = buildTooltip(`${displayName} language server is running.`);
   statusBar.backgroundColor = undefined;
+}
+
+function buildTooltip(header: string): vscode.MarkdownString {
+  const md = new vscode.MarkdownString(undefined, true);
+  md.isTrusted = {
+    enabledCommands: [commands.restartServer, commands.showOutput, "workbench.action.openSettings"],
+  };
+
+  md.appendMarkdown(`${header}\n\n`);
+
+  const settingsArg = encodeURIComponent(JSON.stringify([`@ext:${extensionId}`]));
+  const restart = `[$(refresh) Restart](command:${commands.restartServer} "Restart the language server")`;
+  const logs = `[$(output) Logs](command:${commands.showOutput} "Show the WitcherScript output log")`;
+  const settings = `[$(settings-gear) Settings](command:workbench.action.openSettings?${settingsArg} "Open WitcherScript settings")`;
+  md.appendMarkdown(`${restart} &nbsp;|&nbsp; ${logs} &nbsp;|&nbsp; ${settings}`);
+
+  return md;
 }
 
 type MenuItem = vscode.QuickPickItem & { run: () => Thenable<unknown> | void };
@@ -116,7 +137,7 @@ async function showStatusMenu(): Promise<void> {
     },
     {
       label: "$(output) Show output",
-      run: () => outputChannel.show(true),
+      run: showOutput,
     },
   ];
   if (!gameDirectorySet) {

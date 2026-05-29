@@ -87,6 +87,11 @@
         "command": "witcherscript.showReferences",
         "title": "Show References",
         "category": "WitcherScript"
+      },
+      {
+        "command": "witcherscript.showOutput",
+        "title": "Show Output",
+        "category": "WitcherScript"
       }
     ],
     "menus": {
@@ -105,6 +110,10 @@
         },
         {
           "command": "witcherscript.showReferences",
+          "when": "false"
+        },
+        {
+          "command": "witcherscript.showOutput",
           "when": "false"
         }
       ]
