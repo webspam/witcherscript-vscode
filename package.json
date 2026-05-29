@@ -77,6 +77,11 @@
         "command": "witcherscript.openWalkthrough",
         "title": "Open Walkthrough",
         "category": "WitcherScript"
+      },
+      {
+        "command": "witcherscript.goToBaseDefinition",
+        "title": "Go to Base Definition",
+        "category": "WitcherScript"
       }
     ],
     "menus": {
@@ -87,6 +92,10 @@
         },
         {
           "command": "witcherscript.addAdditionalScriptDirectory",
+          "when": "false"
+        },
+        {
+          "command": "witcherscript.goToBaseDefinition",
           "when": "false"
         }
       ]
@@ -217,6 +226,11 @@
               "Suppress all diagnostics."
             ],
             "markdownDescription": "Which files are diagnosed. Live-switchable."
+          },
+          "witcherscript.codeLens.overriddenSymbols": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "Show a code lens above each top-level symbol in a legacy override script that shadows a base game symbol, linking to the base game definition."
           }
         }
       },

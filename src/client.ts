@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as net from "net";
 import * as path from "path";
 import * as vscode from "vscode";
-import type { DocumentSelector } from "vscode-languageserver-protocol";
+import type { DocumentSelector, Location } from "vscode-languageserver-protocol";
 import {
   CloseAction,
   ErrorAction,
@@ -197,6 +197,12 @@ export function startClient(gameDirectory: string): void {
           configs.formatterAnnotationPlacement.default,
         ),
       },
+      codeLens: {
+        overriddenSymbols: config.get(
+          configs.codeLensOverriddenSymbols.key,
+          configs.codeLensOverriddenSymbols.default,
+        ),
+      },
     },
     outputChannel,
     errorHandler: silentErrorHandler,
@@ -302,6 +308,16 @@ async function clearTcpPortSetting(): Promise<void> {
 export async function restartClient(): Promise<void> {
   await stopClientSafely();
   startClient(resolveGameDirectory());
+}
+
+/** Open `location`'s document in an editor and select its range. */
+export async function goToLocation(location: Location): Promise<void> {
+  if (!client) {
+    outputChannel.warn("goToBaseDefinition invoked with no running language server.");
+    return;
+  }
+  const target = client.protocol2CodeConverter.asLocation(location);
+  await vscode.window.showTextDocument(target.uri, { selection: target.range });
 }
 
 /** Explicit `server.path` wins so LSP devs can point at a local build. */
