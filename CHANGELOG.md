@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.5.0
+
+Bundles `witcherscript-lsp v0.6.0`.
+
+### Features
+
+- Go to Type Definition: jump from a variable, field, or return type to its type's declaration. Generics target the constructor (`array<CFoo>` -> `array`), enum members target their owning enum, and primitives produce no target.
+- Block comment auto-continuation: pressing Enter inside a `/* */` block starts the next line with ` * `.
+- Formatter line-break control via two settings, each offering `preserve` (default), `ownLine`, and `sameLine` modes: `witcherscript.formatter.annotationPlacement` for `@addField`, and `witcherscript.formatter.defaultPlacement` for `default` initializers (with column alignment).
+- Code lenses on declarations, independently toggleable: a "game definition" lens above symbols in legacy override files (`witcherscript.codeLens.overriddenSymbols`, on by default) and an "N references" lens above declarations and class methods (`witcherscript.codeLens.references`, off by default).
+- `wrappedMethod` navigation: Go to Definition, hover, and find-all-references inside a `@wrapMethod` body now target the wrapped method.
+
+### Improvements
+
+- Status bar item now shows a rich markdown tooltip.
+- Text-file reads are encoding-aware (UTF-8 / UTF-16 LE / BE with BOM sniffing).
+- Reduced debug log spam from the language server.
+
+### Bug fixes
+
+- Completions appear immediately on typing, and no longer trigger inside comments.
+- Go to Definition works at the end of a line.
+- Formatter no longer discards edited text, with spacing fixes for casts, operators, and generics.
+- Diagnostics no longer flicker.
+
 ## 0.4.3
 
 Bundles `witcherscript-lsp v0.5.1-alpha.0`.
