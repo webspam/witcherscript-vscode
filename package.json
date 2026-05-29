@@ -82,6 +82,11 @@
         "command": "witcherscript.goToBaseDefinition",
         "title": "Go to Base Definition",
         "category": "WitcherScript"
+      },
+      {
+        "command": "witcherscript.showReferences",
+        "title": "Show References",
+        "category": "WitcherScript"
       }
     ],
     "menus": {
@@ -96,6 +101,10 @@
         },
         {
           "command": "witcherscript.goToBaseDefinition",
+          "when": "false"
+        },
+        {
+          "command": "witcherscript.showReferences",
           "when": "false"
         }
       ]
@@ -231,6 +240,11 @@
             "type": "boolean",
             "default": true,
             "markdownDescription": "Show a code lens above each top-level symbol in a legacy override script that shadows a base game symbol, linking to the base game definition."
+          },
+          "witcherscript.codeLens.references": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "Show a reference-count code lens above each top-level declaration and class method."
           }
         }
       },

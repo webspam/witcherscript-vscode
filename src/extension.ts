@@ -1,6 +1,13 @@
 import * as vscode from "vscode";
 import { registerBuiltinContentProvider } from "./builtinContent";
-import { initClient, startClient, restartClient, stopClient, goToLocation } from "./client";
+import {
+  initClient,
+  startClient,
+  restartClient,
+  stopClient,
+  goToLocation,
+  showReferences,
+} from "./client";
 import {
   resolveGameDirectory,
   setGameDirectory,
@@ -25,6 +32,9 @@ export function activate(context: vscode.ExtensionContext): void {
     ),
     vscode.commands.registerCommand(commands.restartServer, () => restartClient()),
     vscode.commands.registerCommand(commands.goToBaseDefinition, goToLocation),
+    vscode.commands.registerCommand(commands.showReferences, (_uri, _position, _locations) =>
+      showReferences(_uri, _position, _locations),
+    ),
     vscode.commands.registerCommand(commands.openWalkthrough, () =>
       vscode.commands.executeCommand(
         "workbench.action.openWalkthrough",

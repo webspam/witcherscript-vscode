@@ -18,7 +18,8 @@ export type CommandKey =
   | "witcherscript.addLegacyScriptDirectory"
   | "witcherscript.addAdditionalScriptDirectory"
   | "witcherscript.openWalkthrough"
-  | "witcherscript.goToBaseDefinition";
+  | "witcherscript.goToBaseDefinition"
+  | "witcherscript.showReferences";
 
 /**
  * Commands map registered by `webspam.witcherscript`
@@ -49,6 +50,11 @@ export const commands = {
    * @value `witcherscript.goToBaseDefinition`
    */
   goToBaseDefinition: "witcherscript.goToBaseDefinition",
+  /**
+   * Show References
+   * @value `witcherscript.showReferences`
+   */
+  showReferences: "witcherscript.showReferences",
 } satisfies Record<string, CommandKey>;
 
 /**
@@ -72,6 +78,7 @@ export type ConfigKey =
   | "witcherscript.logLevel"
   | "witcherscript.diagnostics.scope"
   | "witcherscript.codeLens.overriddenSymbols"
+  | "witcherscript.codeLens.references"
   | "witcherscript.additionalScriptDirectories"
   | "witcherscript.legacyScriptDirectories"
   | "witcherscript.formatter.lineLimit"
@@ -87,6 +94,7 @@ export interface ConfigKeyTypeMap {
   "witcherscript.logLevel": "error" | "warn" | "info" | "debug" | "trace";
   "witcherscript.diagnostics.scope": "workspace" | "openFiles" | "none";
   "witcherscript.codeLens.overriddenSymbols": boolean;
+  "witcherscript.codeLens.references": boolean;
   "witcherscript.additionalScriptDirectories": string[];
   "witcherscript.legacyScriptDirectories": string[];
   "witcherscript.formatter.lineLimit": number;
@@ -103,6 +111,7 @@ export interface ConfigShorthandMap {
   logLevel: "witcherscript.logLevel";
   diagnosticsScope: "witcherscript.diagnostics.scope";
   codeLensOverriddenSymbols: "witcherscript.codeLens.overriddenSymbols";
+  codeLensReferences: "witcherscript.codeLens.references";
   additionalScriptDirectories: "witcherscript.additionalScriptDirectories";
   legacyScriptDirectories: "witcherscript.legacyScriptDirectories";
   formatterLineLimit: "witcherscript.formatter.lineLimit";
@@ -119,6 +128,7 @@ export interface ConfigShorthandTypeMap {
   logLevel: "error" | "warn" | "info" | "debug" | "trace";
   diagnosticsScope: "workspace" | "openFiles" | "none";
   codeLensOverriddenSymbols: boolean;
+  codeLensReferences: boolean;
   additionalScriptDirectories: string[];
   legacyScriptDirectories: string[];
   formatterLineLimit: number;
@@ -188,6 +198,16 @@ export const configs = {
     key: "witcherscript.codeLens.overriddenSymbols",
     default: true,
   } as ConfigItem<"witcherscript.codeLens.overriddenSymbols">,
+  /**
+   *
+   * @key `witcherscript.codeLens.references`
+   * @default `false`
+   * @type `boolean`
+   */
+  codeLensReferences: {
+    key: "witcherscript.codeLens.references",
+    default: false,
+  } as ConfigItem<"witcherscript.codeLens.references">,
   /**
    *
    * @key `witcherscript.additionalScriptDirectories`
@@ -276,6 +296,7 @@ export interface ScopedConfigKeyTypeMap {
   logLevel: "error" | "warn" | "info" | "debug" | "trace";
   "diagnostics.scope": "workspace" | "openFiles" | "none";
   "codeLens.overriddenSymbols": boolean;
+  "codeLens.references": boolean;
   additionalScriptDirectories: string[];
   legacyScriptDirectories: string[];
   "formatter.lineLimit": number;
@@ -294,6 +315,7 @@ export const scopedConfigs = {
     logLevel: "info",
     "diagnostics.scope": "workspace",
     "codeLens.overriddenSymbols": true,
+    "codeLens.references": false,
     additionalScriptDirectories: [],
     legacyScriptDirectories: [],
     "formatter.lineLimit": 100,
@@ -315,6 +337,7 @@ export interface NestedConfigs {
     };
     codeLens: {
       overriddenSymbols: boolean;
+      references: boolean;
     };
     additionalScriptDirectories: string[];
     legacyScriptDirectories: string[];
@@ -340,6 +363,7 @@ export interface NestedScopedConfigs {
   };
   codeLens: {
     overriddenSymbols: boolean;
+    references: boolean;
   };
   additionalScriptDirectories: string[];
   legacyScriptDirectories: string[];

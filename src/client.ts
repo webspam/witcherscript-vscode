@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as net from "net";
 import * as path from "path";
 import * as vscode from "vscode";
-import type { DocumentSelector, Location } from "vscode-languageserver-protocol";
+import type { DocumentSelector, Location, Position } from "vscode-languageserver-protocol";
 import {
   CloseAction,
   ErrorAction,
@@ -202,6 +202,7 @@ export function startClient(gameDirectory: string): void {
           configs.codeLensOverriddenSymbols.key,
           configs.codeLensOverriddenSymbols.default,
         ),
+        references: config.get(configs.codeLensReferences.key, configs.codeLensReferences.default),
       },
     },
     outputChannel,
@@ -318,6 +319,28 @@ export async function goToLocation(location: Location): Promise<void> {
   }
   const target = client.protocol2CodeConverter.asLocation(location);
   await vscode.window.showTextDocument(target.uri, { selection: target.range });
+}
+
+/** Open the references view for a reference-count code lens. */
+export async function showReferences(
+  uri: string,
+  position: Position,
+  locations: Location[],
+): Promise<void> {
+  if (!client) {
+    outputChannel.warn("showReferences invoked with no running language server.");
+    return;
+  }
+  const converter = client.protocol2CodeConverter;
+  const vsUri = vscode.Uri.parse(uri);
+  const vsPosition = converter.asPosition(position);
+  const vsLocations = locations.map(loc => converter.asLocation(loc));
+  await vscode.commands.executeCommand(
+    "editor.action.showReferences",
+    vsUri,
+    vsPosition,
+    vsLocations,
+  );
 }
 
 /** Explicit `server.path` wins so LSP devs can point at a local build. */
