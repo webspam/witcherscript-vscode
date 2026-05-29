@@ -17,7 +17,8 @@ export type CommandKey =
   | "witcherscript.restartServer"
   | "witcherscript.addLegacyScriptDirectory"
   | "witcherscript.addAdditionalScriptDirectory"
-  | "witcherscript.openWalkthrough";
+  | "witcherscript.openWalkthrough"
+  | "witcherscript.goToBaseDefinition";
 
 /**
  * Commands map registered by `webspam.witcherscript`
@@ -43,6 +44,11 @@ export const commands = {
    * @value `witcherscript.openWalkthrough`
    */
   openWalkthrough: "witcherscript.openWalkthrough",
+  /**
+   * Go to Base Definition
+   * @value `witcherscript.goToBaseDefinition`
+   */
+  goToBaseDefinition: "witcherscript.goToBaseDefinition",
 } satisfies Record<string, CommandKey>;
 
 /**
@@ -65,6 +71,7 @@ export type ConfigKey =
   | "witcherscript.autoLoadModSharedImports"
   | "witcherscript.logLevel"
   | "witcherscript.diagnostics.scope"
+  | "witcherscript.codeLens.overriddenSymbols"
   | "witcherscript.additionalScriptDirectories"
   | "witcherscript.legacyScriptDirectories"
   | "witcherscript.formatter.lineLimit"
@@ -79,6 +86,7 @@ export interface ConfigKeyTypeMap {
   "witcherscript.autoLoadModSharedImports": boolean;
   "witcherscript.logLevel": "error" | "warn" | "info" | "debug" | "trace";
   "witcherscript.diagnostics.scope": "workspace" | "openFiles" | "none";
+  "witcherscript.codeLens.overriddenSymbols": boolean;
   "witcherscript.additionalScriptDirectories": string[];
   "witcherscript.legacyScriptDirectories": string[];
   "witcherscript.formatter.lineLimit": number;
@@ -94,6 +102,7 @@ export interface ConfigShorthandMap {
   autoLoadModSharedImports: "witcherscript.autoLoadModSharedImports";
   logLevel: "witcherscript.logLevel";
   diagnosticsScope: "witcherscript.diagnostics.scope";
+  codeLensOverriddenSymbols: "witcherscript.codeLens.overriddenSymbols";
   additionalScriptDirectories: "witcherscript.additionalScriptDirectories";
   legacyScriptDirectories: "witcherscript.legacyScriptDirectories";
   formatterLineLimit: "witcherscript.formatter.lineLimit";
@@ -109,6 +118,7 @@ export interface ConfigShorthandTypeMap {
   autoLoadModSharedImports: boolean;
   logLevel: "error" | "warn" | "info" | "debug" | "trace";
   diagnosticsScope: "workspace" | "openFiles" | "none";
+  codeLensOverriddenSymbols: boolean;
   additionalScriptDirectories: string[];
   legacyScriptDirectories: string[];
   formatterLineLimit: number;
@@ -168,6 +178,16 @@ export const configs = {
     key: "witcherscript.diagnostics.scope",
     default: "workspace",
   } as ConfigItem<"witcherscript.diagnostics.scope">,
+  /**
+   *
+   * @key `witcherscript.codeLens.overriddenSymbols`
+   * @default `true`
+   * @type `boolean`
+   */
+  codeLensOverriddenSymbols: {
+    key: "witcherscript.codeLens.overriddenSymbols",
+    default: true,
+  } as ConfigItem<"witcherscript.codeLens.overriddenSymbols">,
   /**
    *
    * @key `witcherscript.additionalScriptDirectories`
@@ -255,6 +275,7 @@ export interface ScopedConfigKeyTypeMap {
   autoLoadModSharedImports: boolean;
   logLevel: "error" | "warn" | "info" | "debug" | "trace";
   "diagnostics.scope": "workspace" | "openFiles" | "none";
+  "codeLens.overriddenSymbols": boolean;
   additionalScriptDirectories: string[];
   legacyScriptDirectories: string[];
   "formatter.lineLimit": number;
@@ -272,6 +293,7 @@ export const scopedConfigs = {
     autoLoadModSharedImports: true,
     logLevel: "info",
     "diagnostics.scope": "workspace",
+    "codeLens.overriddenSymbols": true,
     additionalScriptDirectories: [],
     legacyScriptDirectories: [],
     "formatter.lineLimit": 100,
@@ -290,6 +312,9 @@ export interface NestedConfigs {
     logLevel: "error" | "warn" | "info" | "debug" | "trace";
     diagnostics: {
       scope: "workspace" | "openFiles" | "none";
+    };
+    codeLens: {
+      overriddenSymbols: boolean;
     };
     additionalScriptDirectories: string[];
     legacyScriptDirectories: string[];
@@ -312,6 +337,9 @@ export interface NestedScopedConfigs {
   logLevel: "error" | "warn" | "info" | "debug" | "trace";
   diagnostics: {
     scope: "workspace" | "openFiles" | "none";
+  };
+  codeLens: {
+    overriddenSymbols: boolean;
   };
   additionalScriptDirectories: string[];
   legacyScriptDirectories: string[];
