@@ -47,7 +47,7 @@
     }
   },
   "scripts": {
-    "gen:meta": "vscode-ext-gen --scope witcherscript --output src/generated-meta.ts",
+    "gen:meta": "vscode-ext-gen --scope witcherscript --output src/generated-meta.ts && prettier --write src/generated-meta.ts",
     "check": "npm run gen:meta && tsc --noEmit && node --check scripts/prepare-server.mjs && node --check esbuild.mjs",
     "compile": "node esbuild.mjs",
     "watch": "node esbuild.mjs --watch",
