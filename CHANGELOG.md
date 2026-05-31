@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.5.1
+
+Bundles `witcherscript-lsp v0.6.2`.
+
+### Improvements
+
+- Quieter language server: log sites triggered by normal editing no longer spam the output.
+
+### Bug fixes
+
+- Formatter no longer drops, misplaces, or corrupts comments, including end-of-line comments.
+
 ## 0.5.0
 
 Bundles `witcherscript-lsp v0.6.0`.
