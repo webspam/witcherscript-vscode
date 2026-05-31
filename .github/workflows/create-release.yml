@@ -17,6 +17,11 @@ on:
         required: false
         type: boolean
         default: false
+      publish_openvsx:
+        description: "Publish to Open VSX"
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   create-release:
@@ -126,3 +131,19 @@ jobs:
           if ("${{ inputs.prerelease }}" -eq "true") { $publishArgs += "--pre-release" }
 
           npx --yes @vscode/vsce @publishArgs
+
+      - name: Publish to Open VSX
+        if: ${{ inputs.publish_openvsx }}
+        shell: pwsh
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_API }}
+        run: |
+          $ErrorActionPreference = "Stop"
+          if ([string]::IsNullOrWhiteSpace($env:OVSX_PAT)) {
+            throw "OVSX_API secret is not set. Add it under repo Settings > Secrets and variables > Actions."
+          }
+
+          $vsix = Get-ChildItem -Filter "*.vsix" | Select-Object -First 1 -ExpandProperty FullName
+          if (-not $vsix) { throw "No .vsix found to publish" }
+
+          npx --yes ovsx publish $vsix --pat $env:OVSX_PAT
