@@ -7,15 +7,11 @@ on:
         description: "Title (defaults to tag)"
         required: false
         type: string
-      summary:
-        description: "Summary (appears above auto-generated notes)"
-        required: false
-        type: string
       prerelease:
         description: "Mark as pre-release"
         required: false
         type: boolean
-        default: true
+        default: false
       publish_marketplace:
         description: "Publish to VS Code Marketplace"
         required: false
@@ -44,8 +40,8 @@ jobs:
         run: |
           $ErrorActionPreference = "Stop"
           $pkg = Get-Content package.json | ConvertFrom-Json
-          $tag = "v$($pkg.version)"
-          "tag=$tag" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          "version=$($pkg.version)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          "tag=v$($pkg.version)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
 
       - name: Install dependencies
         run: npm ci
@@ -62,6 +58,27 @@ jobs:
             npm run package
           }
 
+      - name: Extract release notes from CHANGELOG
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $version = "${{ steps.version.outputs.version }}"
+          $lines = Get-Content CHANGELOG.md
+          $start = -1
+          for ($i = 0; $i -lt $lines.Count; $i++) {
+            if ($lines[$i] -match "^##\s+$([regex]::Escape($version))\s*$") { $start = $i; break }
+          }
+          if ($start -lt 0) { throw "No '## $version' section found in CHANGELOG.md" }
+
+          $body = @()
+          for ($i = $start + 1; $i -lt $lines.Count; $i++) {
+            if ($lines[$i] -match '^##\s') { break }
+            $body += $lines[$i]
+          }
+          $notes = ($body -join "`n").Trim()
+          if ([string]::IsNullOrWhiteSpace($notes)) { throw "CHANGELOG.md section for $version is empty" }
+          $notes | Out-File -FilePath "notes.md" -Encoding utf8
+
       - name: Create Draft Release
         shell: pwsh
         run: |
@@ -72,11 +89,6 @@ jobs:
           $releaseArgs = @()
           if ("${{ inputs.prerelease }}" -eq "true") { $releaseArgs += "--prerelease" }
 
-          if (-not [string]::IsNullOrWhiteSpace("${{ inputs.summary }}")) {
-            "${{ inputs.summary }}" | Out-File -FilePath "summary.md" -Encoding utf8
-            $releaseArgs += "--notes-file", "summary.md"
-          }
-
           $vsix = Get-ChildItem -Filter "*.vsix" | Select-Object -First 1 -ExpandProperty FullName
           if (-not $vsix) { throw "No .vsix produced by build step" }
 
@@ -84,6 +96,7 @@ jobs:
             --title $releaseTitle `
             --draft `
             @releaseArgs `
+            --notes-file notes.md `
             --generate-notes `
             $vsix
         env:

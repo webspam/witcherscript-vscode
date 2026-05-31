@@ -1,14 +1,18 @@
 ## Creating a Release
 
+The supported path is the `/create-release` command (`.claude/commands/create-release.md`): it bumps the version, pins the bundled LSP, writes the user-focused `CHANGELOG.md` entry, opens and merges the bump PR, then triggers the workflow below. The manual path is documented here as a fallback.
+
 ### Via GitHub Actions
 
-1. Bump `version` in `package.json` on `master` and commit.
-2. Run the "Create Extension Release" workflow from the Actions tab:
-   - **Title** (optional, defaults to the tag — `v<package.json version>`).
-   - **Summary** (optional; markdown, appears above auto-generated notes).
-   - **Pre-release** — defaults to true. When true, the Marketplace upload is also flagged as a pre-release.
-   - **Publish to VS Code Marketplace** — defaults to true. Uncheck to produce only the draft GitHub release.
-3. The workflow produces a **draft** release tagged `v<version>` with the `.vsix` attached and GitHub's auto-generated notes. Review and publish the GitHub release manually from the Releases page. The Marketplace upload happens automatically in a separate step and goes live as soon as the Marketplace finishes scanning the package.
+1. Bump `version` in `package.json`.
+2. Regenerate `src/generated-meta.ts` with `npm run gen:meta`.
+3. Add a `## <version>` section at the top of `CHANGELOG.md`.
+4. Commit to `master`.
+5. Run the "Create Extension Release" workflow from the Actions tab:
+   - **Title** (optional, defaults to the tag - `v<package.json version>`).
+   - **Pre-release** - defaults to false (stable). When true, the Marketplace upload is also flagged as a pre-release.
+   - **Publish to VS Code Marketplace** - defaults to true. Uncheck to produce only the draft GitHub release.
+6. The workflow produces a **draft** release tagged `v<version>` with the `.vsix` attached. The notes are the `## <version>` section of `CHANGELOG.md` (it MUST exist, or the workflow fails), followed by GitHub's auto-generated PR list. Review and publish the GitHub release manually from the Releases page. The Marketplace upload happens automatically in a separate step and goes live as soon as the Marketplace finishes scanning the package.
 
 The `.vsix` is named `witcherscript-win32-x64-<version>.vsix` and bundles the Windows `witcherscript-lsp.exe` from the latest release of `webspam/witcherscript-language`. The `win32-x64` target tells the VS Code marketplace this build is Windows-only, so installs are correctly filtered on other platforms.
 
