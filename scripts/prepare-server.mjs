@@ -90,10 +90,12 @@ function loadDotEnv() {
 }
 
 async function fetchJson(url) {
+  const token = process.env.GITHUB_TOKEN?.trim();
   const response = await fetch(url, {
     headers: {
       Accept: "application/vnd.github+json",
       "User-Agent": "witcherscript-vscode",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
   });
   if (!response.ok) {
