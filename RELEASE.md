@@ -21,22 +21,22 @@ The `.vsix` is named `witcherscript-win32-x64-<version>.vsix` and bundles the Wi
 
 High-level overview of what the workflow does. For actual steps, see the workflow file.
 
-1. **Checkout** — clean checkout of the source.
-2. **Derive tag** — read `version` from `package.json` and use `v<version>` as the release tag, so the tag and the `.vsix` filename always agree.
-3. **Install** — restore Node dependencies for the extension build.
-4. **Check** — typecheck the extension sources so a broken build never produces a release.
-5. **Bundle LSP** — fetch the matching `witcherscript-lsp` binary from the latest release of the language-server repo and stage it under `server/`.
-6. **Package** — bundle the extension with esbuild and run `vsce package` to produce a single `.vsix` containing the bundled extension plus the language-server binary.
-7. **Draft release** — create a GitHub draft release at the derived tag, attach the `.vsix`, and populate notes from GitHub's auto-generator (with an optional summary prepended).
-8. **Publish to Marketplace** — call `vsce publish --packagePath <vsix> --target win32-x64` against the same `.vsix`. Skipped when `publish_marketplace` is unchecked; passes `--pre-release` when the release is flagged as a pre-release.
-9. **Publish to Open VSX** — call `ovsx publish <vsix>` against the same `.vsix`. Skipped when `publish_openvsx` is unchecked. The `win32-x64` target and pre-release flag are read from the package itself, so no extra arguments are needed.
+1. **Checkout** - clean checkout of the source.
+2. **Derive tag** - read `version` from `package.json` and use `v<version>` as the release tag, so the tag and the `.vsix` filename always agree.
+3. **Install** - restore Node dependencies for the extension build.
+4. **Check** - typecheck the extension sources so a broken build never produces a release.
+5. **Bundle LSP** - fetch the matching `witcherscript-lsp` binary from the latest release of the language-server repo and stage it under `server/`.
+6. **Package** - bundle the extension with esbuild and run `vsce package` to produce a single `.vsix` containing the bundled extension plus the language-server binary.
+7. **Draft release** - create a GitHub draft release at the derived tag, attach the `.vsix`, and set the notes to the matching `## <version>` section of `CHANGELOG.md` (failing if absent), followed by GitHub's auto-generated PR list.
+8. **Publish to Marketplace** - call `vsce publish --packagePath <vsix> --target win32-x64` against the same `.vsix`. Skipped when `publish_marketplace` is unchecked; passes `--pre-release` when the release is flagged as a pre-release.
+9. **Publish to Open VSX** - call `ovsx publish <vsix>` against the same `.vsix`. Skipped when `publish_openvsx` is unchecked. The `win32-x64` target and pre-release flag are read from the package itself, so no extra arguments are needed.
 
 ### Build requirements
 
 - A GitHub-hosted Windows runner (Node 24, PowerShell, `gh` CLI).
 - `GITHUB_TOKEN` with `contents: write` (the workflow declares this).
-- `VSCE_PAT` repo secret — a Marketplace personal access token under publisher `webspam`. See "One-time setup" below.
-- `OVSX_API` repo secret — an Open VSX access token under namespace `webspam`. See "One-time setup" below.
+- `VSCE_PAT` repo secret - a Marketplace personal access token under publisher `webspam`. See "One-time setup" below.
+- `OVSX_API` repo secret - an Open VSX access token under namespace `webspam`. See "One-time setup" below.
 - The `witcherscript-lsp` repo (`webspam/witcherscript-language`) must have a published release with platform-matching assets; the build step downloads from `/releases/latest`.
 
 ## One-time setup
@@ -51,7 +51,7 @@ To enable the Marketplace publish step, create a Marketplace PAT and store it as
 3. Copy the token.
 4. In GitHub, go to repo **Settings → Secrets and variables → Actions → New repository secret** and add `VSCE_PAT` with the token value.
 
-The first publish only — verify the listing renders correctly on https://marketplace.visualstudio.com/items?itemName=webspam.witcherscript. To roll back a bad release, run `npx @vscode/vsce unpublish webspam.witcherscript@<version>` locally.
+The first publish only - verify the listing renders correctly on https://marketplace.visualstudio.com/items?itemName=webspam.witcherscript. To roll back a bad release, run `npx @vscode/vsce unpublish webspam.witcherscript@<version>` locally.
 
 To enable the Open VSX publish step, create an access token and claim the namespace:
 

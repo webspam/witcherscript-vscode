@@ -55,13 +55,18 @@ jobs:
         run: npm run check
 
       - name: Build VSIX
+        id: build
         shell: pwsh
         run: |
+          $ErrorActionPreference = "Stop"
           if ("${{ inputs.prerelease }}" -eq "true") {
             npm run prerelease
           } else {
             npm run package
           }
+          $vsix = Get-ChildItem -Filter "*.vsix" | Select-Object -First 1 -ExpandProperty FullName
+          if (-not $vsix) { throw "No .vsix produced by build step" }
+          "vsix=$vsix" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
 
       - name: Extract release notes from CHANGELOG
         shell: pwsh
@@ -94,8 +99,7 @@ jobs:
           $releaseArgs = @()
           if ("${{ inputs.prerelease }}" -eq "true") { $releaseArgs += "--prerelease" }
 
-          $vsix = Get-ChildItem -Filter "*.vsix" | Select-Object -First 1 -ExpandProperty FullName
-          if (-not $vsix) { throw "No .vsix produced by build step" }
+          $vsix = "${{ steps.build.outputs.vsix }}"
 
           gh release create "${{ steps.version.outputs.tag }}" `
             --title $releaseTitle `
@@ -118,8 +122,7 @@ jobs:
             throw "VSCE_PAT secret is not set. Add it under repo Settings > Secrets and variables > Actions."
           }
 
-          $vsix = Get-ChildItem -Filter "*.vsix" | Select-Object -First 1 -ExpandProperty FullName
-          if (-not $vsix) { throw "No .vsix found to publish" }
+          $vsix = "${{ steps.build.outputs.vsix }}"
 
           $publishArgs = @(
             "publish",
@@ -143,7 +146,6 @@ jobs:
             throw "OVSX_API secret is not set. Add it under repo Settings > Secrets and variables > Actions."
           }
 
-          $vsix = Get-ChildItem -Filter "*.vsix" | Select-Object -First 1 -ExpandProperty FullName
-          if (-not $vsix) { throw "No .vsix found to publish" }
+          $vsix = "${{ steps.build.outputs.vsix }}"
 
           npx --yes ovsx publish $vsix --pat $env:OVSX_PAT
