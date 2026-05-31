@@ -7,17 +7,18 @@ on:
         description: "Title (defaults to tag)"
         required: false
         type: string
-      summary:
-        description: "Summary (appears above auto-generated notes)"
-        required: false
-        type: string
       prerelease:
         description: "Mark as pre-release"
         required: false
         type: boolean
-        default: true
+        default: false
       publish_marketplace:
         description: "Publish to VS Code Marketplace"
+        required: false
+        type: boolean
+        default: false
+      publish_openvsx:
+        description: "Publish to Open VSX"
         required: false
         type: boolean
         default: true
@@ -44,8 +45,8 @@ jobs:
         run: |
           $ErrorActionPreference = "Stop"
           $pkg = Get-Content package.json | ConvertFrom-Json
-          $tag = "v$($pkg.version)"
-          "tag=$tag" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          "version=$($pkg.version)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          "tag=v$($pkg.version)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
 
       - name: Install dependencies
         run: npm ci
@@ -54,13 +55,39 @@ jobs:
         run: npm run check
 
       - name: Build VSIX
+        id: build
         shell: pwsh
         run: |
+          $ErrorActionPreference = "Stop"
           if ("${{ inputs.prerelease }}" -eq "true") {
             npm run prerelease
           } else {
             npm run package
           }
+          $vsix = Get-ChildItem -Filter "*.vsix" | Select-Object -First 1 -ExpandProperty FullName
+          if (-not $vsix) { throw "No .vsix produced by build step" }
+          "vsix=$vsix" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+      - name: Extract release notes from CHANGELOG
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $version = "${{ steps.version.outputs.version }}"
+          $lines = Get-Content CHANGELOG.md
+          $start = -1
+          for ($i = 0; $i -lt $lines.Count; $i++) {
+            if ($lines[$i] -match "^##\s+$([regex]::Escape($version))\s*$") { $start = $i; break }
+          }
+          if ($start -lt 0) { throw "No '## $version' section found in CHANGELOG.md" }
+
+          $body = @()
+          for ($i = $start + 1; $i -lt $lines.Count; $i++) {
+            if ($lines[$i] -match '^##\s') { break }
+            $body += $lines[$i]
+          }
+          $notes = ($body -join "`n").Trim()
+          if ([string]::IsNullOrWhiteSpace($notes)) { throw "CHANGELOG.md section for $version is empty" }
+          $notes | Out-File -FilePath "notes.md" -Encoding utf8
 
       - name: Create Draft Release
         shell: pwsh
@@ -72,18 +99,13 @@ jobs:
           $releaseArgs = @()
           if ("${{ inputs.prerelease }}" -eq "true") { $releaseArgs += "--prerelease" }
 
-          if (-not [string]::IsNullOrWhiteSpace("${{ inputs.summary }}")) {
-            "${{ inputs.summary }}" | Out-File -FilePath "summary.md" -Encoding utf8
-            $releaseArgs += "--notes-file", "summary.md"
-          }
-
-          $vsix = Get-ChildItem -Filter "*.vsix" | Select-Object -First 1 -ExpandProperty FullName
-          if (-not $vsix) { throw "No .vsix produced by build step" }
+          $vsix = "${{ steps.build.outputs.vsix }}"
 
           gh release create "${{ steps.version.outputs.tag }}" `
             --title $releaseTitle `
             --draft `
             @releaseArgs `
+            --notes-file notes.md `
             --generate-notes `
             $vsix
         env:
@@ -100,8 +122,7 @@ jobs:
             throw "VSCE_PAT secret is not set. Add it under repo Settings > Secrets and variables > Actions."
           }
 
-          $vsix = Get-ChildItem -Filter "*.vsix" | Select-Object -First 1 -ExpandProperty FullName
-          if (-not $vsix) { throw "No .vsix found to publish" }
+          $vsix = "${{ steps.build.outputs.vsix }}"
 
           $publishArgs = @(
             "publish",
@@ -113,3 +134,18 @@ jobs:
           if ("${{ inputs.prerelease }}" -eq "true") { $publishArgs += "--pre-release" }
 
           npx --yes @vscode/vsce @publishArgs
+
+      - name: Publish to Open VSX
+        if: ${{ inputs.publish_openvsx }}
+        shell: pwsh
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_API }}
+        run: |
+          $ErrorActionPreference = "Stop"
+          if ([string]::IsNullOrWhiteSpace($env:OVSX_PAT)) {
+            throw "OVSX_API secret is not set. Add it under repo Settings > Secrets and variables > Actions."
+          }
+
+          $vsix = "${{ steps.build.outputs.vsix }}"
+
+          npx --yes ovsx publish $vsix --pat $env:OVSX_PAT
