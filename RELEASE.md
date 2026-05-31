@@ -11,7 +11,7 @@ The supported path is the `/create-release` command (`.claude/commands/create-re
 5. Run the "Create Extension Release" workflow from the Actions tab:
    - **Title** (optional, defaults to the tag - `v<package.json version>`).
    - **Pre-release** - defaults to false (stable). When true, the Marketplace upload is also flagged as a pre-release.
-   - **Publish to VS Code Marketplace** - defaults to true. Uncheck to produce only the draft GitHub release.
+   - **Publish to VS Code Marketplace** - defaults to false (draft GitHub release only). Check it to also publish to the Marketplace.
 6. The workflow produces a **draft** release tagged `v<version>` with the `.vsix` attached. The notes are the `## <version>` section of `CHANGELOG.md` (it MUST exist, or the workflow fails), followed by GitHub's auto-generated PR list. Review and publish the GitHub release manually from the Releases page. The Marketplace upload happens automatically in a separate step and goes live as soon as the Marketplace finishes scanning the package.
 
 The `.vsix` is named `witcherscript-win32-x64-<version>.vsix` and bundles the Windows `witcherscript-lsp.exe` from the latest release of `webspam/witcherscript-language`. The `win32-x64` target tells the VS Code marketplace this build is Windows-only, so installs are correctly filtered on other platforms.
