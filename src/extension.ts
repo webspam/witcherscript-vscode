@@ -41,10 +41,10 @@ export function activate(context: vscode.ExtensionContext): void {
         "webspam.witcherscript#witcherscript.gettingStarted",
       ),
     ),
-    vscode.commands.registerCommand(commands.enableReferencesCodeLens, () =>
+    vscode.commands.registerCommand("witcherscript.enableReferencesCodeLens", () =>
       setReferencesCodeLens(true),
     ),
-    vscode.commands.registerCommand(commands.disableReferencesCodeLens, () =>
+    vscode.commands.registerCommand("witcherscript.disableReferencesCodeLens", () =>
       setReferencesCodeLens(false),
     ),
   );

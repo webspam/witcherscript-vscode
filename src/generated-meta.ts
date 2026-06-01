@@ -20,9 +20,7 @@ export type CommandKey =
   | "witcherscript.openWalkthrough"
   | "witcherscript.goToBaseDefinition"
   | "witcherscript.showReferences"
-  | "witcherscript.showOutput"
-  | "witcherscript.enableReferencesCodeLens"
-  | "witcherscript.disableReferencesCodeLens";
+  | "witcherscript.showOutput";
 
 /**
  * Commands map registered by `webspam.witcherscript`
@@ -63,16 +61,6 @@ export const commands = {
    * @value `witcherscript.showOutput`
    */
   showOutput: "witcherscript.showOutput",
-  /**
-   * Enable Reference Code Lens
-   * @value `witcherscript.enableReferencesCodeLens`
-   */
-  enableReferencesCodeLens: "witcherscript.enableReferencesCodeLens",
-  /**
-   * Disable Reference Code Lens
-   * @value `witcherscript.disableReferencesCodeLens`
-   */
-  disableReferencesCodeLens: "witcherscript.disableReferencesCodeLens",
 } satisfies Record<string, CommandKey>;
 
 /**

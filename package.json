@@ -92,16 +92,6 @@
         "command": "witcherscript.showOutput",
         "title": "Show Output",
         "category": "WitcherScript"
-      },
-      {
-        "command": "witcherscript.enableReferencesCodeLens",
-        "title": "Enable Reference Code Lens",
-        "category": "WitcherScript"
-      },
-      {
-        "command": "witcherscript.disableReferencesCodeLens",
-        "title": "Disable Reference Code Lens",
-        "category": "WitcherScript"
       }
     ],
     "menus": {
