@@ -92,6 +92,16 @@
         "command": "witcherscript.showOutput",
         "title": "Show Output",
         "category": "WitcherScript"
+      },
+      {
+        "command": "witcherscript.enableReferencesCodeLens",
+        "title": "Enable Reference Code Lens",
+        "category": "WitcherScript"
+      },
+      {
+        "command": "witcherscript.disableReferencesCodeLens",
+        "title": "Disable Reference Code Lens",
+        "category": "WitcherScript"
       }
     ],
     "menus": {
@@ -190,6 +200,14 @@
             "description": "Optional: For older mods that have edited copies of base game scripts. The server uses your copy instead of the original.\n\n[Add Legacy Mod](command:witcherscript.addLegacyScriptDirectory)",
             "media": {
               "markdown": "walkthrough/legacy-scripts.md"
+            }
+          },
+          {
+            "id": "referencesCodeLens",
+            "title": "Show reference counts",
+            "description": "Optional: a code lens above each top-level declaration and class method showing how many times it's referenced. Pick a tile to turn it on or off.",
+            "media": {
+              "markdown": "walkthrough/references-code-lens.md"
             }
           },
           {

@@ -17,5 +17,6 @@ a bundled language server that provides:
 - **Rename** — workspace-wide
 - **Document Symbols** — outline in the Explorer panel
 - **Semantic highlighting** — only highlights valid variable / type names
+- **Reference-count code lens** - opt-in counts above declarations (`witcherscript.codeLens.references`)
 
 </details>

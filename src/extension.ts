@@ -41,6 +41,12 @@ export function activate(context: vscode.ExtensionContext): void {
         "webspam.witcherscript#witcherscript.gettingStarted",
       ),
     ),
+    vscode.commands.registerCommand(commands.enableReferencesCodeLens, () =>
+      setReferencesCodeLens(true),
+    ),
+    vscode.commands.registerCommand(commands.disableReferencesCodeLens, () =>
+      setReferencesCodeLens(false),
+    ),
   );
 
   registerScriptDirCommands(context);
@@ -51,6 +57,17 @@ export function activate(context: vscode.ExtensionContext): void {
   registerGameDirectoryContextKey(context, gameDirectory);
   registerTcpPortRestart(context);
   startClient(gameDirectory);
+}
+
+/**
+ * The walkthrough's two tiles act as a radio pair: each sets a fixed value, so
+ * re-clicking the selected tile re-asserts rather than toggles. Global scope:
+ * it's an editor preference, not per-workspace.
+ */
+async function setReferencesCodeLens(enabled: boolean): Promise<void> {
+  await vscode.workspace
+    .getConfiguration()
+    .update(configs.codeLensReferences.key, enabled, vscode.ConfigurationTarget.Global);
 }
 
 /** `tcpPort` is read once at boot, so changes require a restart. */

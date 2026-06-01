@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="312" height="80" viewBox="0 0 312 80" font-family="Consolas, 'Courier New', monospace">
+  <rect width="312" height="80" rx="8" fill="#121314" stroke="#2a2d2e" stroke-width="1"/>
+  <text x="16" y="56" font-size="16">
+    <tspan fill="#569cd6">public </tspan><tspan fill="#ff7b72">function </tspan><tspan fill="#d2a8ff">GetLevel</tspan><tspan fill="#c9d1d9">() : </tspan><tspan fill="#4ec9b0">int</tspan>
+  </text>
+</svg>
