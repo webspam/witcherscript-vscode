@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.5.2
+
+Bundles `witcherscript-lsp v0.6.3`.
+
+### Improvements
+
+- `switch` statements format with cleaner indentation and column alignment, respecting how you wrote single- vs multi-line.
+- Boolean conditions split across lines with `&&` / `||` keep their line breaks instead of being collapsed.
+
+### Bug fixes
+
+- "N references" code lens counts are now accurate.
+- Find All References finds `@wrapMethod` targets declared in base-game scripts.
+- Formatter no longer misaligns fields around comments, and keeps correct spacing when a call skips an optional argument.
+
 ## 0.5.1
 
 Bundles `witcherscript-lsp v0.6.2`.
