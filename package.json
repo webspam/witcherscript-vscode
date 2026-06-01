@@ -193,6 +193,14 @@
             }
           },
           {
+            "id": "referencesCodeLens",
+            "title": "Show reference counts",
+            "description": "Optional: a code lens above each top-level declaration and class method showing how many times it's referenced. Pick a tile to turn it on or off.",
+            "media": {
+              "markdown": "walkthrough/references-code-lens.md"
+            }
+          },
+          {
             "id": "openScript",
             "title": "Open a WitcherScript file",
             "description": "Open any `.ws` file to get diagnostics, hover documentation, Go to Definition, and document symbols.",
