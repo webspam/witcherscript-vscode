@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.6.0
+
+Bundles `witcherscript-lsp v0.7.0`.
+
+### Features
+
+- Full type checking: the editor now flags type mismatches across assignments, variable initializers, and call arguments / returns, following the conversions the WitcherScript compiler actually allows.
+- A getting-started walkthrough helps first-time modders decide whether to enable the code lens features.
+
+### Improvements
+
+- After `@wrapMethod(Class)`, the class's overridable methods are offered immediately, with `function` filled in for you.
+- The Problems list no longer resets and reorders while you browse between files.
+- A long-running request (e.g. diagnostics on base-game scripts) no longer delays other requests.
+
+### Bug fixes
+
+- Various minor diagnostics inconsistencies are resolved.
+
 ## 0.5.2
 
 Bundles `witcherscript-lsp v0.6.3`.
