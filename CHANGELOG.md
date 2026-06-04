@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.1
+
+Bundles `witcherscript-lsp v0.7.1`.
+
+### Bug fixes
+
+- Startup no longer shows a flash of false-positive errors before the base-game scripts finish indexing.
+
 ## 0.6.0
 
 Bundles `witcherscript-lsp v0.7.0`.
