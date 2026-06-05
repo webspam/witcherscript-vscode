@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.6.2
+
+Bundles `witcherscript-lsp v0.7.2`.
+
+### Bug fixes
+
+- Syntax highlighting now always appears on files that were already open when you open a project, instead of sometimes showing no colours.
+- Go-to-definition, type checking, and unknown-symbol warnings now work on the type named inside a cast, e.g. the `Foo` in `(Foo)value`.
+- Autocompleting a function name after `@replaceMethod` now offers top-level global functions too, and no longer inserts a stray `wrappedMethod()` call.
+- The Problems panel no longer jumps back to the top when clicking through the list.
+- The formatter no longer moves `//` comments, and correctly indents statements broken across lines by one.
+
 ## 0.6.1
 
 Bundles `witcherscript-lsp v0.7.1`.
