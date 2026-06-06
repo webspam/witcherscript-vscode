@@ -49,7 +49,7 @@ function clearBaseScriptsPath(section: string | undefined, value: LSPAny): LSPAn
  * returned by position (one per `params.items`) so each is replaced by index.
  */
 export function applyBaseScriptsOverride(params: ConfigurationParams, values: LSPAny[]): LSPAny[] {
-  if (!isOverridingBaseScripts()) return values;
+  if (isOverridingBaseScripts()) return values;
 
   const result = values.slice();
   for (let i = 0; i < params.items.length; i++) {
