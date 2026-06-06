@@ -216,16 +216,6 @@
         "title": "General",
         "order": 0,
         "properties": {
-          "witcherscript.gameDirectory": {
-            "type": "string",
-            "default": "",
-            "description": "Absolute path to The Witcher 3 game directory (e.g. C:\\games\\The Witcher 3 Wild Hunt GOTY). Used by the language server to locate base game scripts."
-          },
-          "witcherscript.autoLoadModSharedImports": {
-            "type": "boolean",
-            "default": true,
-            "description": "Auto-load the Shared Imports mod from <gameDirectory>\\Mods\\modSharedImports if present. Most modern Witcher 3 mods depend on it. Disable to opt out."
-          },
           "witcherscript.logLevel": {
             "type": "string",
             "default": "info",
@@ -269,13 +259,38 @@
         "title": "Script Directories",
         "order": 1,
         "properties": {
+          "witcherscript.gameDirectory": {
+            "type": "string",
+            "default": "",
+            "description": "Absolute path to The Witcher 3 game directory (e.g. C:\\games\\The Witcher 3 Wild Hunt GOTY). Used by the language server to locate base game scripts.",
+            "order": 1
+          },
+          "witcherscript.autoLoadModSharedImports": {
+            "type": "boolean",
+            "default": true,
+            "description": "Auto-load the Shared Imports mod from <gameDirectory>\\Mods\\modSharedImports if present. Most modern Witcher 3 mods depend on it. Disable to opt out.",
+            "order": 2
+          },
+          "witcherscript.baseScriptsDirectory": {
+            "type": "string",
+            "default": "",
+            "markdownDescription": "**Advanced:** Exact path to an **alternate** set of base game scripts. Must be the actual `scripts` directory (containing `core`, `engine`, and `game` directories), not a game directory.\n\nThis may be used in combination with `#witcherscript.useBaseScriptsDirectory#` to switch between game versions (e.g. 1.32 vs 4.04).",
+            "order": 3
+          },
+          "witcherscript.useBaseScriptsDirectory": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**Advanced:** Use base game scripts from `#witcherscript.baseScriptsDirectory#` instead of the normal game directory. Allows you to swap between game versions (e.g. 1.32 vs 4.04) without changing the game directory.\n\nThis is toggled via the tooltip on the WitcherScript status bar.",
+            "order": 4
+          },
           "witcherscript.additionalScriptDirectories": {
             "type": "array",
             "items": {
               "type": "string"
             },
             "default": [],
-            "markdownDescription": "Folders to scan for extra `.ws` script files, subfolders included. If your scripts use functions from other mods, you can add them here (e.g. Shared Utils).\n\nSee also `#witcherscript.legacyScriptDirectories#`.\n\n[Add folder (Workspace)…](command:witcherscript.addAdditionalScriptDirectory)"
+            "markdownDescription": "Folders to scan for extra `.ws` script files, subfolders included. If your scripts use functions from other mods, you can add them here (e.g. Shared Utils).\n\nSee also `#witcherscript.legacyScriptDirectories#`.\n\n[Add folder (Workspace)…](command:witcherscript.addAdditionalScriptDirectory)",
+            "order": 5
           },
           "witcherscript.legacyScriptDirectories": {
             "type": "array",
@@ -283,7 +298,8 @@
               "type": "string"
             },
             "default": [],
-            "markdownDescription": "Folders to scan for extra `.ws` script files, subfolders included. A script found here **replaces** the game's built-in script of the same name, instead of clashing with it. Use this for older mods that overwrite the game's own script files.\n\nFor mods that add *new* scripts alongside the game's own, use `#witcherscript.additionalScriptDirectories#` instead.\n\n[Add folder (Workspace)…](command:witcherscript.addLegacyScriptDirectory)"
+            "markdownDescription": "Folders to scan for extra `.ws` script files, subfolders included. A script found here **replaces** the game's built-in script of the same name, instead of clashing with it. Use this for older mods that overwrite the game's own script files.\n\nFor mods that add *new* scripts alongside the game's own, use `#witcherscript.additionalScriptDirectories#` instead.\n\n[Add folder (Workspace)…](command:witcherscript.addLegacyScriptDirectory)",
+            "order": 6
           }
         }
       },

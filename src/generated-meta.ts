@@ -79,12 +79,14 @@ export const languages = {
  * Type union of all configs
  */
 export type ConfigKey =
-  | "witcherscript.gameDirectory"
-  | "witcherscript.autoLoadModSharedImports"
   | "witcherscript.logLevel"
   | "witcherscript.diagnostics.scope"
   | "witcherscript.codeLens.overriddenSymbols"
   | "witcherscript.codeLens.references"
+  | "witcherscript.gameDirectory"
+  | "witcherscript.autoLoadModSharedImports"
+  | "witcherscript.baseScriptsDirectory"
+  | "witcherscript.useBaseScriptsDirectory"
   | "witcherscript.additionalScriptDirectories"
   | "witcherscript.legacyScriptDirectories"
   | "witcherscript.formatter.lineLimit"
@@ -95,12 +97,14 @@ export type ConfigKey =
   | "witcherscript.server.tcpPort";
 
 export interface ConfigKeyTypeMap {
-  "witcherscript.gameDirectory": string;
-  "witcherscript.autoLoadModSharedImports": boolean;
   "witcherscript.logLevel": "error" | "warn" | "info" | "debug" | "trace";
   "witcherscript.diagnostics.scope": "workspace" | "openFiles" | "none";
   "witcherscript.codeLens.overriddenSymbols": boolean;
   "witcherscript.codeLens.references": boolean;
+  "witcherscript.gameDirectory": string;
+  "witcherscript.autoLoadModSharedImports": boolean;
+  "witcherscript.baseScriptsDirectory": string;
+  "witcherscript.useBaseScriptsDirectory": boolean;
   "witcherscript.additionalScriptDirectories": string[];
   "witcherscript.legacyScriptDirectories": string[];
   "witcherscript.formatter.lineLimit": number;
@@ -112,12 +116,14 @@ export interface ConfigKeyTypeMap {
 }
 
 export interface ConfigShorthandMap {
-  gameDirectory: "witcherscript.gameDirectory";
-  autoLoadModSharedImports: "witcherscript.autoLoadModSharedImports";
   logLevel: "witcherscript.logLevel";
   diagnosticsScope: "witcherscript.diagnostics.scope";
   codeLensOverriddenSymbols: "witcherscript.codeLens.overriddenSymbols";
   codeLensReferences: "witcherscript.codeLens.references";
+  gameDirectory: "witcherscript.gameDirectory";
+  autoLoadModSharedImports: "witcherscript.autoLoadModSharedImports";
+  baseScriptsDirectory: "witcherscript.baseScriptsDirectory";
+  useBaseScriptsDirectory: "witcherscript.useBaseScriptsDirectory";
   additionalScriptDirectories: "witcherscript.additionalScriptDirectories";
   legacyScriptDirectories: "witcherscript.legacyScriptDirectories";
   formatterLineLimit: "witcherscript.formatter.lineLimit";
@@ -129,12 +135,14 @@ export interface ConfigShorthandMap {
 }
 
 export interface ConfigShorthandTypeMap {
-  gameDirectory: string;
-  autoLoadModSharedImports: boolean;
   logLevel: "error" | "warn" | "info" | "debug" | "trace";
   diagnosticsScope: "workspace" | "openFiles" | "none";
   codeLensOverriddenSymbols: boolean;
   codeLensReferences: boolean;
+  gameDirectory: string;
+  autoLoadModSharedImports: boolean;
+  baseScriptsDirectory: string;
+  useBaseScriptsDirectory: boolean;
   additionalScriptDirectories: string[];
   legacyScriptDirectories: string[];
   formatterLineLimit: number;
@@ -154,26 +162,6 @@ export interface ConfigItem<T extends keyof ConfigKeyTypeMap> {
  * Configs map registered by `webspam.witcherscript`
  */
 export const configs = {
-  /**
-   * Absolute path to The Witcher 3 game directory (e.g. C:\games\The Witcher 3 Wild Hunt GOTY). Used by the language server to locate base game scripts.
-   * @key `witcherscript.gameDirectory`
-   * @default `""`
-   * @type `string`
-   */
-  gameDirectory: {
-    key: "witcherscript.gameDirectory",
-    default: "",
-  } as ConfigItem<"witcherscript.gameDirectory">,
-  /**
-   * Auto-load the Shared Imports mod from <gameDirectory>\Mods\modSharedImports if present. Most modern Witcher 3 mods depend on it. Disable to opt out.
-   * @key `witcherscript.autoLoadModSharedImports`
-   * @default `true`
-   * @type `boolean`
-   */
-  autoLoadModSharedImports: {
-    key: "witcherscript.autoLoadModSharedImports",
-    default: true,
-  } as ConfigItem<"witcherscript.autoLoadModSharedImports">,
   /**
    * Log verbosity for the WitcherScript language server. Messages appear in the WitcherScript output channel.
    * @key `witcherscript.logLevel`
@@ -214,6 +202,46 @@ export const configs = {
     key: "witcherscript.codeLens.references",
     default: false,
   } as ConfigItem<"witcherscript.codeLens.references">,
+  /**
+   * Absolute path to The Witcher 3 game directory (e.g. C:\games\The Witcher 3 Wild Hunt GOTY). Used by the language server to locate base game scripts.
+   * @key `witcherscript.gameDirectory`
+   * @default `""`
+   * @type `string`
+   */
+  gameDirectory: {
+    key: "witcherscript.gameDirectory",
+    default: "",
+  } as ConfigItem<"witcherscript.gameDirectory">,
+  /**
+   * Auto-load the Shared Imports mod from <gameDirectory>\Mods\modSharedImports if present. Many modern Witcher 3 mods depend on it. Disable to opt out.
+   * @key `witcherscript.autoLoadModSharedImports`
+   * @default `true`
+   * @type `boolean`
+   */
+  autoLoadModSharedImports: {
+    key: "witcherscript.autoLoadModSharedImports",
+    default: true,
+  } as ConfigItem<"witcherscript.autoLoadModSharedImports">,
+  /**
+   *
+   * @key `witcherscript.baseScriptsDirectory`
+   * @default `""`
+   * @type `string`
+   */
+  baseScriptsDirectory: {
+    key: "witcherscript.baseScriptsDirectory",
+    default: "",
+  } as ConfigItem<"witcherscript.baseScriptsDirectory">,
+  /**
+   *
+   * @key `witcherscript.useBaseScriptsDirectory`
+   * @default `false`
+   * @type `boolean`
+   */
+  useBaseScriptsDirectory: {
+    key: "witcherscript.useBaseScriptsDirectory",
+    default: false,
+  } as ConfigItem<"witcherscript.useBaseScriptsDirectory">,
   /**
    *
    * @key `witcherscript.additionalScriptDirectories`
@@ -297,12 +325,14 @@ export const configs = {
 };
 
 export interface ScopedConfigKeyTypeMap {
-  gameDirectory: string;
-  autoLoadModSharedImports: boolean;
   logLevel: "error" | "warn" | "info" | "debug" | "trace";
   "diagnostics.scope": "workspace" | "openFiles" | "none";
   "codeLens.overriddenSymbols": boolean;
   "codeLens.references": boolean;
+  gameDirectory: string;
+  autoLoadModSharedImports: boolean;
+  baseScriptsDirectory: string;
+  useBaseScriptsDirectory: boolean;
   additionalScriptDirectories: string[];
   legacyScriptDirectories: string[];
   "formatter.lineLimit": number;
@@ -316,12 +346,14 @@ export interface ScopedConfigKeyTypeMap {
 export const scopedConfigs = {
   scope: "witcherscript",
   defaults: {
-    gameDirectory: "",
-    autoLoadModSharedImports: true,
     logLevel: "info",
     "diagnostics.scope": "workspace",
     "codeLens.overriddenSymbols": true,
     "codeLens.references": false,
+    gameDirectory: "",
+    autoLoadModSharedImports: true,
+    baseScriptsDirectory: "",
+    useBaseScriptsDirectory: false,
     additionalScriptDirectories: [],
     legacyScriptDirectories: [],
     "formatter.lineLimit": 100,
@@ -335,8 +367,6 @@ export const scopedConfigs = {
 
 export interface NestedConfigs {
   witcherscript: {
-    gameDirectory: string;
-    autoLoadModSharedImports: boolean;
     logLevel: "error" | "warn" | "info" | "debug" | "trace";
     diagnostics: {
       scope: "workspace" | "openFiles" | "none";
@@ -345,6 +375,10 @@ export interface NestedConfigs {
       overriddenSymbols: boolean;
       references: boolean;
     };
+    gameDirectory: string;
+    autoLoadModSharedImports: boolean;
+    baseScriptsDirectory: string;
+    useBaseScriptsDirectory: boolean;
     additionalScriptDirectories: string[];
     legacyScriptDirectories: string[];
     formatter: {
@@ -361,8 +395,6 @@ export interface NestedConfigs {
 }
 
 export interface NestedScopedConfigs {
-  gameDirectory: string;
-  autoLoadModSharedImports: boolean;
   logLevel: "error" | "warn" | "info" | "debug" | "trace";
   diagnostics: {
     scope: "workspace" | "openFiles" | "none";
@@ -371,6 +403,10 @@ export interface NestedScopedConfigs {
     overriddenSymbols: boolean;
     references: boolean;
   };
+  gameDirectory: string;
+  autoLoadModSharedImports: boolean;
+  baseScriptsDirectory: string;
+  useBaseScriptsDirectory: boolean;
   additionalScriptDirectories: string[];
   legacyScriptDirectories: string[];
   formatter: {

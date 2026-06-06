@@ -1,4 +1,10 @@
 import * as vscode from "vscode";
+import {
+  TOGGLE_BASE_SCRIPTS_COMMAND,
+  getBaseScriptsDirectory,
+  isOverridingBaseScripts,
+  toggleBaseScriptsOverride,
+} from "./baseScripts";
 import { resolveGameDirectory } from "./gameDirectory";
 import { commands, displayName, extensionId } from "./generated-meta";
 
@@ -45,12 +51,19 @@ export function registerStatusBar(
         busySpinnerEnabled = readBusySpinnerSetting();
         render();
       }
+      if (
+        e.affectsConfiguration("witcherscript.useBaseScriptsDirectory") ||
+        e.affectsConfiguration("witcherscript.baseScriptsDirectory")
+      ) {
+        render();
+      }
     }),
   );
 
   context.subscriptions.push(
     vscode.commands.registerCommand("witcherscript.showStatusMenu", showStatusMenu),
     vscode.commands.registerCommand(commands.showOutput, showOutput),
+    vscode.commands.registerCommand(TOGGLE_BASE_SCRIPTS_COMMAND, toggleBaseScriptsOverride),
   );
 
   render();
@@ -105,7 +118,9 @@ function render(): void {
     statusBar.backgroundColor = undefined;
     return;
   }
-  statusBar.text = `$(check) ${displayName}`;
+
+  const icon = isOverridingBaseScripts() ? "$(check-all)" : "$(check)";
+  statusBar.text = `${icon} ${displayName}`;
   statusBar.tooltip = buildTooltip(`${displayName} language server is running.`);
   statusBar.backgroundColor = undefined;
 }
@@ -113,7 +128,12 @@ function render(): void {
 function buildTooltip(header: string): vscode.MarkdownString {
   const md = new vscode.MarkdownString(undefined, true);
   md.isTrusted = {
-    enabledCommands: [commands.restartServer, commands.showOutput, "workbench.action.openSettings"],
+    enabledCommands: [
+      commands.restartServer,
+      commands.showOutput,
+      TOGGLE_BASE_SCRIPTS_COMMAND,
+      "workbench.action.openSettings",
+    ],
   };
 
   md.appendMarkdown(`${header}\n\n`);
@@ -122,9 +142,24 @@ function buildTooltip(header: string): vscode.MarkdownString {
   const restart = `[$(refresh) Restart](command:${commands.restartServer} "Restart the language server")`;
   const logs = `[$(output) Logs](command:${commands.showOutput} "Show the WitcherScript output log")`;
   const settings = `[$(settings-gear) Settings](command:workbench.action.openSettings?${settingsArg} "Open WitcherScript settings")`;
-  md.appendMarkdown(`${restart} &nbsp;|&nbsp; ${logs} &nbsp;|&nbsp; ${settings}`);
+  const buttons = [restart, logs, settings];
+
+  const baseScripts = buildBaseScriptsButton();
+  if (baseScripts) buttons.push(baseScripts);
+
+  md.appendMarkdown(buttons.join(" &nbsp;|&nbsp; "));
 
   return md;
+}
+
+/** Returns undefined when no base scripts directory is set, so the button is not shown. */
+function buildBaseScriptsButton(): string | undefined {
+  if (getBaseScriptsDirectory().length === 0) return undefined;
+
+  const on = isOverridingBaseScripts();
+  const icon = on ? "$(check-all)" : "$(circle-slash)";
+  const title = on ? "Use game directory scripts (default)" : "Swap to alternate base scripts";
+  return `[${icon} Alternate Scripts](command:${TOGGLE_BASE_SCRIPTS_COMMAND} "${title}")`;
 }
 
 type MenuItem = vscode.QuickPickItem & { run: () => Thenable<unknown> | void };
