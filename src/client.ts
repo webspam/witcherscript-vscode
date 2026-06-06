@@ -14,6 +14,7 @@ import {
   State,
   TransportKind,
 } from "vscode-languageclient/node";
+import { applyBaseScriptsOverride } from "./baseScripts";
 import { setBuiltinClient } from "./builtinContent";
 import { resolveGameDirectory } from "./gameDirectory";
 import {
@@ -213,6 +214,13 @@ export function startClient(gameDirectory: string): void {
     },
     middleware: {
       handleDiagnostics: ignorePushDiagnostics,
+      workspace: {
+        configuration: async (params, token, next) => {
+          const values = await next(params, token);
+          if (!Array.isArray(values)) return values;
+          return applyBaseScriptsOverride(params, values);
+        },
+      },
       sendRequest: async (type, param, token, next) => {
         adjustInFlight(1);
         try {
