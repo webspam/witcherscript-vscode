@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.7.0
+
+Bundles `witcherscript-lsp v0.8.0`.
+
+### Features
+
+- New `witcherscript.baseScriptsDirectory` setting overrides the base game scripts folder, for installs where it isn't under `witcherscript.gameDirectory` or to switch between game versions.
+- New `witcherscript.useBaseScriptsDirectory` checkbox controls whether to use the alternate base scripts directory or not.  It can be quickly swapped via the "Alternate Scripts" button in the status bar tooltip.  The status bar icon changes to a double-check when alternate scripts are in use.
+  - Note: This does not replace the game directory, only the scripts folder.  If you have a different `redscripts.ini` or a different version of `modSharedImports`, you'll need to set those manually.
+
+### Improvements
+
+- Large projects now complete diagnostics around to 5x faster.
+
+### Bug fixes
+
+- Type checking no longer flags false errors on `default` declarations of `CBehTreeVal` engine types.
+- Using `new` on a `CBehTreeVal` engine value type is now correctly flagged as an error.
+
 ## 0.6.2
 
 Bundles `witcherscript-lsp v0.7.2`.
