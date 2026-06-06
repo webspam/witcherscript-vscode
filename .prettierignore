@@ -1,10 +1,14 @@
-# Default-deny everything; only TS/JS/JSON are formatted.
+# Default: Deny
 *
 
-# Allow descending into subdirectories.
-!*/
+!/src/
+!/src/**
+!/syntaxes/
+!/syntaxes/**
 
-# Re-include TS, JS, JSON at any depth.
-!*.ts
-!*.js
-!*.json
+# Root config
+!/*.json
+!/*.ts
+!/*.mjs
+!/*.cjs
+/package-lock.json
