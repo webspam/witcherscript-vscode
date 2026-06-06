@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.1
+
+### Bug fixes
+
+- The `witcherscript.useBaseScriptsDirectory` toggle was inverted, so the alternate base scripts directory was used only when the option was off. It now applies the alternate directory when enabled and the game's scripts when disabled.
+
 ## 0.7.0
 
 Bundles `witcherscript-lsp v0.8.0`.
