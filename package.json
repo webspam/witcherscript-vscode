@@ -268,7 +268,7 @@
           "witcherscript.autoLoadModSharedImports": {
             "type": "boolean",
             "default": true,
-            "description": "Auto-load the Shared Imports mod from <gameDirectory>\\Mods\\modSharedImports if present. Most modern Witcher 3 mods depend on it. Disable to opt out.",
+            "description": "Auto-load the Shared Imports mod from <gameDirectory>\\Mods\\modSharedImports if present. Many modern Witcher 3 mods depend on it. Disable to opt out.",
             "order": 2
           },
           "witcherscript.baseScriptsDirectory": {
@@ -335,7 +335,7 @@
               "Annotation always above the member.",
               "Annotation and member always on one line."
             ],
-            "markdownDescription": "How the formatter places annotations relative to their member."
+            "markdownDescription": "How the formatter places `addField` annotations relative to their member."
           }
         }
       },
