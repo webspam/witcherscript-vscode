@@ -11,32 +11,50 @@ hero:
   actions:
     - theme: brand
       text: Getting Started
-      link: /getting-started
+      link: /guide/getting-started
+    - theme: alt
+      text: Language Features
+      link: /guide/language-features
     - theme: alt
       text: View on Marketplace
       link: https://marketplace.visualstudio.com/items?itemName=webspam.witcherscript
 
 features:
   - title: Diagnostics
-    details: Syntax errors and validation warnings as you type.
+    details: Syntax errors and type-checking warnings as you type, scoped to the whole project or just open files.
+    link: /guide/language-features
+    linkText: Learn more
   - title: Completion
-    details: Members, symbols, and method snippets.
+    details: Members, types, locals, and globals - method completions expand to snippets with parameter placeholders.
+    link: /guide/language-features#completion
   - title: Hover
-    details: Signatures and type annotations.
+    details: Type signatures, annotations, and file-line links.
+    link: /guide/language-features#hover
   - title: Navigation
-    details: Go to Definition and Find References.
+    details: Go to Definition, Go to Type Definition, and workspace-wide Find References.
+    link: /guide/language-features#navigation
   - title: Rename
-    details: Workspace-wide symbol renaming.
+    details: Workspace-wide symbol renaming, rejected on read-only base game scripts.
+    link: /guide/language-features#rename
   - title: Signature help
-    details: Parameter hints inside calls.
+    details: Parameter hints with active-parameter tracking inside calls.
+    link: /guide/language-features#signature-help
   - title: Document Symbols
-    details: Outline in the Explorer panel.
+    details: An outline of classes, structs, enums, functions, methods, states, events, and fields.
+    link: /guide/language-features#document-symbols
   - title: Semantic highlighting
-    details: Only highlights valid variable and type names.
+    details: Only highlights valid variable and type names, so mistakes stand out.
+    link: /guide/language-features#semantic-highlighting
   - title: Document formatting
-    details: Opinionated pretty-printer with configurable line limit and alignment.
+    details: An opinionated pretty-printer with a configurable line limit, colon style, and alignment.
+    link: /guide/formatting
+  - title: Code lenses
+    details: Game-definition links on overridden symbols and reference counts on declarations.
+    link: /guide/language-features#code-lenses
   - title: Shared Imports auto-load
-    details: Uses Community Patch - Shared Imports automatically for type resolution, when present.
+    details: Automatically uses modSharedImports and the missing classes / imports it provides
+    link: /guide/game-directory#shared-imports
   - title: Auto-detected projects
     details: Folders with a witcherscript.toml manifest are indexed automatically, no config needed.
+    link: /guide/getting-started
 ---

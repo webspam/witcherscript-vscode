@@ -13,6 +13,7 @@
     "preview": "vitepress preview"
   },
   "devDependencies": {
+    "@vscode/codicons": "^0.0.45",
     "vitepress": "^2.0.0-alpha.17"
   }
 }
