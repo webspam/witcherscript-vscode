@@ -16,6 +16,7 @@ CONTRIBUTING.md
 RELEASE.md
 package-lock.json
 node_modules/**
+docs/**
 out/**
 scripts/**
 src/**
