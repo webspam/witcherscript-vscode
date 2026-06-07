@@ -315,7 +315,7 @@
           "witcherscript.formatter.compactColon": {
             "type": "boolean",
             "default": false,
-            "description": "When enabled, the formatter omits spaces around the colon in type annotations (e.g. `var x:int` instead of `var x : int`)."
+            "description": "When enabled, the formatter uses modern spacing for type annotations (e.g. `var x: int` instead of `var x : int`)."
           },
           "witcherscript.formatter.alignMemberColons": {
             "type": "boolean",
