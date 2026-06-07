@@ -1,6 +1,6 @@
 ## Legacy scripts
 
-For older mods that ship **edited copies** of base game scripts (e.g. `scripts/game/gameplay/r4Game.ws`) instead of using `@` annotations.
+For older mods that use **edited copies** of base game scripts (e.g. `scripts/game/gameplay/r4Game.ws`) instead of using `@` annotations.
 
 > `!` A script in this list will be used instead of the base game script of the same name.
 

@@ -93,13 +93,13 @@ function setGameDirectorySet(set: boolean): void {
 
 function render(): void {
   if (serverState === "stopped") {
-    statusBar.text = `$(debug-disconnect) ${displayName}: server stopped`;
+    statusBar.text = `$(debug-disconnect) ${displayName}`;
     statusBar.tooltip = buildTooltip(serverErrorDetail ?? "Language server stopped.");
     statusBar.backgroundColor = new vscode.ThemeColor("statusBarItem.errorBackground");
     return;
   }
   if (!gameDirectorySet) {
-    statusBar.text = `$(warning) ${displayName}: set game directory`;
+    statusBar.text = `$(warning) ${displayName}`;
     statusBar.tooltip = buildTooltip(
       "The Witcher 3 game directory is not set, so the language server cannot locate base game scripts.",
     );
