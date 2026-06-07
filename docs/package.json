@@ -1,0 +1,19 @@
+{
+  "name": "witcherscript-vscode-docs",
+  "version": "0.1.0",
+  "description": "Documentation for the witcherscript-vscode extension providing WitcherScript language services",
+  "license": "MIT",
+  "author": "webspam",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "devDependencies": {
+    "@vscode/codicons": "^0.0.45",
+    "vitepress": "^2.0.0-alpha.17"
+  }
+}
