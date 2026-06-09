@@ -16,7 +16,10 @@ import {
 import { registerLegacyScriptStatusBar } from "./legacyScriptStatus";
 import { registerScriptDirCommands } from "./scriptDirCommands";
 import { registerStatusBar } from "./statusBar";
-import { commands, configs, displayName } from "./generated-meta";
+import { commands, configs, displayName, name, version } from "./generated-meta";
+
+/** Last extension version that ran, recorded in synced global state. */
+const LAST_VERSION_KEY = `${name}.lastVersion`;
 
 /** Module-scope state is captured for the restart flow. */
 export function activate(context: vscode.ExtensionContext): void {
@@ -57,6 +60,20 @@ export function activate(context: vscode.ExtensionContext): void {
   registerGameDirectoryContextKey(context, gameDirectory);
   registerTcpPortRestart(context);
   startClient(gameDirectory);
+
+  stampExtensionVersion(context).catch((err: unknown) =>
+    channel.error(`Failed to stamp extension version: ${err}`),
+  );
+}
+
+/**
+ * Records the running version so a future release can distinguish an upgrading
+ * user (stamp present) from a fresh install (no stamp). Synced so the signal
+ * travels with the user across machines.
+ */
+async function stampExtensionVersion(context: vscode.ExtensionContext): Promise<void> {
+  context.globalState.setKeysForSync([LAST_VERSION_KEY]);
+  await context.globalState.update(LAST_VERSION_KEY, version);
 }
 
 /**
