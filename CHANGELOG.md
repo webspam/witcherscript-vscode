@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.2
+
+### Bug fixes
+
+- The status bar no longer overflows its label when the language server is stopped or the game directory is not set.
+- The description of the `witcherscript.formatter.compactColon` setting no longer misdescribes the spacing it produces.
+
 ## 0.7.1
 
 ### Bug fixes

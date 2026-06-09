@@ -4,7 +4,7 @@
 // Meta info
 export const publisher = "webspam";
 export const name = "witcherscript";
-export const version = "0.7.1";
+export const version = "0.7.2";
 export const displayName = "WitcherScript";
 export const description =
   "WitcherScript language support, with code completion, diagnostics, and more.";
@@ -273,7 +273,7 @@ export const configs = {
     default: 100,
   } as ConfigItem<"witcherscript.formatter.lineLimit">,
   /**
-   * When enabled, the formatter omits spaces around the colon in type annotations (e.g. `var x:int` instead of `var x : int`).
+   * When enabled, the formatter uses modern spacing for type annotations (e.g. `var x: int` instead of `var x : int`).
    * @key `witcherscript.formatter.compactColon`
    * @default `false`
    * @type `boolean`
