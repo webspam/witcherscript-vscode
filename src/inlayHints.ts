@@ -66,7 +66,7 @@ export async function maybeShowInlayHintsNotice(
 
   const hasOpenScript = vscode.workspace.textDocuments.some(doc => doc.languageId === name);
   if (!hasOpenScript) {
-    channel.debug("Inlay-hints notice suppressed: no open script (fresh install).");
+    channel.trace("Inlay-hints notice suppressed: no open script.");
     await context.globalState.update(NOTICE_SEEN_KEY, true);
     return;
   }
