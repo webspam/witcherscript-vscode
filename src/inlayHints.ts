@@ -74,7 +74,7 @@ export async function maybeShowInlayHintsNotice(
   await presentInlayHintsNotice(context, channel);
 }
 
-const WHATS_NEW = "What's New";
+const SHOW_ME = "Show me";
 const OFF_UNLESS_PRESSED = "Off unless pressed";
 const OK = "OK";
 
@@ -83,8 +83,8 @@ async function presentInlayHintsNotice(
   channel: vscode.LogOutputChannel,
 ): Promise<void> {
   const choice = await vscode.window.showInformationMessage(
-    `${displayName} now shows inlay hints in .ws files. You can change how they appear, or turn them off.`,
-    WHATS_NEW,
+    `${displayName} now shows inlay hints in .ws files, but by default VS Code will always show them.\nRecommended: "Off unless pressed"`,
+    SHOW_ME,
     OFF_UNLESS_PRESSED,
     OK,
   );
@@ -92,7 +92,7 @@ async function presentInlayHintsNotice(
   // Ensure the user has actually seen the notice before marking it as seen
   await context.globalState.update(NOTICE_SEEN_KEY, true);
 
-  if (choice === WHATS_NEW) {
+  if (choice === SHOW_ME) {
     await vscode.commands.executeCommand(
       "workbench.action.openWalkthrough",
       { category: WALKTHROUGH_CATEGORY, step: WALKTHROUGH_STEP },
