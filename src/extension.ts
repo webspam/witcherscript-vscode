@@ -16,6 +16,11 @@ import {
 import { registerLegacyScriptStatusBar } from "./legacyScriptStatus";
 import { registerScriptDirCommands } from "./scriptDirCommands";
 import { registerStatusBar } from "./statusBar";
+import {
+  registerInlayHintsContextKey,
+  setInlayHintsMode,
+  maybeShowInlayHintsNotice,
+} from "./inlayHints";
 import { commands, configs, displayName, name, version } from "./generated-meta";
 
 /** Last extension version that ran, recorded in synced global state. */
@@ -50,16 +55,29 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.commands.registerCommand("witcherscript.disableReferencesCodeLens", () =>
       setReferencesCodeLens(false),
     ),
+    vscode.commands.registerCommand("witcherscript.inlayHints.on", () => setInlayHintsMode("on")),
+    vscode.commands.registerCommand("witcherscript.inlayHints.onUnlessPressed", () =>
+      setInlayHintsMode("onUnlessPressed"),
+    ),
+    vscode.commands.registerCommand("witcherscript.inlayHints.offUnlessPressed", () =>
+      setInlayHintsMode("offUnlessPressed"),
+    ),
+    vscode.commands.registerCommand("witcherscript.inlayHints.off", () => setInlayHintsMode("off")),
   );
 
   registerScriptDirCommands(context);
   registerLegacyScriptStatusBar(context);
+  registerInlayHintsContextKey(context);
 
   const gameDirectory = resolveGameDirectory(channel);
   registerStatusBar(context, channel, !!gameDirectory);
   registerGameDirectoryContextKey(context, gameDirectory);
   registerTcpPortRestart(context);
   startClient(gameDirectory);
+
+  maybeShowInlayHintsNotice(context, channel).catch((err: unknown) =>
+    channel.error(`Failed to show inlay-hints notice: ${err}`),
+  );
 
   stampExtensionVersion(context).catch((err: unknown) =>
     channel.error(`Failed to stamp extension version: ${err}`),

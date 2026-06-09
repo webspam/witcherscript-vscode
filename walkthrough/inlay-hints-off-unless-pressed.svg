@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="312" height="80" viewBox="0 0 312 80" font-family="Consolas, 'Courier New', monospace">
+  <rect width="312" height="80" rx="8" fill="#121314" stroke="#2a2d2e" stroke-width="1"/>
+  <text x="16" y="28" font-size="16" fill="#8c8c8c">Hold Ctrl+Alt to show</text>
+  <text x="16" y="58" font-size="18"><tspan fill="#dcdcaa">Heal</tspan><tspan fill="#c9d1d9">(</tspan></text>
+  <rect x="66" y="44" width="80" height="20" rx="4" fill="none" stroke="#6a6a6a" stroke-width="1" stroke-dasharray="3 3"/>
+  <text x="74" y="58" font-size="16" fill="#6a6a6a">amount:</text>
+  <text x="152" y="58" font-size="18"><tspan fill="#b5cea8">25</tspan><tspan fill="#c9d1d9">)</tspan></text>
+</svg>

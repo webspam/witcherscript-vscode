@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="312" height="80" viewBox="0 0 312 80" font-family="Consolas, 'Courier New', monospace">
+  <rect width="312" height="80" rx="8" fill="#121314" stroke="#2a2d2e" stroke-width="1"/>
+  <text x="16" y="48" font-size="18"><tspan fill="#dcdcaa">Heal</tspan><tspan fill="#c9d1d9">(</tspan><tspan fill="#b5cea8">25</tspan><tspan fill="#c9d1d9">)</tspan></text>
+</svg>
