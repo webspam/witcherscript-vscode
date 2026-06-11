@@ -351,6 +351,22 @@ export async function showReferences(
   );
 }
 
+/**
+ * Mirrors VS Code's own TypeScript "extract" flow: the code action carries the
+ * `WorkspaceEdit`, so VS Code's code-action engine applies it and then runs this
+ * command. We only convert the post-edit location to native types and trigger the
+ * built-in rename — the server, not a client-side `applyEdit`, owns the edit.
+ */
+export async function extractVariableRename(uri: string, position: Position): Promise<void> {
+  if (!client) {
+    outputChannel.warn("extractVariableRename invoked with no running language server.");
+    return;
+  }
+  const vsUri = vscode.Uri.parse(uri);
+  const vsPosition = client.protocol2CodeConverter.asPosition(position);
+  await vscode.commands.executeCommand("editor.action.rename", [vsUri, vsPosition]);
+}
+
 /** Explicit `server.path` wins so LSP devs can point at a local build. */
 function resolveServerPath(context: vscode.ExtensionContext): string | undefined {
   const configuredPath = vscode.workspace
