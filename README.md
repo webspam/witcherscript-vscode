@@ -1,6 +1,18 @@
 # WitcherScript
 
-Language support for The Witcher 3 `.ws` files in VS Code and Cursor, powered by a bundled Rust language server.
+Language support for The Witcher 3 `.ws` files in VS Code and Cursor, powered by a bundled Rust language server. Available on [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=webspam.witcherscript) / [Open VSX](https://open-vsx.org/extension/webspam/witcherscript).
+
+## Getting started
+
+After installing in VS Code, the **Get Started with WitcherScript** walkthrough opens. to guide you through pointing the language server at your Witcher 3 install, and configuring options.
+
+> Reload the walkthrough at any time via Command Palette (`Ctrl+Shift+P`) -> **WitcherScript: Open Walkthrough**
+
+## Documentation site
+
+https://webspam.github.io/witcherscript-vscode/
+
+Details on how to use & configure the extension.
 
 ## Features
 
@@ -25,10 +37,6 @@ Language support for The Witcher 3 `.ws` files in VS Code and Cursor, powered by
 
 - Windows (x64). The bundled language server is currently Windows-only.
 - A local Witcher 3 install (recommended). Without one, most features will be of limited use.
-
-## First-run setup
-
-On first install, VS Code opens a **Get Started with WitcherScript** walkthrough that guides you through pointing the language server at your Witcher 3 install. GOG Game of the Year is detected automatically.
 
 ## Commands
 
