@@ -75,7 +75,10 @@ export function activate(context: vscode.ExtensionContext): void {
   registerTcpPortRestart(context);
   startClient(gameDirectory);
 
-  maybeShowInlayHintsNotice(context, channel).catch((err: unknown) =>
+  // Read before stampExtensionVersion overwrites it: absent stamp = fresh install.
+  const isFreshInstall = context.globalState.get<string>(LAST_VERSION_KEY) === undefined;
+
+  maybeShowInlayHintsNotice(context, channel, isFreshInstall).catch((err: unknown) =>
     channel.error(`Failed to show inlay-hints notice: ${err}`),
   );
 

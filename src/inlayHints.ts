@@ -52,21 +52,19 @@ export function registerInlayHintsContextKey(context: vscode.ExtensionContext): 
 }
 
 /**
- * One-time heads-up that `.ws` files now show inlay hints. Shown once per user
- * (synced flag). Suppressed when the extension was activated by the walkthrough
- * auto-opening on a fresh install (inferred as "no `.ws` document open") since
- * fresh installs learn about inlay hints from the walkthrough itself.
+ * One-time upgrade notice that `.ws` files now show inlay hints. Shown once per user
+ * (synced flag). Fresh installs are shown the walkthrough, instead.
  */
 export async function maybeShowInlayHintsNotice(
   context: vscode.ExtensionContext,
   channel: vscode.LogOutputChannel,
+  isFreshInstall: boolean,
 ): Promise<void> {
   context.globalState.setKeysForSync([NOTICE_SEEN_KEY]);
   if (context.globalState.get<boolean>(NOTICE_SEEN_KEY)) return;
 
-  const hasOpenScript = vscode.workspace.textDocuments.some(doc => doc.languageId === name);
-  if (!hasOpenScript) {
-    channel.trace("Inlay-hints notice suppressed: no open script.");
+  if (isFreshInstall) {
+    channel.trace("Inlay-hints notice suppressed: fresh install.");
     await context.globalState.update(NOTICE_SEEN_KEY, true);
     return;
   }
