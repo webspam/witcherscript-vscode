@@ -7,6 +7,7 @@ import {
   stopClient,
   goToLocation,
   showReferences,
+  extractVariableRename,
 } from "./client";
 import {
   resolveGameDirectory,
@@ -63,6 +64,7 @@ export function activate(context: vscode.ExtensionContext): void {
       setInlayHintsMode("offUnlessPressed"),
     ),
     vscode.commands.registerCommand("witcherscript.inlayHints.off", () => setInlayHintsMode("off")),
+    vscode.commands.registerCommand(`${name}.extractVariable`, extractVariableRename),
   );
 
   registerScriptDirCommands(context);
