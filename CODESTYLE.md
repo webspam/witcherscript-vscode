@@ -2,7 +2,8 @@
 
 ## Functions
 
-Extract named functions over anonymous closures. A function should do one thing; if it needs a comment to explain what it does, it needs a better name or a split.
+Extract named functions over anonymous closures. Not applicable to simple event callbacks.
+A function should do one thing; if it needs a comment to explain what it does, it needs a better name or a split.
 Prefer self-describing names (`connectToTcpServer`, `handleTcpConnectionError`) over generic ones (`handler`, `fn`, `helper`).
 
 ## Loops over chained array methods
@@ -33,7 +34,7 @@ An early return is for a case that is genuinely expected and correctly needs no 
 ## Principles
 
 - Guard clauses / early returns over nested `if`
-- Explicit over implicit - no truthiness coercion, prefer `=== undefined`
+- Explicit over implicit - truthiness coercion only after exhaustively considering all possible outcomes, prefer `=== undefined`
 - `readonly` and `const` by default; mutate deliberately
 - Narrow types - discriminated unions over optional-field soup
 - No `any`; `unknown` at boundaries, then narrow

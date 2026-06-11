@@ -201,6 +201,14 @@
             }
           },
           {
+            "id": "inlayHints",
+            "title": "Inline type hints",
+            "description": "VS Code enables inlay hints by default. You can configure the `editor.inlayHints.enabled` VS Code setting to change this.",
+            "media": {
+              "markdown": "walkthrough/inlay-hints.md"
+            }
+          },
+          {
             "id": "openScript",
             "title": "Open a WitcherScript file",
             "description": "Open any `.ws` file to get diagnostics, hover documentation, Go to Definition, and document symbols.",
