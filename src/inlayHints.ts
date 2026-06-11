@@ -42,7 +42,7 @@ function applySetting(): void {
 export function registerInlayHintsContextKey(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration(e => {
-      if (e.affectsConfiguration("editor.inlayHints.enabled")) {
+      if (e.affectsConfiguration(`editor.${INLAY_HINTS_SETTING}`)) {
         applySetting();
       }
     }),
