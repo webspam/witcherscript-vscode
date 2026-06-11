@@ -18,7 +18,7 @@
     "vscode": "^1.85.0"
   },
   "witcherscriptLsp": {
-    "version": "v0.8.0"
+    "version": "v0.9.1"
   },
   "categories": [
     "Programming Languages",
