@@ -31,7 +31,7 @@ features:
     details: Type signatures, annotations, and file-line links.
     link: /guide/language-features#hover
   - title: Navigation
-    details: Go to Definition, Go to Type Definition, and workspace-wide Find References.
+    details: Go to Definition, Go to Type Definition, workspace-wide Find References, and workspace symbol search.
     link: /guide/language-features#navigation
   - title: Rename
     details: Workspace-wide symbol renaming, rejected on read-only base game scripts.
@@ -39,6 +39,9 @@ features:
   - title: Signature help
     details: Parameter hints with active-parameter tracking inside calls.
     link: /guide/language-features#signature-help
+  - title: Inlay hints
+    details: Parameter-name hints at call sites show which argument fills which parameter, with out params marked.
+    link: /guide/language-features#inlay-hints
   - title: Document Symbols
     details: An outline of classes, structs, enums, functions, methods, states, events, and fields.
     link: /guide/language-features#document-symbols
@@ -51,6 +54,9 @@ features:
   - title: Code lenses
     details: Game-definition links on overridden symbols and reference counts on declarations.
     link: /guide/language-features#code-lenses
+  - title: Code actions
+    details: Collapse or expand switch cases and if / else chains from the lightbulb.
+    link: /guide/language-features#code-actions
   - title: Shared Imports auto-load
     details: Automatically uses modSharedImports and the missing classes / imports it provides
     link: /guide/game-directory#shared-imports
