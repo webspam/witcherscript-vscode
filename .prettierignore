@@ -9,9 +9,9 @@
 /docs/public/
 
 !/src/
-!/src/**
+!/src/*
 !/syntaxes/
-!/syntaxes/**
+!/syntaxes/*
 
 # Root config
 !/*.json
