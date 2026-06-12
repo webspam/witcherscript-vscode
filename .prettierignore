@@ -1,6 +1,13 @@
 # Default: Deny
 *
 
+!/docs/
+!/docs/*
+/docs/.vitepress/cache/
+/docs/.vitepress/dist/
+/docs/node_modules/
+/docs/public/
+
 !/src/
 !/src/**
 !/syntaxes/
@@ -11,4 +18,6 @@
 !/*.ts
 !/*.mjs
 !/*.cjs
-/package-lock.json
+
+# Lockfiles
+package-lock.json
