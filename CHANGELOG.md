@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.8.1
+
+Bundles `witcherscript-lsp v0.10.1`.
+
+### Improvements
+
+- Hovering a `class` or `state` now shows its full keyword list, e.g. `abstract statemachine class Foo`
+
+### Bug fixes
+
+- The diagnostic for an override that weakens its inherited access modifier was inverted; it now flags the right overrides
+
 ## 0.8.0
 
 Bundles `witcherscript-lsp v0.10.0`.
