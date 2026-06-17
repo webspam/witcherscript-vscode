@@ -10,7 +10,8 @@ The steps are:
 4. **Add scripts from other mods**: See [Additional Script Directories](/guide/script-directories#additional-script-directories)
 5. **Add legacy script overrides**: See [Legacy Script Directories](/guide/script-directories#legacy-script-directories)
 6. **Show reference counts**: Suggests turning on the [reference-count code lens](/guide/language-features#reference-counts)
-7. **Open a WitcherScript file**: Wrap-up step
+7. **Inline type hints**: Choose how [inlay hints](/guide/language-features#inlay-hints) appear - off, on, or revealed on demand
+8. **Open a WitcherScript file**: Wrap-up step
 
 ## Re-run the walkthrough
 

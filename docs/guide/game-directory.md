@@ -2,6 +2,8 @@
 
 The language server needs your Witcher 3 install to resolve the base game scripts that your mod builds on. Without it, most features are of limited use - unknown types and members get flagged everywhere because the server has nothing to resolve them against.
 
+Even with no game directory, the default `redscripts.ini` globals are still recognised - but base game types are not.
+
 ## Auto-detection
 
 On Windows, a **GOG Game of the Year** install is detected automatically through the GOG Galaxy registry. If it is found, the walkthrough shows a "Game directory detected" step and there is nothing to configure.
