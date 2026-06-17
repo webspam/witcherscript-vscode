@@ -12,9 +12,13 @@ The extension includes an opinionated formatter. Use it through VS Code's standa
 }
 ```
 
+## Operator chains
+
+Long operator chains such as `+` and `&&` keep the line breaks you wrote, so a deliberately wrapped boolean or arithmetic expression is not collapsed back onto one line.
+
 ## Compact colon
 
-`witcherscript.formatter.compactColon` (default `false`) uses modern spacing for type annotations.
+`witcherscript.formatter.compactColon` (default `false`) uses modern spacing for type annotations. The setting also applies outside formatting - hovers and other tooltips, completion items, and inserted snippets all follow it.
 
 ::: code-group
 

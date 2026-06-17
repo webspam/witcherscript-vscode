@@ -24,6 +24,9 @@ features:
     details: Syntax errors and type-checking warnings as you type, scoped to the whole project or just open files.
     link: /guide/language-features
     linkText: Learn more
+  - title: Unused symbols
+    details: Locals, parameters, and private fields that are never used are dimmed in the editor.
+    link: /guide/language-features#unused-symbols
   - title: Completion
     details: Members, types, locals, and globals - method completions expand to snippets with parameter placeholders.
     link: /guide/language-features#completion
@@ -55,7 +58,7 @@ features:
     details: Game-definition links on overridden symbols and reference counts on declarations.
     link: /guide/language-features#code-lenses
   - title: Code actions
-    details: Collapse or expand switch cases and if / else chains from the lightbulb.
+    details: Extract to variable, function, or method, inline a variable, split / join declarations, and collapse or expand switch and if / else from the lightbulb.
     link: /guide/language-features#code-actions
   - title: Shared Imports auto-load
     details: Automatically uses modSharedImports and the missing classes / imports it provides

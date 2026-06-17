@@ -13,7 +13,13 @@ Syntax errors and validation warnings appear as you type:
 - Duplicate locals and parameters
 - `var` declarations after executable statements
 - Locals or parameters that shadow class fields or `redscripts.ini` globals
+- Fields that shadow a field from a parent class
 - Missing or duplicate `wrappedMethod(...)` calls inside `@wrapMethod` bodies
+- Overrides that change the parameter count or weaken the original's access modifier
+- Invalid `event` return types, or a `return` value that does not cast to `bool`
+- Integer literals too large for an `int`, and string literals containing a raw newline
+- `new` or a function call used as a default field value
+- Modding annotations targeting a state's backing class, or modifiers on a `@wrapMethod` function
 - ... and more.
 
 Full type checking flags type mismatches across assignments, variable initializers, and call arguments and returns, following the conversions the WitcherScript compiler actually allows.
@@ -30,9 +36,15 @@ Full type checking flags type mismatches across assignments, variable initialize
 | `openFiles`           | Diagnose only the files currently open. Symbols are still indexed project-wide so navigation and completion work everywhere, but the heavy whole-project checking is skipped. |
 | `none`                | Suppress all diagnostics.                                                                                                                                                     |
 
+## Unused symbols
+
+Locals, parameters, and `private` fields that are never used are dimmed in the editor, so dead declarations stand out at a glance.
+
 ## Completion
 
 Completions are offered for members (after `.` and `:`), types, locals, `this`-shorthand members, globals, statement keywords, and modding-annotation parameters. Function and method completions expand to snippets with parameter placeholders.
+
+Inside a state's methods, `parent` and `virtual_parent` are offered as well.
 
 Completions appear immediately as you type.
 
@@ -44,7 +56,7 @@ Completions appear immediately as you type.
 
 ## Hover
 
-Hover over a symbol for its type signature, annotations, and a file-line link to its declaration.
+Hover over a symbol for its type signature, annotations, and a file-line link to its declaration. Methods and functions show their full signature, not just the name and parameters.
 
 ![Hover showing a method signature and its declaration link](/guide/hover.png)
 
@@ -129,7 +141,17 @@ Two independent code lenses sit above declarations. Each is toggled separately.
 
 ## Code actions
 
-Refactor actions are offered through the lightbulb (`Ctrl+.`):
+Refactors and rewrites are offered through the lightbulb (`Ctrl+.`).
+
+### Refactor
+
+- **Extract to variable** - pull the selected expression into a new `var` above the statement. An inline rename opens straight away so you can name it without a separate step.
+- **Extract to function** - turn the selection into a new named function, with the parameters it needs filled in for you.
+- **Extract to method** - lift the selection into a new `private` method on the same class.
+- **Inline variable** - replace a local with its value everywhere it is used, then drop the declaration.
+- **Split / join declaration** - split `var x : int = 5;` into a declaration and a separate assignment, or join them back together.
+
+### Layout
 
 - **Collapse / expand `switch`** - with the cursor on a `switch`, `case`, or `default`, collapse every case onto one line, or expand each onto its own. Case bodies are copied verbatim, not reformatted.
 - **Collapse / expand `if` / `else`** - the same toggle for `if` / `else if` / `else` chains.
