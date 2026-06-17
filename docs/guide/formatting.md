@@ -18,7 +18,9 @@ Long operator chains such as `+` and `&&` keep the line breaks you wrote, so a d
 
 ## Compact colon
 
-`witcherscript.formatter.compactColon` (default `false`) uses modern spacing for type annotations. The setting also applies outside formatting - hovers and other tooltips, completion items, and inserted snippets all follow it.
+`witcherscript.formatter.compactColon` (default `false`) uses modern spacing for type annotations.
+
+It also applies outside formatting: hovers and other tooltips, completion items, and inserted snippets all follow it.
 
 ::: code-group
 

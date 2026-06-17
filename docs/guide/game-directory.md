@@ -1,6 +1,8 @@
 # Game Directory
 
-The language server needs your Witcher 3 install to resolve the base game scripts that your mod builds on. Without it, most features are of limited use - unknown types and members get flagged everywhere because the server has nothing to resolve them against. The default `redscripts.ini` globals are still recognised even when no game directory is found, but base game types are not.
+The language server needs your Witcher 3 install to resolve the base game scripts that your mod builds on. Without it, most features are of limited use - unknown types and members get flagged everywhere because the server has nothing to resolve them against.
+
+Even with no game directory, the default `redscripts.ini` globals are still recognised - but base game types are not.
 
 ## Auto-detection
 

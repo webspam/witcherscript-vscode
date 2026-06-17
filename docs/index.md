@@ -58,7 +58,7 @@ features:
     details: Game-definition links on overridden symbols and reference counts on declarations.
     link: /guide/language-features#code-lenses
   - title: Code actions
-    details: Extract to variable, function, or method, inline a variable, split / join declarations, and collapse or expand switch and if / else from the lightbulb.
+    details: Extract a variable, function, or method, and collapse or expand switch and if / else.
     link: /guide/language-features#code-actions
   - title: Shared Imports auto-load
     details: Automatically uses modSharedImports and the missing classes / imports it provides

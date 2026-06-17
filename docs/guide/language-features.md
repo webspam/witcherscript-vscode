@@ -44,8 +44,6 @@ Locals, parameters, and `private` fields that are never used are dimmed in the e
 
 Completions are offered for members (after `.` and `:`), types, locals, `this`-shorthand members, globals, statement keywords, and modding-annotation parameters. Function and method completions expand to snippets with parameter placeholders.
 
-Inside a state's methods, `parent` and `virtual_parent` are offered as well.
-
 Completions appear immediately as you type.
 
 ![Global completion for `thePlayer`](/guide/completions.png)
@@ -56,7 +54,7 @@ Completions appear immediately as you type.
 
 ## Hover
 
-Hover over a symbol for its type signature, annotations, and a file-line link to its declaration. Methods and functions show their full signature, not just the name and parameters.
+Hover over a symbol for its type signature, annotations, and a file-line link to its declaration.
 
 ![Hover showing a method signature and its declaration link](/guide/hover.png)
 
