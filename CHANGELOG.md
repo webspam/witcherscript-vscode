@@ -1,5 +1,41 @@
 # Changelog
 
+## 0.8.0
+
+Bundles `witcherscript-lsp v0.10.0`.
+
+### Features
+
+- Extract a selected expression to a new `var`, or selected statements to a new function or `private` method, ready to rename
+- Inline a local to replace every use with its value and remove the declaration
+- Split `var x : int = 5;` into a separate declaration and assignment, or join them back together
+- Collapse a `switch` or `if`/`else` onto single lines, or expand each case or branch onto its own
+- Jump to any class, function, or enum across your whole project with workspace symbols
+- Put the cursor on a symbol to highlight every use of it in the file
+- Call arguments now show the parameter name they fill, `out` parameters marked; control them with VS Code's `editor.inlayHints.enabled`
+- A walkthrough tile lets you pick your inlay-hints mode, and existing users get a one-time prompt to choose it
+- Unused locals, parameters, and private fields are now dimmed
+- The editor now catches more mistakes as you type, including:
+  - an override that weakens the access modifier it inherits
+  - an override that changes the number of parameters
+  - returning a value from an event other than `bool`
+  - a `state` whose owner is not a `statemachine`
+  - modifiers on a `@wrapMethod` function
+
+### Improvements
+
+- Hovering a method or function shows its full signature instead of just the name and parameters
+- `@wrapMethod` completion now also offers methods already wrapped elsewhere in your project
+- Autocomplete inside a state method now offers `parent` and `virtual_parent`
+- The formatter leaves your own line breaks in long `+` and `&&` chains alone
+- When a game directory isn't available, the default values for script globals (`redscripts.ini`) are used
+
+### Bug fixes
+
+- Switching git branches now clears stale errors from files you have open
+- Hovering on variables that were defined as a list `var a, b, c : float` no longer shows the other vars
+- A large project with many tabs open no longer hangs on startup
+
 ## 0.7.2
 
 ### Bug fixes
