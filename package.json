@@ -2,7 +2,7 @@
   "name": "witcherscript",
   "displayName": "WitcherScript",
   "description": "WitcherScript language support, with code completion, diagnostics, and more.",
-  "version": "0.8.1",
+  "version": "0.9.0",
   "publisher": "webspam",
   "license": "MIT",
   "repository": {
@@ -18,7 +18,7 @@
     "vscode": "^1.85.0"
   },
   "witcherscriptLsp": {
-    "version": "v0.10.1"
+    "version": "v0.12.0"
   },
   "categories": [
     "Programming Languages",

@@ -1,5 +1,34 @@
 # Changelog
 
+## 0.9.0
+
+Bundles `witcherscript-lsp v0.12.0`.
+
+### Features
+
+- A new `wsformat` command-line formatter formats `.ws` files or whole directories from the terminal, with a `--check` mode that lists unformatted files without rewriting them
+- Formatting now reads a `.wsformat.toml` config; the `wsformat` CLI and the editor both pick up the nearest config in the directory tree and format identically
+- Many more of the game's built-in enums are now recognised, so autocomplete and unknown-symbol warnings cover them
+- Calls with the wrong number of arguments are now flagged, whether too many or a missing required (non-`optional`) one
+- Using `parent` or `virtual_parent` outside a state is now flagged as an error
+- Reading a struct field straight off a function's return value, e.g. `f().x`, is now flagged - store the result in a local first
+
+### Improvements
+
+- A long function call on the right of an assignment now wraps its arguments across lines, matching plain call statements
+
+### Bug fixes
+
+- Go-to-definition and type checking now work on a field accessed through an array element, e.g. the `.field` in `arr[i].field`
+- Type checking and autocomplete now work when chaining member access through a `private` or `protected` field on `this`
+- Cross-file errors now clear once you fix the file they came from, instead of lingering
+- Member completion now works on a line with no trailing `;`, and no longer suggests the wrong members when typing before an existing `;`
+- Editing a file rapidly no longer occasionally corrupts highlighting and error positions
+- The formatter no longer drops skipped argument slots (e.g. `f(a, , b)`) when wrapping a long call
+- `//` end-of-line comments no longer add or remove blank lines when formatting
+- Gitignored and excluded files now stay ignored at startup, even when an editor tab for one is restored before the project finishes loading
+- Closing a gitignored or excluded file no longer adds it to the project as a regular script
+
 ## 0.8.1
 
 Bundles `witcherscript-lsp v0.10.1`.
