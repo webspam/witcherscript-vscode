@@ -16,7 +16,7 @@ hero:
       text: Language Features
       link: /guide/language-features
     - theme: alt
-      text: View on Marketplace
+      text: Add to VS Code
       link: https://marketplace.visualstudio.com/items?itemName=webspam.witcherscript
 
 features:
