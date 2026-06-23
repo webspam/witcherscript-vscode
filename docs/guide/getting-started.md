@@ -1,10 +1,19 @@
+<script setup>
+import VPButton from 'vitepress/dist/client/theme-default/components/VPButton.vue'
+</script>
+
 # Getting Started
 
 WitcherScript adds language support for The Witcher 3 `.ws` files in VS Code and Cursor: diagnostics, completion, hover, navigation, formatting, and more - all powered by the bundled [WitcherScript LSP](https://github.com/webspam/witcherscript-language).
 
 ## Install
 
-Install **WitcherScript** from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=webspam.witcherscript), or search for "WitcherScript" in the Extensions view (`Ctrl+Shift+X`).
+Install **WitcherScript** from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=webspam.witcherscript) or [Open VSX](https://open-vsx.org/extension/webspam/witcherscript), or search for "WitcherScript" in the Extensions view (`Ctrl+Shift+X`).
+
+<div class="install-actions">
+<VPButton theme="brand" text="Add to VS Code" href="vscode:extension/webspam.witcherscript" />
+<VPButton theme="alt" text="Add to Cursor" href="cursor:extension/webspam.witcherscript" />
+</div>
 
 ## Requirements
 

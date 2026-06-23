@@ -36,7 +36,7 @@ export default defineConfig({
       { text: "Reference", link: "/reference/settings", activeMatch: "/reference/" },
       { text: "Changelog", link: "/changelog" },
       {
-        text: "Marketplace",
+        text: "View on VS Code",
         link: "https://marketplace.visualstudio.com/items?itemName=webspam.witcherscript",
       },
     ],

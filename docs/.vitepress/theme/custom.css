@@ -1,3 +1,19 @@
 html {
   scrollbar-gutter: stable;
 }
+
+.install-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+:root {
+  --purple-1:  #aaa3e7;
+  --purple-2:  #847bcf;
+  --purple-3:  #6359be;
+  --vp-c-brand-1: var(--purple-1);
+  --vp-c-brand-2: var(--purple-2);
+  --vp-c-brand-3: var(--purple-3);
+  --vp-c-brand-soft: var(--vp-c-purple-soft);
+}
