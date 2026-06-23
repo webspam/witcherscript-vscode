@@ -1,6 +1,35 @@
 # Formatting
 
-The extension includes an opinionated formatter. Use it through VS Code's standard **Format Document** (`Alt+Shift+F`) or enable **Format on Save**. There are a handful of preferences that can be set.
+The extension includes an opinionated formatter. Use it through VS Code's standard **Format Document** (`Alt+Shift+F`) or enable **Format on Save**. There are a handful of preferences, set in VS Code's settings or a project `.wsformat.toml` file.
+
+## Project config (`.wsformat.toml`) {#wsformat-toml}
+
+Formatter preferences can also live in a `.wsformat.toml` file. The editor looks for one starting in the file's own directory and walking up through its ancestors, using the nearest match. A plain `wsformat.toml` is read too, but `.wsformat.toml` wins when both sit in the same directory.
+
+Any settings in the file override VS Code.
+
+| Key                    | Type                                  | Default    | Editor setting        |
+| ---------------------- | ------------------------------------- | ---------- | --------------------- |
+| `tab_size`             | int                                   | `4`        | -                     |
+| `use_tabs`             | bool                                  | `false`    | -                     |
+| `line_limit`           | int                                   | `100`      | `lineLimit`           |
+| `colon_spacing`        | `spaced` \| `compact`                 | `spaced`   | `compactColon`        |
+| `align_member_colons`  | bool                                  | `false`    | `alignMemberColons`   |
+| `annotation_placement` | `preserve` \| `ownLine` \| `sameLine` | `preserve` | `annotationPlacement` |
+| `default_placement`    | `preserve` \| `ownLine` \| `sameLine` | `preserve` | -                     |
+
+```toml [wsformat.toml]
+# .wsformat.toml
+line_limit = 120
+colon_spacing = "compact"
+align_member_colons = true
+```
+
+:::info `wsformat` command-line formatter
+The same `.wsformat.toml` also controls `wsformat`, a standalone CLI that formats files or whole directories from the terminal, with a `--check` mode that lists unformatted files for CI.
+
+It can be downloaded from the [language server releases page](https://github.com/webspam/witcherscript-language/releases).
+:::
 
 ## Line limit
 
