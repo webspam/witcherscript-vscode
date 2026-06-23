@@ -17,7 +17,7 @@ hero:
       link: /guide/language-features
     - theme: alt
       text: Add to VS Code
-      link: https://marketplace.visualstudio.com/items?itemName=webspam.witcherscript
+      link: vscode:extension/webspam.witcherscript
 
 features:
   - title: Diagnostics
