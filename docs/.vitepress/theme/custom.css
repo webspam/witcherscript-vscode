@@ -2,6 +2,12 @@ html {
   scrollbar-gutter: stable;
 }
 
+.install-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
 :root {
   --purple-1:  #aaa3e7;
   --purple-2:  #847bcf;
