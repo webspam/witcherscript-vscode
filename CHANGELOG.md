@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.10.0
+
+Bundles `witcherscript-lsp v0.13.0`.
+
+### Features
+
+- Doc comments now appear in hover tooltips, so you can read a symbol's documentation without jumping to its definition
+- Unused parameters, variables, and fields now offer a "Remove unused var" quick fix
+- Go-to-definition on a `virtual_parent.member()` call now also jumps to every currently known subclass override
+
+### Bug fixes
+
+- Go-to-definition on the `virtual_parent` keyword now jumps to the state's owner class
+- Accepting an annotation suggestion like `@wrapMethod` no longer doubles the `@`
+- Starting a new annotation with `@` before an existing one no longer suggests class names
+- Picking an annotation snippet now immediately shows a list of class names
+
 ## 0.9.0
 
 Bundles `witcherscript-lsp v0.12.0`.
