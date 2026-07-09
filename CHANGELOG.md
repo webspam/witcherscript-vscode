@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.11.0
+
+Bundles `witcherscript-lsp v0.14.0`.
+
+### Features
+
+- Type names now autocomplete inside a cast expression: `(CSpot)target`
+- Adds a diagnostic to detect explicit casts in `var` initialisers: `var spot: CSpot = (CSpot)target;`
+
+### Bug fixes
+
+- Fixed occasional Find References / Go To Definition errors on files that had been closed
+- A field annotated with `@addField` is no longer treated as a global variable declaration
+- Formatting no longer removes blank lines that follow a `//` comment inside a function
+- Diagnostics for files in a folder deleted by a git rebase or branch switch now clear instead of lingering until restart
+
 ## 0.10.0
 
 Bundles `witcherscript-lsp v0.13.0`.
