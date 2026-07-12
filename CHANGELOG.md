@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.11.1
+
+Bundles `witcherscript-lsp v0.14.1`.
+
+### Bug fixes
+
+- Fixes the false-positive diagnostic error when casting to primitive types in a `var` initializer
+
 ## 0.11.0
 
 Bundles `witcherscript-lsp v0.14.0`.
