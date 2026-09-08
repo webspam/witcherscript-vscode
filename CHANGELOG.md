@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.12.0
+
+Bundles `witcherscript-lsp v0.15.0`.
+
+### Features
+
+- Using a hex literal in a class field `default` now raises a diagnostic warning
+
 ## 0.11.1
 
 Bundles `witcherscript-lsp v0.14.1`.
