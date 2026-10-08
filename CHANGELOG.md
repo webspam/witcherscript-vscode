@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.12.1
+
+Bundles `witcherscript-lsp v0.15.1`.
+
+### Improvements
+
+- Mapped formerly-unknown Engine enums
+  - `PhotomodeParameterId`
+  - `EBatchQueryQueryFlag`
+  - `EScriptQueryFlags`
+  - `GamepadTriggerEffectMode`
+- Removed ternary diagnostic - ternaries are accepted in Remastered
+
+### Bug fixes
+
+- `//` comments inside a multi-line `if`/`while` condition no longer get moved out of the condition when formatting
+
 ## 0.12.0
 
 Bundles `witcherscript-lsp v0.15.0`.
