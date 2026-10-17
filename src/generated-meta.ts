@@ -4,7 +4,7 @@
 // Meta info
 export const publisher = "webspam";
 export const name = "witcherscript";
-export const version = "0.12.1";
+export const version = "0.13.0";
 export const displayName = "WitcherScript";
 export const description =
   "WitcherScript language support, with code completion, diagnostics, and more.";
