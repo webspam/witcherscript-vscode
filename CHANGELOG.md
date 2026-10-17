@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.13.0
+
+Bundles `witcherscript-lsp v0.16.0`.
+
+### Features
+
+- Formatting splits multi-line ternaries consistently, with `?` and `:` at the start of each line
+  - Long ternaries in `return`, assignments, and `var` initialisers wrap automatically
+- Formatting wraps long function calls anywhere in an expression
+  - Add a line break before or after a call's first argument to override automatic wrapping
+
+### Bug fixes
+
+- Calls inside multi-line ternaries and `&&` / `||` chains no longer wrap before reaching the line limit
+
 ## 0.12.1
 
 Bundles `witcherscript-lsp v0.15.1`.
