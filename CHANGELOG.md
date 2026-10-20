@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.14.0
+
+Bundles `witcherscript-lsp v1.0.0`.
+
+### Features
+
+- All types, members, enums, and functions now match the engine compiler
+- Native types and enum members work without an `import`
+  - Native functions, methods, and fields still need an `import`
+- New diagnostics for:
+  - Using a native function or member without an `import`
+  - An `import` that refers to something the engine doesn't have
+- Go-to-definition on the name in an `import` opens the builtin definition, generated on demand
+
+### Bug fixes
+
+- `CBehTreeVal*` types are structs, matching the engine
+- `new` on native "simple" types (e.g. `CDateTime`) reports correct diagnostics
+
 ## 0.13.0
 
 Bundles `witcherscript-lsp v0.16.0`.
