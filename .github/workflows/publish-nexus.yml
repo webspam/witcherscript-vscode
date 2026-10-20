@@ -1,0 +1,43 @@
+name: Publish to Nexus Mods
+
+on:
+  release:
+    types: [released]
+
+jobs:
+  publish-nexus:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      TAG: ${{ github.event.release.tag_name }}
+
+    steps:
+      - name: Download release asset
+        id: asset
+        run: |
+          version="${TAG#v}"
+          vsix="witcherscript-win32-x64-${version}.vsix"
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --pattern "$vsix"
+          zip "${vsix}.zip" "$vsix"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "filename=${vsix}.zip" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload to Nexus Mods
+        # v1.0.0-beta.10
+        uses: Nexus-Mods/upload-action@c96019556046053aa26044b44396cd38929daf23
+        with:
+          api_key: ${{ secrets.NEXUS_API_KEY }}
+          mod_id: 4088808878040
+          file_id: 7452593
+          filename: ${{ steps.asset.outputs.filename }}
+          version: ${{ steps.asset.outputs.version }}
+          changelog: ${{ github.event.release.html_url }}
+          display_name: WitcherScript
+          category: main
+          archive_existing_version: false
+          primary_mod_manager_download: false
+          allow_mod_manager_download: false
+          update_mod_version: true
