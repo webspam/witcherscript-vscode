@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.15.0
+
+Bundles `witcherscript-lsp v1.1.0`.
+
+### Features
+
+- Supports the `map<K, V>` builtin type
+  - Hover, autocomplete, and signature help show the key and value types
+  - Extract to function works with maps
+- Formatting lays out method call chains fluently, one call per line
+  - Determines whether to wrap or collapse from the first/second method call placement
+- States are referred to by their class name, e.g. `@wrapMethod(CR4PlayerStateSwimming)`
+  - Autocomplete offers states by class name
+- New diagnostics
+  - Calling an unknown method on an `array` or `map`
+  - Assigning a map to a different type
+  - Annotations using the short state name, suggesting the class name instead
+
 ## 0.14.0
 
 Bundles `witcherscript-lsp v1.0.0`.
